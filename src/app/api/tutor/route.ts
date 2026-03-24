@@ -1,0 +1,56 @@
+import { NextRequest } from "next/server"
+import { anthropic } from "@/lib/claude"
+import { buildTutorSystemPrompt } from "@/lib/prompts"
+import type { TutorRequest } from "@/types"
+
+export async function POST(req: NextRequest) {
+  let body: TutorRequest
+  try {
+    body = await req.json()
+  } catch {
+    return new Response("Invalid request body", { status: 400 })
+  }
+
+  const { problemText, subject, messages } = body
+
+  if (!problemText || !subject || !messages) {
+    return new Response("problemText, subject, and messages are required", { status: 400 })
+  }
+
+  try {
+    const stream = await anthropic.messages.stream({
+      model: "claude-sonnet-4-6",
+      max_tokens: 1024,
+      system: buildTutorSystemPrompt(subject),
+      messages: messages.map((m) => ({ role: m.role, content: m.content })),
+    })
+
+    const readable = new ReadableStream({
+      async start(controller) {
+        try {
+          for await (const chunk of stream) {
+            if (
+              chunk.type === "content_block_delta" &&
+              chunk.delta.type === "text_delta"
+            ) {
+              controller.enqueue(new TextEncoder().encode(chunk.delta.text))
+            }
+          }
+        } finally {
+          controller.close()
+        }
+      },
+    })
+
+    return new Response(readable, {
+      headers: {
+        "Content-Type": "text/plain; charset=utf-8",
+        "Cache-Control": "no-cache",
+        "X-Content-Type-Options": "nosniff",
+      },
+    })
+  } catch (err) {
+    console.error("tutor error:", err)
+    return new Response("Failed to get response. Please try again.", { status: 500 })
+  }
+}
