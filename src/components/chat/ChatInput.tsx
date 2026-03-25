@@ -43,6 +43,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
           value={value}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKeyDown}
+          autoFocus
           placeholder={disabled ? "Waiting for tutor…" : (placeholder || "Type your answer or question…")}
           rows={1}
           className="flex-1 resize-none bg-transparent text-slate-800 placeholder-slate-400 text-sm focus:outline-none"
