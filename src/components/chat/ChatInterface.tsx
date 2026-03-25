@@ -34,6 +34,13 @@ export function ChatInterface({ sessionId, problemIndex }: ChatInterfaceProps) {
     scrollToBottom()
   }, [messages, isLoading, scrollToBottom])
 
+  // Focus input whenever loading finishes and problem isn't solved
+  useEffect(() => {
+    if (!isLoading && !isSolved) {
+      setTimeout(() => chatInputRef.current?.focus(), 100)
+    }
+  }, [isLoading, isSolved])
+
   const sendMessage = useCallback(
     async (userText: string, isInitial = false) => {
       if (!session) return
@@ -139,7 +146,6 @@ export function ChatInterface({ sessionId, problemIndex }: ChatInterfaceProps) {
         )
       } finally {
         setIsLoading(false)
-        setTimeout(() => chatInputRef.current?.focus(), 50)
       }
     },
     [session, messages, sessionId, problemIndex]
