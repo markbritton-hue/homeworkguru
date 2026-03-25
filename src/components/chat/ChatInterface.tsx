@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react"
 import { ChatMessage } from "./ChatMessage"
-import { ChatInput } from "./ChatInput"
+import { ChatInput, type ChatInputHandle } from "./ChatInput"
 import { LoadingDots } from "@/components/ui/LoadingDots"
 import { CompletionBanner } from "./CompletionBanner"
 import { appendChatMessage, loadSession, updateProblemStatus } from "@/lib/session-storage"
@@ -23,6 +23,7 @@ export function ChatInterface({ sessionId, problemIndex }: ChatInterfaceProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [isSolved, setIsSolved] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const chatInputRef = useRef<ChatInputHandle>(null)
   const initialized = useRef(false)
 
   const scrollToBottom = useCallback(() => {
@@ -138,6 +139,7 @@ export function ChatInterface({ sessionId, problemIndex }: ChatInterfaceProps) {
         )
       } finally {
         setIsLoading(false)
+        setTimeout(() => chatInputRef.current?.focus(), 50)
       }
     },
     [session, messages, sessionId, problemIndex]
@@ -241,6 +243,7 @@ export function ChatInterface({ sessionId, problemIndex }: ChatInterfaceProps) {
         <div className="px-4 pb-4 pt-2 border-t border-slate-100 bg-slate-50">
           <div className="max-w-2xl mx-auto">
             <ChatInput
+              ref={chatInputRef}
               value={input}
               onChange={setInput}
               onSubmit={handleSubmit}
