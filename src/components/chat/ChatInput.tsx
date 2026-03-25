@@ -43,10 +43,9 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
           value={value}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKeyDown}
-          disabled={disabled}
-          placeholder={placeholder || "Type your answer or question…"}
+          placeholder={disabled ? "Waiting for tutor…" : (placeholder || "Type your answer or question…")}
           rows={1}
-          className="flex-1 resize-none bg-transparent text-slate-800 placeholder-slate-400 text-sm focus:outline-none disabled:opacity-50"
+          className="flex-1 resize-none bg-transparent text-slate-800 placeholder-slate-400 text-sm focus:outline-none"
           style={{ minHeight: "24px" }}
         />
         <button
