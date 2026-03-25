@@ -23,7 +23,8 @@ export function ChatInput({ value, onChange, onSubmit, disabled, placeholder }: 
   // Re-focus input when AI finishes responding (disabled flips from true to false)
   useEffect(() => {
     if (!disabled) {
-      textareaRef.current?.focus()
+      const t = setTimeout(() => textareaRef.current?.focus(), 50)
+      return () => clearTimeout(t)
     }
   }, [disabled])
 
