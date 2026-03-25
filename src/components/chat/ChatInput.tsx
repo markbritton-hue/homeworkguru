@@ -20,6 +20,13 @@ export function ChatInput({ value, onChange, onSubmit, disabled, placeholder }: 
     el.style.height = Math.min(el.scrollHeight, 120) + "px"
   }, [value])
 
+  // Re-focus input when AI finishes responding (disabled flips from true to false)
+  useEffect(() => {
+    if (!disabled) {
+      textareaRef.current?.focus()
+    }
+  }, [disabled])
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault()
