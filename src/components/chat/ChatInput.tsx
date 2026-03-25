@@ -50,6 +50,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
         />
         <button
           onClick={onSubmit}
+          onMouseDown={(e) => e.preventDefault()}
           disabled={disabled || !value.trim()}
           className="flex-shrink-0 w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center hover:bg-indigo-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           aria-label="Send message"
