@@ -37,7 +37,10 @@ export function ChatInterface({ sessionId, problemIndex }: ChatInterfaceProps) {
   // Focus input whenever loading finishes and problem isn't solved
   useEffect(() => {
     if (!isLoading && !isSolved) {
-      setTimeout(() => chatInputRef.current?.focus(), 100)
+      setTimeout(() => {
+        const ta = document.querySelector<HTMLTextAreaElement>("textarea")
+        ta?.focus()
+      }, 100)
     }
   }, [isLoading, isSolved])
 
