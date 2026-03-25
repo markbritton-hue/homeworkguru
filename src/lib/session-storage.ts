@@ -20,7 +20,13 @@ export function loadSession(sessionId: string): HomeworkSession | null {
   try {
     const raw = localStorage.getItem(PREFIX + sessionId)
     if (!raw) return null
-    return JSON.parse(raw) as HomeworkSession
+    const session = JSON.parse(raw) as HomeworkSession
+    // backfill name for older sessions that didn't have one
+    if (!session.name) {
+      const subjects = [...new Set(session.problems.map((p) => p.subject))]
+      session.name = subjects.slice(0, 2).join(" & ") || "Homework"
+    }
+    return session
   } catch {
     return null
   }
@@ -49,6 +55,10 @@ export function appendChatMessage(
   }
   session.chatHistory[problemIndex].push(message)
   saveSession(session)
+}
+
+export function deleteSession(sessionId: string): void {
+  localStorage.removeItem(PREFIX + sessionId)
 }
 
 export function listSessions(): string[] {

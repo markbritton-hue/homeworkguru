@@ -40,16 +40,9 @@ export async function POST(req: NextRequest) {
           content: [
             {
               type: "image",
-              source: {
-                type: "base64",
-                media_type: mimeType,
-                data: rawBase64,
-              },
+              source: { type: "base64", media_type: mimeType, data: rawBase64 },
             },
-            {
-              type: "text",
-              text: PARSE_HOMEWORK_PROMPT,
-            },
+            { type: "text", text: PARSE_HOMEWORK_PROMPT },
           ],
         },
       ],
@@ -57,12 +50,10 @@ export async function POST(req: NextRequest) {
 
     const text = response.content[0].type === "text" ? response.content[0].text : ""
 
-    // Try direct JSON parse first
     let problems
     try {
       problems = JSON.parse(text)
     } catch {
-      // Fallback: extract JSON array via regex
       const match = text.match(/\[[\s\S]*\]/)
       if (match) {
         try {

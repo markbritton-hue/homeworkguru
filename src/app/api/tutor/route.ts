@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
 
   const { problemText, subject, messages } = body
 
-  if (!problemText || !subject || !messages) {
+  if (!problemText || !subject || !messages || messages.length === 0) {
     return new Response("problemText, subject, and messages are required", { status: 400 })
   }
 
@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
     const stream = await anthropic.messages.stream({
       model: "claude-sonnet-4-6",
       max_tokens: 1024,
-      system: buildTutorSystemPrompt(subject),
+      system: buildTutorSystemPrompt(subject, problemText),
       messages: messages.map((m) => ({ role: m.role, content: m.content })),
     })
 

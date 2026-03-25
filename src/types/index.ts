@@ -17,6 +17,7 @@ export interface ChatMessage {
 
 export interface HomeworkSession {
   sessionId: string
+  name: string
   createdAt: number
   imageDataUrl: string
   problems: Problem[]
