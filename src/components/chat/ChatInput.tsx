@@ -90,24 +90,25 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
       if (!SR) return
 
       const recognition = new SR()
-      recognition.continuous = false
+      recognition.continuous = true
       recognition.interimResults = true
       recognition.lang = "en-US"
+
+      let accumulated = ""
 
       recognition.onstart = () => setIsListening(true)
 
       recognition.onresult = (event: ISpeechRecognitionEvent) => {
-        let finalTranscript = ""
         let interim = ""
         for (let i = event.resultIndex; i < event.results.length; i++) {
           const t = event.results[i][0].transcript
           if (event.results[i].isFinal) {
-            finalTranscript += t
+            accumulated += t + " "
           } else {
-            interim += t
+            interim = t
           }
         }
-        onChange(finalTranscript || interim)
+        onChange((accumulated + interim).trim())
       }
 
       recognition.onend = () => {
