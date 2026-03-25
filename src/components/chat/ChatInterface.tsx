@@ -254,6 +254,7 @@ export function ChatInterface({ sessionId, problemIndex }: ChatInterfaceProps) {
         <div className="px-4 pb-4 pt-2 border-t border-slate-100 bg-slate-50">
           <div className="max-w-2xl mx-auto">
             <ChatInput
+              key={isLoading ? "loading" : "ready"}
               ref={chatInputRef}
               value={input}
               onChange={setInput}
