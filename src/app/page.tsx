@@ -280,7 +280,7 @@ function HomePageInner() {
                 <div className="mt-2 text-center">
                   <div className="relative inline-block">
                     {user.isAnonymous && (
-                      <div className="absolute -top-3 left-3 z-10 whitespace-nowrap">
+                      <div className="absolute top-2 left-3 z-10 whitespace-nowrap">
                         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold animate-pulse"
                           style={{ background: "rgba(16,185,129,0.2)", border: "1px solid rgba(16,185,129,0.6)", color: "#10b981", boxShadow: "0 0 12px rgba(16,185,129,0.4)" }}>
                           <span className="w-2 h-2 rounded-full animate-ping inline-block" style={{ background: "#10b981" }} />
