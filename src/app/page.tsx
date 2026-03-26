@@ -36,6 +36,7 @@ function HomePageInner() {
     listSessions(user.uid).then((loaded) => {
       loaded.sort((a, b) => b.createdAt - a.createdAt)
       setSessions(loaded)
+
       const isDemo = searchParams.get("demo") === "1"
       if (isDemo && !demoTriggered.current) {
         demoTriggered.current = true
@@ -43,6 +44,18 @@ function HomePageInner() {
         handleDemo()
         return
       }
+
+      // Auto-onboard new registered users with demo assignment
+      if (loaded.length === 0 && !user.isAnonymous) {
+        const createdMs = user.metadata.creationTime ? new Date(user.metadata.creationTime).getTime() : 0
+        const isNewUser = Date.now() - createdMs < 2 * 60 * 1000 // within last 2 minutes
+        if (isNewUser && !demoTriggered.current) {
+          demoTriggered.current = true
+          autoOnboard(user.uid)
+          return
+        }
+      }
+
       setShowUpload(loaded.length === 0)
       if (loaded.length === 0) {
         try {
@@ -113,6 +126,41 @@ function HomePageInner() {
     }
   }
 
+  const autoOnboard = async (uid: string) => {
+    setIsParsing(true)
+    try {
+      const res = await fetch("/gemwork.jpg")
+      const blob = await res.blob()
+      const dataUrl = await new Promise<string>((resolve) => {
+        const reader = new FileReader()
+        reader.onload = (e) => resolve(e.target?.result as string)
+        reader.readAsDataURL(blob)
+      })
+      const compressed = await compressImage(dataUrl)
+      const response = await fetch("/api/parse-homework", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ images: [{ imageBase64: dataUrl, mimeType: "image/jpeg" }] }),
+      })
+      const data = await response.json()
+      if (!response.ok) { setShowUpload(true); return }
+      const sessionId = crypto.randomUUID()
+      const session: HomeworkSession = {
+        sessionId, name: "Demo Assignment", createdAt: Date.now(),
+        imageDataUrls: [],
+        problems: data.problems.map((p: { index: number; text: string; subject: string }) => ({ ...p, status: "not_started" as const })),
+        chatHistory: {},
+      }
+      await saveSession(uid, session, [compressed])
+      setSessions([session])
+      setShowUpload(false)
+    } catch {
+      setShowUpload(true)
+    } finally {
+      setIsParsing(false)
+    }
+  }
+
   const handleDelete = (sessionId: string, e: React.MouseEvent) => {
     e.preventDefault(); e.stopPropagation()
     if (!user) return
@@ -127,6 +175,15 @@ function HomePageInner() {
   if (authLoading || !user) return (
     <main className="min-h-screen flex items-center justify-center">
       <p className="text-sm" style={{ color: "rgba(255,255,255,0.4)" }}>Loading…</p>
+    </main>
+  )
+
+  if (isParsing && sessions.length === 0) return (
+    <main className="min-h-screen flex flex-col items-center justify-center gap-4">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/HomeworkguruLogo.png" alt="Homework Guru" style={{ height: "100px", objectFit: "contain" }} />
+      <p className="text-base font-semibold" style={{ color: "rgba(255,255,255,0.8)" }}>Setting up your demo assignment…</p>
+      <p className="text-sm" style={{ color: "rgba(255,255,255,0.4)" }}>Finding problems in your homework</p>
     </main>
   )
 
