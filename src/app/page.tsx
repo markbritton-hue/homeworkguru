@@ -93,6 +93,8 @@ export default function HomePage() {
     setSessions((prev) => prev.filter((s) => s.sessionId !== sessionId))
   }
 
+  const [lightbox, setLightbox] = useState<string | null>(null)
+
   const solvedCount = (s: HomeworkSession) => s.problems.filter((p) => p.status === "solved").length
 
   return (
@@ -245,6 +247,24 @@ export default function HomePage() {
                           </div>
                           <span className="text-xs flex-shrink-0" style={{ color: "var(--muted)" }}>{solved}/{total}</span>
                         </div>
+
+                        {/* Homework image thumbnails */}
+                        {session.imageDataUrls.length > 0 && (
+                          <div className="flex gap-2 mt-3 flex-wrap">
+                            {session.imageDataUrls.map((url, i) => (
+                              <button
+                                key={i}
+                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setLightbox(url) }}
+                                className="rounded-lg overflow-hidden transition-all hover:scale-105 hover:opacity-90 flex-shrink-0"
+                                style={{ border: "1px solid rgba(96,165,250,0.3)", height: "52px", background: "rgba(0,0,0,0.3)" }}
+                                aria-label={`View page ${i + 1}`}
+                              >
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img src={url} alt={`Page ${i + 1}`} className="h-full w-auto object-cover" />
+                              </button>
+                            ))}
+                          </div>
+                        )}
                       </div>
                       <div className="flex items-center gap-1 flex-shrink-0 self-center">
                         <button
@@ -345,6 +365,30 @@ export default function HomePage() {
           </div>
         </div>
       </div>
+
+      {/* Lightbox */}
+      {lightbox && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ background: "rgba(0,0,0,0.85)", backdropFilter: "blur(8px)" }}
+          onClick={() => setLightbox(null)}
+        >
+          <div className="relative max-w-full max-h-full" onClick={(e) => e.stopPropagation()}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={lightbox} alt="Homework" className="max-w-[90vw] max-h-[85vh] rounded-2xl object-contain"
+              style={{ border: "1px solid rgba(96,165,250,0.3)", boxShadow: "0 20px 60px rgba(0,0,0,0.8)" }} />
+            <button
+              onClick={() => setLightbox(null)}
+              className="absolute -top-3 -right-3 w-8 h-8 rounded-full flex items-center justify-center transition-opacity hover:opacity-80"
+              style={{ background: "rgba(30,41,59,0.95)", border: "1px solid rgba(96,165,250,0.4)", color: "var(--muted)" }}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
     </main>
   )
 }
