@@ -66,6 +66,17 @@ export default function SessionPage() {
     <main className="min-h-screen px-4 py-8">
       <div className="max-w-2xl mx-auto">
 
+        {/* Problems header panel */}
+        <div className="rounded-2xl overflow-hidden mb-6"
+          style={{ background: "rgba(15,30,60,0.85)", border: "1px solid rgba(96,165,250,0.2)", boxShadow: "0 8px 20px rgba(0,0,0,0.4)", backdropFilter: "blur(10px)" }}>
+          <div className="px-6 py-4" style={{ background: "rgba(96,165,250,0.08)" }}>
+            <h2 className="text-xl font-bold" style={{
+              background: "linear-gradient(135deg, var(--accent), var(--accent2))",
+              WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+            }}>Here are your Problems to Solve</h2>
+          </div>
+        </div>
+
         {/* Header */}
         <div className="flex items-center gap-3 mb-6">
           <HomeButton />
