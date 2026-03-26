@@ -6,10 +6,8 @@ import {
   getDocs,
   deleteDoc,
   updateDoc,
-  arrayUnion,
 } from "firebase/firestore"
-import { ref, uploadString, getDownloadURL, deleteObject } from "firebase/storage"
-import { db, storage } from "@/lib/firebase"
+import { db } from "@/lib/firebase"
 import type { HomeworkSession, ChatMessage, ProblemStatus } from "@/types"
 
 function sessionsCol(uid: string) {
@@ -20,26 +18,8 @@ function sessionDoc(uid: string, sessionId: string) {
   return doc(db, "users", uid, "sessions", sessionId)
 }
 
-// Upload base64 images to Firebase Storage, return download URLs
-async function uploadImages(uid: string, sessionId: string, dataUrls: string[]): Promise<string[]> {
-  return Promise.all(
-    dataUrls.map(async (dataUrl, i) => {
-      const storageRef = ref(storage, `users/${uid}/${sessionId}/page-${i}.jpg`)
-      await uploadString(storageRef, dataUrl, "data_url")
-      return getDownloadURL(storageRef)
-    })
-  )
-}
-
 export async function saveSession(uid: string, session: HomeworkSession, imageDataUrls?: string[]): Promise<void> {
-  let imageUrls = session.imageDataUrls
-
-  // If raw data URLs are provided, upload them to Storage first
-  if (imageDataUrls && imageDataUrls.length > 0 && imageDataUrls[0].startsWith("data:")) {
-    imageUrls = await uploadImages(uid, session.sessionId, imageDataUrls)
-  }
-
-  const data = { ...session, imageDataUrls: imageUrls }
+  const data = { ...session, imageDataUrls: imageDataUrls ?? session.imageDataUrls }
   await setDoc(sessionDoc(uid, session.sessionId), data)
 }
 
@@ -58,14 +38,6 @@ export async function listSessions(uid: string): Promise<HomeworkSession[]> {
 
 export async function deleteSession(uid: string, sessionId: string): Promise<void> {
   await deleteDoc(sessionDoc(uid, sessionId))
-  // Best-effort delete images from Storage
-  for (let i = 0; i < 10; i++) {
-    try {
-      await deleteObject(ref(storage, `users/${uid}/${sessionId}/page-${i}.jpg`))
-    } catch {
-      break
-    }
-  }
 }
 
 export async function updateProblemStatus(

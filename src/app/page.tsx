@@ -164,13 +164,7 @@ function HomePageInner() {
         chatHistory: {},
       }
 
-      // Try saving with Storage upload; fall back to storing base64 directly
-      try {
-        await saveSession(uid, session, [compressed])
-      } catch {
-        session.imageDataUrls = [compressed]
-        await saveSession(uid, session)
-      }
+      await saveSession(uid, session, [compressed])
 
       setSessions([session])
       setShowUpload(false)
