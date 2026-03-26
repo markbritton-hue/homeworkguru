@@ -108,7 +108,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
       if (!SR || !shouldListenRef.current) return
 
       const recognition = new SR()
-      recognition.continuous = false
+      recognition.continuous = true
       recognition.interimResults = true
       recognition.lang = "en-US"
 
