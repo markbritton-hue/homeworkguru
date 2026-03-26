@@ -105,7 +105,7 @@ export default function HomePage() {
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/HomeworkguruLogo.png" alt="Homework Guru" className="h-11 w-auto" />
+            <img src="/HomeworkguruLogo.png" alt="Homework Guru" style={{ width: "150px", height: "150px", objectFit: "contain" }} />
           </div>
           {sessions.length > 0 && !showUpload && (
             <button
