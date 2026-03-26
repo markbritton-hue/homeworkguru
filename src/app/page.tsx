@@ -20,6 +20,7 @@ export default function HomePage() {
   const [sessions, setSessions] = useState<HomeworkSession[]>([])
   const [showUpload, setShowUpload] = useState(false)
   const [assignmentName, setAssignmentName] = useState("")
+  const [showWelcome, setShowWelcome] = useState(false)
 
   useEffect(() => {
     const ids = listSessions()
@@ -27,6 +28,10 @@ export default function HomePage() {
     loaded.sort((a, b) => b.createdAt - a.createdAt)
     setSessions(loaded)
     setShowUpload(loaded.length === 0)
+    if (loaded.length === 0) {
+      const seen = localStorage.getItem("welcome_seen")
+      if (!seen) setShowWelcome(true)
+    }
   }, [])
 
   const handleImageSelected = (dataUrl: string, mimeType: MimeType) => {
@@ -371,6 +376,55 @@ export default function HomePage() {
           </div>
         </div>
       </div>
+
+      {/* Welcome modal */}
+      {showWelcome && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ background: "rgba(0,0,0,0.75)", backdropFilter: "blur(8px)" }}>
+          <div className="w-full max-w-md rounded-3xl overflow-hidden shadow-2xl"
+            style={{ background: "rgba(10,18,35,0.98)", border: "1px solid rgba(251,146,60,0.35)" }}>
+
+            {/* Header */}
+            <div className="px-6 pt-8 pb-4 text-center">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/HomeworkguruLogo.png" alt="Homework Guru" className="mx-auto mb-4" style={{ height: "100px", objectFit: "contain" }} />
+              <p className="text-sm" style={{ color: "var(--muted)" }}>Your personal AI homework tutor</p>
+            </div>
+
+            {/* Steps */}
+            <div className="px-6 pb-4 space-y-4">
+              {[
+                { step: "1", title: "Upload your homework", desc: "Take a photo or upload an image of your worksheet." },
+                { step: "2", title: "AI finds every problem", desc: "Each question is extracted and identified automatically." },
+                { step: "3", title: "Chat with your tutor", desc: "Get guided hints — not just answers — so you actually learn." },
+                { step: "4", title: "Track your progress", desc: "Problems get marked solved as you work through them." },
+              ].map(({ step, title, desc }) => (
+                <div key={step} className="flex gap-3">
+                  <div className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold"
+                    style={{ background: "rgba(251,146,60,0.15)", border: "1px solid rgba(251,146,60,0.35)", color: "#fb923c" }}>
+                    {step}
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold" style={{ color: "var(--text)" }}>{title}</p>
+                    <p className="text-xs" style={{ color: "var(--muted)" }}>{desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* CTA */}
+            <div className="px-6 pb-8 pt-2">
+              <button
+                onClick={() => { localStorage.setItem("welcome_seen", "1"); setShowWelcome(false); setShowUpload(true) }}
+                className="w-full py-3 rounded-full text-sm font-bold text-white transition-all hover:-translate-y-0.5"
+                style={{ background: "linear-gradient(135deg, #fb923c, #f59e0b)", boxShadow: "0 4px 16px rgba(251,146,60,0.4)" }}
+              >
+                Get Started →
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Lightbox */}
       {lightbox && (
