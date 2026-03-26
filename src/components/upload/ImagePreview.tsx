@@ -97,17 +97,15 @@ export function ImagePreview({ images, onRemove, onAddMore, onParse, isParsing, 
           <span className="text-sm font-semibold" style={{ color: "var(--muted)" }}>Reading your homework…</span>
         </div>
       ) : (
-        <div className="relative">
+        <div className="flex flex-col gap-1.5">
           {isDemo && (
-            <div className="absolute top-2 left-3 z-10">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold animate-pulse"
-                style={{ background: "rgba(16,185,129,0.2)", border: "1px solid rgba(16,185,129,0.6)", color: "#10b981", boxShadow: "0 0 12px rgba(16,185,129,0.4)" }}>
-                <span className="w-2 h-2 rounded-full animate-ping inline-block" style={{ background: "#10b981" }} />
-                Step 2
-              </span>
-            </div>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold animate-pulse self-start"
+              style={{ background: "rgba(16,185,129,0.2)", border: "1px solid rgba(16,185,129,0.6)", color: "#10b981", boxShadow: "0 0 12px rgba(16,185,129,0.4)" }}>
+              <span className="w-2 h-2 rounded-full animate-ping inline-block" style={{ background: "#10b981" }} />
+              Step 2
+            </span>
           )}
-          <Button onClick={onParse} size="lg" className="w-full" style={isDemo ? { boxShadow: "0 0 20px rgba(16,185,129,0.3)", border: "1px solid rgba(16,185,129,0.5)" } : undefined}>
+          <Button onClick={onParse} size="lg" className="w-full">
             Find My Problems
           </Button>
         </div>
