@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useState, useEffect, useRef, Suspense } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { UploadZone } from "@/components/upload/UploadZone"
 import { ImagePreview } from "@/components/upload/ImagePreview"
@@ -13,9 +13,11 @@ import type { HomeworkSession } from "@/types"
 type MimeType = "image/jpeg" | "image/png" | "image/webp" | "image/gif"
 interface ImageEntry { dataUrl: string; mimeType: MimeType }
 
-export default function HomePage() {
+function HomePageInner() {
   const router = useRouter()
   const { user, loading: authLoading, signOut } = useAuth()
+  const searchParams = useSearchParams()
+  const demoTriggered = useRef(false)
   const [images, setImages] = useState<ImageEntry[]>([])
   const [isParsing, setIsParsing] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -34,6 +36,13 @@ export default function HomePage() {
     listSessions(user.uid).then((loaded) => {
       loaded.sort((a, b) => b.createdAt - a.createdAt)
       setSessions(loaded)
+      const isDemo = searchParams.get("demo") === "1"
+      if (isDemo && !demoTriggered.current) {
+        demoTriggered.current = true
+        setShowUpload(true)
+        handleDemo()
+        return
+      }
       setShowUpload(loaded.length === 0)
       if (loaded.length === 0) {
         try {
@@ -42,6 +51,7 @@ export default function HomePage() {
         } catch {}
       }
     })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user])
 
   const handleImageSelected = (dataUrl: string, mimeType: MimeType) => {
@@ -123,6 +133,21 @@ export default function HomePage() {
   return (
     <main className="min-h-screen px-4 py-10">
       <div className="max-w-2xl mx-auto">
+
+        {/* Guest banner */}
+        {user.isAnonymous && (
+          <div className="mb-4 rounded-2xl px-4 py-3 flex items-center justify-between gap-3"
+            style={{ background: "rgba(251,146,60,0.1)", border: "1px solid rgba(251,146,60,0.3)" }}>
+            <p className="text-sm" style={{ color: "#fb923c" }}>
+              You&apos;re in demo mode — <span style={{ color: "rgba(255,255,255,0.7)" }}>create a free account to save your assignments.</span>
+            </p>
+            <Link href="/login"
+              className="flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold transition-all hover:-translate-y-0.5"
+              style={{ background: "rgba(251,146,60,0.2)", border: "1px solid rgba(251,146,60,0.4)", color: "#fb923c" }}>
+              Sign Up
+            </Link>
+          </div>
+        )}
 
         {/* Header */}
         <div className="relative flex items-center justify-center mb-2">
@@ -478,5 +503,17 @@ export default function HomePage() {
         </div>
       )}
     </main>
+  )
+}
+
+export default function HomePage() {
+  return (
+    <Suspense fallback={
+      <main className="min-h-screen flex items-center justify-center">
+        <p className="text-sm" style={{ color: "rgba(255,255,255,0.4)" }}>Loading…</p>
+      </main>
+    }>
+      <HomePageInner />
+    </Suspense>
   )
 }

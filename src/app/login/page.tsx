@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { useAuth } from "@/contexts/AuthContext"
 
 export default function LoginPage() {
-  const { user, loading, signIn, signUp, signInWithGoogle } = useAuth()
+  const { user, loading, signIn, signUp, signInWithGoogle, signInAsGuest } = useAuth()
   const router = useRouter()
   const [mode, setMode] = useState<"signin" | "signup">("signin")
   const [email, setEmail] = useState("")
@@ -42,6 +42,20 @@ export default function LoginPage() {
     try {
       await signInWithGoogle()
       router.replace("/")
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Something went wrong"
+      setError(msg.replace("Firebase: ", "").replace(/\(auth\/.*?\)\.?/, "").trim())
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const handleDemo = async () => {
+    setError(null)
+    setBusy(true)
+    try {
+      await signInAsGuest()
+      router.replace("/?demo=1")
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Something went wrong"
       setError(msg.replace("Firebase: ", "").replace(/\(auth\/.*?\)\.?/, "").trim())
@@ -134,6 +148,23 @@ export default function LoginPage() {
               <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
             </svg>
             Continue with Google
+          </button>
+
+          <div className="flex items-center gap-3 my-1">
+            <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.08)" }} />
+            <span className="text-xs" style={{ color: "rgba(255,255,255,0.25)" }}>or</span>
+            <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.08)" }} />
+          </div>
+
+          {/* Demo */}
+          <button onClick={handleDemo} disabled={busy}
+            className="w-full py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all hover:-translate-y-0.5 disabled:opacity-50"
+            style={{ background: "rgba(251,146,60,0.1)", border: "1px solid rgba(251,146,60,0.35)", color: "#fb923c" }}>
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Try Demo — no account needed
           </button>
         </div>
       </div>
