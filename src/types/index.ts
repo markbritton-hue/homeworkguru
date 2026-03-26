@@ -1,10 +1,19 @@
 export type ProblemStatus = "not_started" | "in_progress" | "solved"
 
+export interface BBox {
+  x: number  // left edge % of image width
+  y: number  // top edge % of image height
+  w: number  // width % of image width
+  h: number  // height % of image height
+}
+
 export interface Problem {
   index: number
   text: string
   subject: string
   status: ProblemStatus
+  page?: number
+  bbox?: BBox
 }
 
 export interface ChatMessage {

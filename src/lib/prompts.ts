@@ -4,11 +4,13 @@ Return ONLY a valid JSON array. No explanation, no markdown, no code fences. Eac
 - "index": integer starting at 0
 - "text": the full problem text exactly as written
 - "subject": infer the academic subject (e.g., "Algebra", "Biology", "History", "Chemistry", "Geometry", "English", "Physics", "Calculus")
+- "page": which image this problem appears on, 0-indexed (default 0 if only one image provided)
+- "bbox": bounding box of the problem on its page as percentages 0–100. Object with "x" (left edge), "y" (top edge), "w" (width), "h" (height). Add ~3% padding around the problem content. Be as precise as possible.
 
 If you cannot find any problems (e.g., the image is not a homework assignment), return an empty array: []
 
 Example output format:
-[{"index":0,"text":"Solve for x: 3x - 7 = 14","subject":"Algebra"},{"index":1,"text":"What is the powerhouse of the cell?","subject":"Biology"}]`
+[{"index":0,"text":"Solve for x: 3x - 7 = 14","subject":"Algebra","page":0,"bbox":{"x":5,"y":10,"w":90,"h":12}},{"index":1,"text":"What is the powerhouse of the cell?","subject":"Biology","page":0,"bbox":{"x":5,"y":24,"w":90,"h":10}}]`
 
 export function buildTutorSystemPrompt(subject: string, problemText: string): string {
   return `You are a patient, encouraging Socratic tutor helping a high school student with the following ${subject} problem:
