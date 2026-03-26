@@ -11,6 +11,7 @@ import { INITIAL_USER_MESSAGE } from "@/lib/prompts"
 import type { ChatMessage as ChatMessageType, HomeworkSession, Problem } from "@/types"
 
 const SOLVED_SENTINEL = "[[SOLVED]]"
+const TOKENS_RE = /\[\[TOKENS:(\{.*?\})\]\]/
 
 interface ChatInterfaceProps {
   sessionId: string
@@ -25,6 +26,7 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [isSolved, setIsSolved] = useState(false)
+  const [totalTokens, setTotalTokens] = useState(0)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const chatInputRef = useRef<ChatInputHandle>(null)
   const initialized = useRef(false)
@@ -122,16 +124,25 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
           const chunk = decoder.decode(value, { stream: true })
           fullText += chunk
 
-          // Strip sentinel from display
-          const displayText = fullText.replace(SOLVED_SENTINEL, "").trim()
+          // Strip sentinels from display
+          const displayText = fullText.replace(SOLVED_SENTINEL, "").replace(TOKENS_RE, "").trim()
           setMessages((prev) =>
             prev.map((m) => (m.id === aiMsgId ? { ...m, content: displayText } : m))
           )
         }
 
+        // Extract and accumulate token usage
+        const tokenMatch = fullText.match(TOKENS_RE)
+        if (tokenMatch) {
+          try {
+            const usage = JSON.parse(tokenMatch[1])
+            setTotalTokens(prev => prev + (usage.input_tokens ?? 0) + (usage.output_tokens ?? 0))
+          } catch {}
+        }
+
         // Check for solved sentinel
         const solved = fullText.includes(SOLVED_SENTINEL)
-        const finalContent = fullText.replace(SOLVED_SENTINEL, "").trim()
+        const finalContent = fullText.replace(SOLVED_SENTINEL, "").replace(TOKENS_RE, "").trim()
 
         const finalAiMsg: ChatMessageType = {
           id: aiMsgId,
@@ -265,9 +276,14 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
               onSubmit={handleSubmit}
               disabled={isLoading}
             />
-            <p className="text-xs text-center mt-2" style={{ color: "var(--muted2)" }}>
-              Enter to send · Shift+Enter for new line
-            </p>
+            <div className="flex items-center justify-between mt-2">
+              <p className="text-xs" style={{ color: "var(--muted2)" }}>Enter to send · Shift+Enter for new line</p>
+              {totalTokens > 0 && (
+                <p className="text-xs" style={{ color: "var(--muted2)" }}>
+                  {totalTokens.toLocaleString()} tokens used
+                </p>
+              )}
+            </div>
           </div>
         </div>
       )}

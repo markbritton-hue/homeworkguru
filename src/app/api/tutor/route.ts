@@ -36,6 +36,8 @@ export async function POST(req: NextRequest) {
               controller.enqueue(new TextEncoder().encode(chunk.delta.text))
             }
           }
+          const msg = await stream.finalMessage()
+          controller.enqueue(new TextEncoder().encode(`[[TOKENS:${JSON.stringify(msg.usage)}]]`))
         } finally {
           controller.close()
         }
