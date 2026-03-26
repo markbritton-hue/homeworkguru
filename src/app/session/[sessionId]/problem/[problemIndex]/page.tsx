@@ -23,6 +23,7 @@ export default function ProblemPage() {
   const [imageExpanded, setImageExpanded] = useState(false)
   const [zoom, setZoom] = useState(1)
   const [showCalculator, setShowCalculator] = useState(false)
+  const [showLightbox, setShowLightbox] = useState(false)
 
   useEffect(() => {
     const s = loadSession(sessionId)
@@ -71,22 +72,18 @@ export default function ProblemPage() {
           <div className="flex items-center justify-between px-4 py-2" style={{ borderBottom: imageExpanded ? "1px solid var(--border)" : undefined }}>
             {/* Cropped problem preview (if bbox available) */}
             {problem.bbox && !imageExpanded ? (
-              <div className="flex items-center gap-2 flex-1 min-w-0">
-                <div className="rounded-lg overflow-hidden flex-shrink-0" style={{ width: 80, border: "1px solid var(--border)" }}>
-                  <CroppedImage
-                    src={session.imageDataUrls[problem.page ?? 0] ?? session.imageDataUrls[0]}
-                    bbox={problem.bbox}
-                    alt="Problem region"
-                  />
-                </div>
-                <button
-                  onClick={() => { setImageExpanded(true); setZoom(1) }}
-                  className="text-xs font-semibold transition-opacity hover:opacity-70"
-                  style={{ color: "var(--accent)" }}
-                >
-                  View full sheet →
-                </button>
-              </div>
+              <button
+                onClick={() => setShowLightbox(true)}
+                className="rounded-lg overflow-hidden flex-shrink-0 transition-all hover:opacity-90 hover:scale-105 active:scale-95"
+                style={{ width: 100, border: "1px solid var(--border)", cursor: "zoom-in" }}
+                aria-label="Enlarge problem image"
+              >
+                <CroppedImage
+                  src={session.imageDataUrls[problem.page ?? 0] ?? session.imageDataUrls[0]}
+                  bbox={problem.bbox}
+                  alt="Problem region"
+                />
+              </button>
             ) : (
               <button
                 onClick={() => { setImageExpanded((v) => !v); setZoom(1) }}
@@ -191,6 +188,35 @@ export default function ProblemPage() {
       </button>
 
       {showCalculator && <Calculator onClose={() => setShowCalculator(false)} />}
+
+      {/* Lightbox */}
+      {showLightbox && problem.bbox && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ background: "rgba(0,0,0,0.85)", backdropFilter: "blur(6px)" }}
+          onClick={() => setShowLightbox(false)}
+        >
+          <div className="relative w-full max-w-2xl" onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={() => setShowLightbox(false)}
+              className="absolute -top-10 right-0 transition-opacity hover:opacity-70"
+              style={{ color: "#fff" }}
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            <div className="rounded-2xl overflow-hidden shadow-2xl" style={{ border: "1px solid rgba(96,165,250,0.3)" }}>
+              <CroppedImage
+                src={session.imageDataUrls[problem.page ?? 0] ?? session.imageDataUrls[0]}
+                bbox={problem.bbox}
+                alt="Problem region enlarged"
+              />
+            </div>
+            <p className="text-center text-xs mt-3" style={{ color: "rgba(255,255,255,0.4)" }}>Tap anywhere to close</p>
+          </div>
+        </div>
+      )}
     </main>
   )
 }
