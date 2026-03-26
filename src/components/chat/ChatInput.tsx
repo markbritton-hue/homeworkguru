@@ -167,16 +167,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
       }
       shouldListenRef.current = true
       setMicError(null)
-      // Open mic briefly to verify access and warm up the device, then release before starting recognition
-      navigator.mediaDevices?.getUserMedia({ audio: true })
-        .then((stream) => {
-          stream.getTracks().forEach((t) => t.stop())
-          setTimeout(() => startRecognition("", onChange), 400)
-        })
-        .catch(() => {
-          setMicError("Could not access microphone — check browser permissions")
-          shouldListenRef.current = false
-        })
+      startRecognition("", onChange)
     }, [isListening, onChange, stopListening, startRecognition, selectedMicId])
 
     useEffect(() => {
