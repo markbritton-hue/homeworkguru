@@ -60,6 +60,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
     const [selectedMicId, setSelectedMicId] = useState<string>("")
     const [showMicPicker, setShowMicPicker] = useState(false)
   const [micError, setMicError] = useState<string | null>(null)
+  const [micStatus, setMicStatus] = useState<string | null>(null)
 
     useImperativeHandle(ref, () => ({
       focus: () => textareaRef.current?.focus(),
@@ -99,6 +100,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
       recognitionRef.current?.stop()
       recognitionRef.current = null
       setIsListening(false)
+      setMicStatus(null)
     }, [])
 
     const startRecognition = useCallback((accumulatedText: string, onTextChange: (t: string) => void) => {
@@ -112,7 +114,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
 
       let accumulated = accumulatedText
 
-      recognition.onstart = () => { setIsListening(true); setMicError(null) }
+      recognition.onstart = () => { setIsListening(true); setMicError(null); setMicStatus("Listening") }
 
       recognition.onresult = (event: ISpeechRecognitionEvent) => {
         let interim = ""
@@ -157,7 +159,14 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
       }
 
       recognitionRef.current = recognition
-      recognition.start()
+      try {
+        recognition.start()
+      } catch (e) {
+        recognitionRef.current = null
+        setMicError(`Start failed: ${e}`)
+        shouldListenRef.current = false
+        setIsListening(false)
+      }
     }, [])
 
     const toggleVoice = useCallback(() => {
@@ -167,6 +176,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
       }
       shouldListenRef.current = true
       setMicError(null)
+      setMicStatus("Starting…")
       startRecognition("", onChange)
     }, [isListening, onChange, stopListening, startRecognition, selectedMicId])
 
@@ -185,6 +195,9 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
       <>
       {micError && (
         <p className="text-xs text-red-500 mb-1 px-1">{micError}</p>
+      )}
+      {!micError && micStatus && (
+        <p className="text-xs text-slate-400 mb-1 px-1">{micStatus}</p>
       )}
       <div className={`flex items-end gap-2 bg-white border rounded-2xl px-4 py-3 shadow-sm transition-all ${
         isListening
