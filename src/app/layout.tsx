@@ -1,8 +1,9 @@
 import type { Metadata } from "next"
-import { Inter } from "next/font/google"
+import { Orbitron, Rajdhani } from "next/font/google"
 import "./globals.css"
 
-const inter = Inter({ subsets: ["latin"] })
+const orbitron = Orbitron({ subsets: ["latin"], variable: "--font-orbitron", weight: ["700", "900"] })
+const rajdhani = Rajdhani({ subsets: ["latin"], variable: "--font-rajdhani", weight: ["400", "600", "700"] })
 
 export const metadata: Metadata = {
   title: "Homework Guru",
@@ -15,8 +16,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className="h-full antialiased">
-      <body className={`${inter.className} h-full`}>{children}</body>
+    <html lang="en" className={`h-full ${orbitron.variable} ${rajdhani.variable}`}>
+      <body className="h-full font-[family-name:var(--font-rajdhani)]">{children}</body>
     </html>
   )
 }
