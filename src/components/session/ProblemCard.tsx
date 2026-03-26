@@ -13,32 +13,39 @@ export function ProblemCard({ problem, sessionId }: ProblemCardProps) {
   return (
     <Link
       href={`/session/${sessionId}/problem/${problem.index}`}
-      className="block rounded-lg p-4 transition-all group"
-      style={{ background: "var(--card)", border: "1px solid var(--border)" }}
-      onMouseEnter={e => (e.currentTarget.style.borderColor = problem.status === "solved" ? "var(--green)" : "var(--accent)")}
-      onMouseLeave={e => (e.currentTarget.style.borderColor = "var(--border)")}
+      className="block rounded-2xl p-4 transition-all group"
+      style={{
+        background: "var(--surface)",
+        border: "1px solid var(--border)",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+        backdropFilter: "blur(10px)",
+      }}
+      onMouseEnter={e => {
+        (e.currentTarget as HTMLElement).style.borderColor = "var(--border-hover)"
+        ;(e.currentTarget as HTMLElement).style.boxShadow = "0 8px 24px rgba(0,0,0,0.4)"
+        ;(e.currentTarget as HTMLElement).style.transform = "translateY(-2px)"
+      }}
+      onMouseLeave={e => {
+        (e.currentTarget as HTMLElement).style.borderColor = "var(--border)"
+        ;(e.currentTarget as HTMLElement).style.boxShadow = "0 4px 12px rgba(0,0,0,0.3)"
+        ;(e.currentTarget as HTMLElement).style.transform = ""
+      }}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-start gap-3 min-w-0">
-          <span className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-sm font-black"
-            style={{
-              background: problem.status === "solved" ? "rgba(0,255,136,0.12)" : "rgba(255,69,0,0.12)",
-              color: problem.status === "solved" ? "var(--green)" : "var(--accent)",
-              fontFamily: "var(--font-orbitron)",
-            }}>
+          <span className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white"
+            style={{ background: "var(--accent)", boxShadow: "0 0 12px rgba(96,165,250,0.4)" }}>
             {problem.index + 1}
           </span>
           <div className="min-w-0">
-            <p className="text-xs font-bold uppercase tracking-widest mb-0.5" style={{ color: "var(--muted)" }}>
-              {problem.subject}
-            </p>
+            <p className="text-xs font-semibold mb-0.5" style={{ color: "var(--muted)" }}>{problem.subject}</p>
             <p className="text-sm leading-relaxed" style={{ color: "var(--text)" }}>{preview}</p>
           </div>
         </div>
         <div className="flex-shrink-0 flex items-center gap-2">
           <Badge status={problem.status} />
           <svg className="w-4 h-4 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-            style={{ color: "var(--border)" }}>
+            style={{ color: "var(--muted2)" }}>
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
         </div>

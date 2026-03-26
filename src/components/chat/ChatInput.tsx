@@ -209,16 +209,16 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
     return (
       <>
       {micError && (
-        <p className="text-xs mb-1 px-1 font-bold uppercase tracking-widest" style={{ color: "var(--accent)" }}>{micError}</p>
+        <p className="text-xs mb-1 px-1 font-semibold" style={{ color: "#f87171" }}>{micError}</p>
       )}
       {!micError && micStatus && (
-        <p className="text-xs mb-1 px-1 uppercase tracking-widest" style={{ color: "var(--muted)" }}>{micStatus}</p>
+        <p className="text-xs mb-1 px-1" style={{ color: "var(--muted)" }}>{micStatus}</p>
       )}
-      <div className="flex items-end gap-2 rounded-xl px-4 py-3 transition-all"
+      <div className="flex items-end gap-2 rounded-2xl px-4 py-3 transition-all"
         style={{
-          background: "var(--card)",
-          border: `1px solid ${isListening ? "var(--accent)" : "var(--border)"}`,
-          boxShadow: isListening ? "0 0 0 1px var(--accent)" : undefined,
+          background: "var(--input-bg)",
+          border: `2px solid ${isListening ? "var(--accent)" : "rgba(96,165,250,0.3)"}`,
+          boxShadow: isListening ? "0 0 0 3px rgba(96,165,250,0.15)" : undefined,
         }}>
         <textarea
           ref={textareaRef}
@@ -243,10 +243,11 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
               onClick={toggleVoice}
               onMouseDown={(e) => e.preventDefault()}
               disabled={disabled}
-              className={`w-8 h-8 rounded-lg flex items-center justify-center transition-opacity disabled:opacity-40 disabled:cursor-not-allowed ${isListening ? "animate-pulse" : "hover:opacity-70"}`}
+              className={`w-8 h-8 rounded-full flex items-center justify-center transition-all disabled:opacity-40 disabled:cursor-not-allowed ${isListening ? "animate-pulse" : "hover:opacity-70"}`}
               style={{
-                background: isListening ? "var(--accent)" : "rgba(255,255,255,0.06)",
-                color: isListening ? "white" : "var(--muted)",
+                background: isListening ? "var(--accent)" : "rgba(96,165,250,0.12)",
+                color: isListening ? "white" : "var(--accent)",
+                boxShadow: isListening ? "0 0 12px rgba(96,165,250,0.4)" : undefined,
               }}
               aria-label={isListening ? "Stop listening" : "Speak your answer"}
             >
@@ -272,8 +273,8 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
                 </button>
 
                 {showMicPicker && (
-                  <div className="absolute bottom-full right-0 mb-1 rounded-lg shadow-xl z-10 min-w-[200px] py-1"
-                    style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+                  <div className="absolute bottom-full right-0 mb-1 rounded-xl shadow-xl z-10 min-w-[200px] py-1"
+                    style={{ background: "var(--surface)", border: "1px solid var(--border)", backdropFilter: "blur(10px)" }}>
                     <p className="px-3 py-1 text-xs font-bold uppercase tracking-widest" style={{ color: "var(--muted)" }}>Microphone</p>
                     {mics.map((mic) => (
                       <button
@@ -299,8 +300,8 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
           onClick={onSubmit}
           onMouseDown={(e) => e.preventDefault()}
           disabled={disabled || !value.trim()}
-          className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-opacity hover:opacity-80 disabled:opacity-30 disabled:cursor-not-allowed"
-          style={{ background: "linear-gradient(135deg, var(--accent), var(--accent2))" }}
+          className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all hover:-translate-y-0.5 hover:opacity-90 disabled:opacity-30 disabled:cursor-not-allowed disabled:translate-y-0"
+          style={{ background: "var(--accent)", boxShadow: "0 4px 12px rgba(96,165,250,0.3)" }}
           aria-label="Send message"
         >
           <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">

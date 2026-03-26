@@ -21,55 +21,36 @@ export default function HomePage() {
 
   useEffect(() => {
     const ids = listSessions()
-    const loaded = ids
-      .map((id) => loadSession(id))
-      .filter(Boolean) as HomeworkSession[]
+    const loaded = ids.map((id) => loadSession(id)).filter(Boolean) as HomeworkSession[]
     loaded.sort((a, b) => b.createdAt - a.createdAt)
     setSessions(loaded)
     setShowUpload(loaded.length === 0)
   }, [])
 
   const handleImageSelected = (dataUrl: string, mime: typeof mimeType) => {
-    setImageDataUrl(dataUrl)
-    setMimeType(mime)
-    setError(null)
+    setImageDataUrl(dataUrl); setMimeType(mime); setError(null)
   }
 
   const handleParse = async () => {
     if (!imageDataUrl) return
-    setIsParsing(true)
-    setError(null)
-
+    setIsParsing(true); setError(null)
     try {
       const response = await fetch("/api/parse-homework", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ imageBase64: imageDataUrl, mimeType }),
       })
-
       const data = await response.json()
-
-      if (!response.ok) {
-        setError(data.error || "Failed to read homework. Please try again.")
-        return
-      }
-
+      if (!response.ok) { setError(data.error || "Failed to read homework. Please try again."); return }
       const compressed = await compressImage(imageDataUrl)
       const subjects = [...new Set(data.problems.map((p: { subject: string }) => p.subject))] as string[]
       const autoName = assignmentName.trim() || `${subjects.slice(0, 2).join(" & ")} — ${new Date().toLocaleDateString()}`
-
       const session: HomeworkSession = {
-        sessionId: crypto.randomUUID(),
-        name: autoName,
-        createdAt: Date.now(),
+        sessionId: crypto.randomUUID(), name: autoName, createdAt: Date.now(),
         imageDataUrl: compressed,
-        problems: data.problems.map((p: { index: number; text: string; subject: string }) => ({
-          ...p,
-          status: "not_started" as const,
-        })),
+        problems: data.problems.map((p: { index: number; text: string; subject: string }) => ({ ...p, status: "not_started" as const })),
         chatHistory: {},
       }
-
       saveSession(session)
       router.push(`/session/${session.sessionId}`)
     } catch {
@@ -80,8 +61,7 @@ export default function HomePage() {
   }
 
   const handleDelete = (sessionId: string, e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
+    e.preventDefault(); e.stopPropagation()
     deleteSession(sessionId)
     setSessions((prev) => prev.filter((s) => s.sessionId !== sessionId))
   }
@@ -89,62 +69,51 @@ export default function HomePage() {
   const solvedCount = (s: HomeworkSession) => s.problems.filter((p) => p.status === "solved").length
 
   return (
-    <main className="min-h-screen" style={{ background: "var(--bg)" }}>
+    <main className="min-h-screen px-4 py-10">
+      <div className="max-w-2xl mx-auto">
 
-      {/* Header */}
-      <header style={{ borderBottom: "1px solid var(--border)", background: "var(--surface)" }}
-        className="px-6 py-4">
-        <div className="max-w-2xl mx-auto flex items-center justify-between">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
-            {/* Graduation cap icon */}
-            <div className="w-10 h-10 rounded-lg flex items-center justify-center"
-              style={{ background: "linear-gradient(135deg, var(--accent), var(--accent2))" }}>
-              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.8}>
+            <div className="w-11 h-11 rounded-full flex items-center justify-center"
+              style={{ background: "var(--accent)", boxShadow: "0 0 20px rgba(96,165,250,0.4)" }}>
+              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.8}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
               </svg>
             </div>
             <div>
-              <h1 className="text-lg font-black tracking-widest uppercase"
-                style={{ fontFamily: "var(--font-orbitron)", color: "var(--accent)" }}>
+              <h1 className="text-xl font-bold" style={{
+                background: "linear-gradient(135deg, var(--accent), var(--accent2))",
+                WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+              }}>
                 Homework Guru
               </h1>
-              <p className="text-xs uppercase tracking-widest" style={{ color: "var(--muted)", letterSpacing: "0.2em" }}>
-                AI Tutor · Learn, Don&apos;t Copy
-              </p>
+              <p className="text-xs" style={{ color: "var(--muted)" }}>AI tutor that teaches, not just answers</p>
             </div>
           </div>
-
           {sessions.length > 0 && !showUpload && (
             <button
               onClick={() => setShowUpload(true)}
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-bold uppercase tracking-widest text-white rounded-lg transition-opacity hover:opacity-80"
-              style={{ background: "linear-gradient(135deg, var(--accent), var(--accent2))", fontFamily: "var(--font-rajdhani)" }}
+              className="inline-flex items-center gap-2 px-5 py-2 text-sm font-semibold rounded-full text-white transition-all hover:-translate-y-0.5"
+              style={{ background: "var(--accent)", boxShadow: "0 4px 12px rgba(96,165,250,0.3)" }}
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
               </svg>
-              Add
+              Add Assignment
             </button>
           )}
         </div>
-      </header>
-
-      <div className="max-w-2xl mx-auto px-4 py-6">
 
         {/* Upload panel */}
         {showUpload && (
-          <div className="rounded-lg p-6 mb-6" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+          <div className="rounded-2xl p-6 mb-6"
+            style={{ background: "var(--surface)", border: "1px solid var(--border)", boxShadow: "0 8px 20px rgba(0,0,0,0.5)", backdropFilter: "blur(10px)" }}>
             <div className="flex items-center justify-between mb-5">
-              <h2 className="font-black uppercase tracking-widest text-sm"
-                style={{ fontFamily: "var(--font-orbitron)", color: "var(--accent)" }}>
-                New Assignment
-              </h2>
+              <h2 className="font-bold text-lg" style={{ color: "var(--text)" }}>New Assignment</h2>
               {sessions.length > 0 && (
-                <button
-                  onClick={() => { setShowUpload(false); setImageDataUrl(null); setError(null) }}
-                  style={{ color: "var(--muted)" }}
-                  className="hover:text-white transition-colors"
-                >
+                <button onClick={() => { setShowUpload(false); setImageDataUrl(null); setError(null) }}
+                  className="transition-opacity hover:opacity-70" style={{ color: "var(--muted)" }}>
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
@@ -157,29 +126,25 @@ export default function HomePage() {
               value={assignmentName}
               onChange={(e) => setAssignmentName(e.target.value)}
               placeholder="Assignment name (optional)"
-              className="w-full mb-4 px-3 py-2.5 text-sm rounded-lg focus:outline-none"
+              className="w-full mb-4 px-4 py-2.5 text-sm rounded-xl focus:outline-none transition-all"
               style={{
-                background: "var(--surface)",
-                border: "1px solid var(--border)",
+                background: "var(--input-bg)",
+                border: "2px solid rgba(96,165,250,0.3)",
                 color: "var(--text)",
-                fontFamily: "var(--font-rajdhani)",
               }}
+              onFocus={e => { e.currentTarget.style.borderColor = "var(--accent)"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(96,165,250,0.15)" }}
+              onBlur={e => { e.currentTarget.style.borderColor = "rgba(96,165,250,0.3)"; e.currentTarget.style.boxShadow = "" }}
             />
 
             {imageDataUrl ? (
-              <ImagePreview
-                dataUrl={imageDataUrl}
-                onClear={() => { setImageDataUrl(null); setError(null) }}
-                onParse={handleParse}
-                isParsing={isParsing}
-              />
+              <ImagePreview dataUrl={imageDataUrl} onClear={() => { setImageDataUrl(null); setError(null) }} onParse={handleParse} isParsing={isParsing} />
             ) : (
               <UploadZone onImageSelected={handleImageSelected} />
             )}
 
             {error && (
-              <div className="mt-4 p-3 rounded-lg" style={{ background: "rgba(255,69,0,0.1)", border: "1px solid rgba(255,69,0,0.3)" }}>
-                <p className="text-sm" style={{ color: "var(--accent)" }}>{error}</p>
+              <div className="mt-4 p-3 rounded-xl" style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)" }}>
+                <p className="text-sm" style={{ color: "#f87171" }}>{error}</p>
               </div>
             )}
           </div>
@@ -188,10 +153,7 @@ export default function HomePage() {
         {/* Assignments list */}
         {sessions.length > 0 && (
           <div className="pb-10">
-            <p className="text-xs font-bold uppercase mb-3 px-1"
-              style={{ color: "var(--muted)", letterSpacing: "0.2em", fontFamily: "var(--font-rajdhani)" }}>
-              Your Assignments
-            </p>
+            <p className="text-xs font-semibold mb-3 px-1" style={{ color: "var(--muted)" }}>Your Assignments</p>
             <div className="space-y-3">
               {sessions.map((session) => {
                 const solved = solvedCount(session)
@@ -203,23 +165,26 @@ export default function HomePage() {
                   <Link
                     key={session.sessionId}
                     href={`/session/${session.sessionId}`}
-                    className="block rounded-lg p-4 transition-all group"
-                    style={{
-                      background: "var(--card)",
-                      border: "1px solid var(--border)",
+                    className="block rounded-2xl p-4 transition-all group"
+                    style={{ background: "var(--surface)", border: "1px solid var(--border)", boxShadow: "0 4px 12px rgba(0,0,0,0.3)", backdropFilter: "blur(10px)" }}
+                    onMouseEnter={e => {
+                      (e.currentTarget as HTMLElement).style.borderColor = allDone ? "rgba(16,185,129,0.5)" : "var(--border-hover)"
+                      ;(e.currentTarget as HTMLElement).style.transform = "translateY(-2px)"
+                      ;(e.currentTarget as HTMLElement).style.boxShadow = "0 8px 24px rgba(0,0,0,0.4)"
                     }}
-                    onMouseEnter={e => (e.currentTarget.style.borderColor = allDone ? "var(--green)" : "var(--accent)")}
-                    onMouseLeave={e => (e.currentTarget.style.borderColor = "var(--border)")}
+                    onMouseLeave={e => {
+                      (e.currentTarget as HTMLElement).style.borderColor = "var(--border)"
+                      ;(e.currentTarget as HTMLElement).style.transform = ""
+                      ;(e.currentTarget as HTMLElement).style.boxShadow = "0 4px 12px rgba(0,0,0,0.3)"
+                    }}
                   >
-                    <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-start justify-between gap-3">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <p className="font-bold text-sm truncate" style={{ color: "var(--text)", fontFamily: "var(--font-rajdhani)" }}>
-                            {session.name}
-                          </p>
+                          <p className="font-semibold text-sm truncate" style={{ color: "var(--text)" }}>{session.name}</p>
                           {allDone && (
-                            <span className="flex-shrink-0 text-xs font-bold uppercase px-2 py-0.5 rounded"
-                              style={{ background: "rgba(0,255,136,0.1)", color: "var(--green)", letterSpacing: "0.1em" }}>
+                            <span className="flex-shrink-0 text-xs font-semibold px-2 py-0.5 rounded-full"
+                              style={{ background: "rgba(16,185,129,0.15)", color: "var(--green)" }}>
                               ✓ Done
                             </span>
                           )}
@@ -228,28 +193,24 @@ export default function HomePage() {
                           {new Date(session.createdAt).toLocaleDateString()} · {total} problem{total !== 1 ? "s" : ""}
                         </p>
                         <div className="flex items-center gap-2">
-                          <div className="flex-1 rounded-full h-1.5" style={{ background: "var(--border)" }}>
-                            <div
-                              className="h-1.5 rounded-full transition-all"
+                          <div className="flex-1 rounded-full h-1.5" style={{ background: "rgba(255,255,255,0.1)" }}>
+                            <div className="h-1.5 rounded-full transition-all"
                               style={{
                                 width: `${pct}%`,
-                                background: allDone
-                                  ? "var(--green)"
-                                  : "linear-gradient(90deg, var(--accent), var(--accent2))",
-                              }}
-                            />
+                                background: allDone ? "var(--green)" : "var(--accent)",
+                                boxShadow: allDone ? "0 0 6px rgba(16,185,129,0.4)" : "0 0 6px rgba(96,165,250,0.4)",
+                              }} />
                           </div>
                           <span className="text-xs flex-shrink-0" style={{ color: "var(--muted)" }}>{solved}/{total}</span>
                         </div>
                       </div>
-
-                      <div className="flex items-center gap-1 flex-shrink-0">
+                      <div className="flex items-center gap-1 flex-shrink-0 self-center">
                         <button
                           onClick={(e) => handleDelete(session.sessionId, e)}
-                          className="p-1.5 transition-colors opacity-0 group-hover:opacity-100"
-                          style={{ color: "var(--border)" }}
-                          onMouseEnter={e => (e.currentTarget.style.color = "var(--accent)")}
-                          onMouseLeave={e => (e.currentTarget.style.color = "var(--border)")}
+                          className="p-1.5 transition-opacity opacity-0 group-hover:opacity-100"
+                          style={{ color: "var(--muted2)" }}
+                          onMouseEnter={e => (e.currentTarget.style.color = "#f87171")}
+                          onMouseLeave={e => (e.currentTarget.style.color = "var(--muted2)")}
                           aria-label="Delete assignment"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -257,7 +218,7 @@ export default function HomePage() {
                           </svg>
                         </button>
                         <svg className="w-4 h-4 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                          style={{ color: "var(--border)" }}>
+                          style={{ color: "var(--muted2)" }}>
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                         </svg>
                       </div>
@@ -271,7 +232,7 @@ export default function HomePage() {
 
         {sessions.length === 0 && !showUpload && (
           <div className="text-center py-16" style={{ color: "var(--muted)" }}>
-            <p className="text-sm uppercase tracking-widest">No assignments yet. Upload your first homework!</p>
+            <p className="text-sm">No assignments yet. Upload your first homework!</p>
           </div>
         )}
       </div>

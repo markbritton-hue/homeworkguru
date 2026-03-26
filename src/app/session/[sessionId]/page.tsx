@@ -22,10 +22,10 @@ export default function SessionPage() {
 
   if (notFound) {
     return (
-      <main className="min-h-screen flex items-center justify-center px-4" style={{ background: "var(--bg)" }}>
+      <main className="min-h-screen flex items-center justify-center px-4">
         <div className="text-center">
           <p className="mb-4" style={{ color: "var(--muted)" }}>Session not found or expired.</p>
-          <Link href="/" className="text-sm font-bold uppercase tracking-widest transition-opacity hover:opacity-70"
+          <Link href="/" className="text-sm font-semibold transition-opacity hover:opacity-70"
             style={{ color: "var(--accent)" }}>← Back</Link>
         </div>
       </main>
@@ -34,8 +34,8 @@ export default function SessionPage() {
 
   if (!session) {
     return (
-      <main className="min-h-screen flex items-center justify-center" style={{ background: "var(--bg)" }}>
-        <p className="text-sm uppercase tracking-widest" style={{ color: "var(--muted)" }}>Loading…</p>
+      <main className="min-h-screen flex items-center justify-center">
+        <p className="text-sm" style={{ color: "var(--muted)" }}>Loading…</p>
       </main>
     )
   }
@@ -43,7 +43,7 @@ export default function SessionPage() {
   const solved = session.problems.filter((p) => p.status === "solved").length
 
   return (
-    <main className="min-h-screen px-4 py-8" style={{ background: "var(--bg)" }}>
+    <main className="min-h-screen px-4 py-8">
       <div className="max-w-2xl mx-auto">
 
         {/* Header */}
@@ -53,17 +53,20 @@ export default function SessionPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </Link>
-          <div className="w-9 h-9 rounded-lg flex items-center justify-center"
-            style={{ background: "linear-gradient(135deg, var(--accent), var(--accent2))" }}>
+          <div className="w-9 h-9 rounded-full flex items-center justify-center"
+            style={{ background: "var(--accent)", boxShadow: "0 0 16px rgba(96,165,250,0.4)" }}>
             <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
             </svg>
           </div>
           <div className="min-w-0">
-            <h1 className="text-lg font-black truncate" style={{ fontFamily: "var(--font-orbitron)", color: "var(--text)" }}>
+            <h1 className="text-lg font-bold truncate" style={{
+              background: "linear-gradient(135deg, var(--accent), var(--accent2))",
+              WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+            }}>
               {session.name}
             </h1>
-            <p className="text-xs uppercase tracking-widest" style={{ color: "var(--muted)" }}>
+            <p className="text-xs" style={{ color: "var(--muted)" }}>
               {new Date(session.createdAt).toLocaleDateString()}
             </p>
           </div>
@@ -79,13 +82,13 @@ export default function SessionPage() {
 
         {/* Homework image */}
         {session.imageDataUrl && (
-          <div className="rounded-lg overflow-hidden" style={{ border: "1px solid var(--border)" }}>
+          <div className="rounded-2xl overflow-hidden" style={{ border: "1px solid var(--border)", background: "var(--surface)", backdropFilter: "blur(10px)" }}>
             <button
               onClick={() => setImageExpanded((v) => !v)}
-              className="w-full flex items-center justify-between px-4 py-3 text-sm transition-colors"
-              style={{ background: "var(--card)", color: "var(--muted)" }}
+              className="w-full flex items-center justify-between px-4 py-3 text-sm transition-opacity hover:opacity-80"
+              style={{ color: "var(--muted)" }}
             >
-              <div className="flex items-center gap-2 font-bold uppercase tracking-widest text-xs">
+              <div className="flex items-center gap-2 font-semibold text-xs">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
@@ -100,7 +103,7 @@ export default function SessionPage() {
               // eslint-disable-next-line @next/next/no-img-element
               <img src={session.imageDataUrl} alt="Original homework"
                 className="w-full object-contain"
-                style={{ borderTop: "1px solid var(--border)", background: "var(--surface)" }} />
+                style={{ borderTop: "1px solid var(--border)", background: "var(--input-bg)" }} />
             )}
           </div>
         )}

@@ -12,30 +12,28 @@ export function CompletionBanner({ sessionId, nextProblem, totalProblems, solved
   const allDone = solvedCount >= totalProblems
 
   return (
-    <div className="mx-4 mb-4 rounded-lg p-4"
-      style={{ background: "rgba(0,255,136,0.07)", border: "1px solid rgba(0,255,136,0.25)" }}>
+    <div className="mx-4 mb-4 rounded-2xl p-4"
+      style={{ background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.4)", boxShadow: "0 4px 12px rgba(16,185,129,0.15)", backdropFilter: "blur(10px)" }}>
       <div className="flex items-start gap-3">
-        <div className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center"
-          style={{ background: "rgba(0,255,136,0.15)" }}>
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-            style={{ color: "var(--green)" }}>
+        <div className="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center"
+          style={{ background: "var(--green)", boxShadow: "0 0 16px rgba(16,185,129,0.5)" }}>
+          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-black uppercase tracking-widest"
-            style={{ color: "var(--green)", fontFamily: "var(--font-orbitron)" }}>
+          <p className="text-sm font-bold" style={{ color: "var(--green)" }}>
             {allDone ? "Assignment complete!" : "Problem solved!"}
           </p>
           <p className="text-xs mt-0.5" style={{ color: "var(--muted)" }}>
             {solvedCount} of {totalProblems} solved
           </p>
-          <div className="mt-3 flex gap-2">
+          <div className="mt-3 flex gap-2 flex-wrap">
             {nextProblem && (
               <Link
                 href={`/session/${sessionId}/problem/${nextProblem.index}`}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold uppercase tracking-widest rounded-lg text-white transition-opacity hover:opacity-80"
-                style={{ background: "linear-gradient(135deg, var(--accent), var(--accent2))" }}
+                className="inline-flex items-center gap-1.5 px-4 py-1.5 text-xs font-semibold rounded-full text-white transition-all hover:-translate-y-0.5"
+                style={{ background: "var(--green)", boxShadow: "0 4px 12px rgba(16,185,129,0.3)" }}
               >
                 Next problem
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -45,8 +43,8 @@ export function CompletionBanner({ sessionId, nextProblem, totalProblems, solved
             )}
             <Link
               href={`/session/${sessionId}`}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold uppercase tracking-widest rounded-lg transition-opacity hover:opacity-80"
-              style={{ background: "var(--card)", border: "1px solid var(--border)", color: "var(--text)" }}
+              className="inline-flex items-center gap-1.5 px-4 py-1.5 text-xs font-semibold rounded-full transition-all hover:-translate-y-0.5"
+              style={{ background: "rgba(30,41,59,0.8)", border: "1px solid rgba(16,185,129,0.3)", color: "var(--green)" }}
             >
               All problems
             </Link>

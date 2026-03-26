@@ -13,13 +13,12 @@ export function SessionHeader({ solved, total }: SessionHeaderProps) {
   return (
     <div className="mb-6">
       <div className="flex items-center justify-between mb-2">
-        <p className="text-sm font-bold uppercase tracking-widest"
-          style={{ color: allDone ? "var(--green)" : "var(--muted)" }}>
+        <p className="text-sm font-semibold" style={{ color: allDone ? "var(--green)" : "var(--muted)" }}>
           {allDone ? "All done! Great work!" : `${solved} of ${total} problem${total !== 1 ? "s" : ""} solved`}
         </p>
-        <Link href="/" className="text-sm font-bold uppercase tracking-widest transition-opacity hover:opacity-70"
+        <Link href="/" className="text-sm font-semibold transition-opacity hover:opacity-70"
           style={{ color: "var(--accent)" }}>
-          + New
+          + New homework
         </Link>
       </div>
       <ProgressBar value={pct} green={allDone} />
