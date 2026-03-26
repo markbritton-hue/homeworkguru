@@ -33,7 +33,7 @@ export function UploadZone({ onImageSelected }: UploadZoneProps) {
     <div className="space-y-3">
       <div
         {...getRootProps()}
-        className="rounded-2xl p-10 text-center cursor-pointer transition-all"
+        className="rounded-2xl p-6 text-center cursor-pointer transition-all"
         style={{
           background: "var(--input-bg)",
           border: `2px dashed ${isDragActive ? "var(--accent)" : "rgba(96,165,250,0.3)"}`,
@@ -41,10 +41,10 @@ export function UploadZone({ onImageSelected }: UploadZoneProps) {
         }}
       >
         <input {...getInputProps()} />
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-14 h-14 rounded-full flex items-center justify-center"
+        <div className="flex flex-col items-center gap-2">
+          <div className="w-11 h-11 rounded-full flex items-center justify-center"
             style={{ background: "rgba(96,165,250,0.15)", boxShadow: "0 0 20px rgba(96,165,250,0.2)" }}>
-            <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
               style={{ color: "var(--accent)" }}>
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>

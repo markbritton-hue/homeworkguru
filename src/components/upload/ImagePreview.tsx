@@ -17,9 +17,10 @@ interface ImagePreviewProps {
   onAddMore: (dataUrl: string, mimeType: MimeType) => void
   onParse: () => void
   isParsing: boolean
+  isDemo?: boolean
 }
 
-export function ImagePreview({ images, onRemove, onAddMore, onParse, isParsing }: ImagePreviewProps) {
+export function ImagePreview({ images, onRemove, onAddMore, onParse, isParsing, isDemo }: ImagePreviewProps) {
   const addInputRef = useRef<HTMLInputElement>(null)
 
   const handleAddFile = async (file: File) => {
@@ -31,7 +32,7 @@ export function ImagePreview({ images, onRemove, onAddMore, onParse, isParsing }
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {/* Thumbnails */}
       <div className="flex flex-wrap gap-3">
         {images.map((img, i) => (
@@ -96,9 +97,20 @@ export function ImagePreview({ images, onRemove, onAddMore, onParse, isParsing }
           <span className="text-sm font-semibold" style={{ color: "var(--muted)" }}>Reading your homework…</span>
         </div>
       ) : (
-        <Button onClick={onParse} size="lg" className="w-full">
-          Find My Problems
-        </Button>
+        <div className="relative">
+          {isDemo && (
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold animate-pulse"
+                style={{ background: "rgba(96,165,250,0.2)", border: "1px solid rgba(96,165,250,0.6)", color: "#60a5fa", boxShadow: "0 0 12px rgba(96,165,250,0.4)" }}>
+                <span className="w-2 h-2 rounded-full bg-blue-400 animate-ping inline-block" />
+                Step 2
+              </span>
+            </div>
+          )}
+          <Button onClick={onParse} size="lg" className="w-full" style={isDemo ? { boxShadow: "0 0 20px rgba(96,165,250,0.4)", border: "1px solid rgba(96,165,250,0.5)" } : undefined}>
+            Find My Problems
+          </Button>
+        </div>
       )}
     </div>
   )
