@@ -297,12 +297,12 @@ export default function HomePage() {
         {/* How it works */}
         <div className="mt-10 pb-10">
           <div className="rounded-2xl overflow-hidden"
-            style={{ background: "rgba(15,30,60,0.85)", border: "1px solid rgba(96,165,250,0.2)", boxShadow: "0 8px 20px rgba(0,0,0,0.4)", backdropFilter: "blur(10px)" }}>
+            style={{ background: "rgba(30,15,5,0.9)", border: "1px solid rgba(251,146,60,0.3)", boxShadow: "0 8px 20px rgba(0,0,0,0.4)", backdropFilter: "blur(10px)" }}>
 
             {/* Panel header */}
-            <div className="px-6 py-4" style={{ borderBottom: "1px solid rgba(96,165,250,0.2)", background: "rgba(96,165,250,0.08)" }}>
+            <div className="px-6 py-4" style={{ borderBottom: "1px solid rgba(251,146,60,0.25)", background: "rgba(251,146,60,0.1)" }}>
               <h2 className="text-xl font-bold" style={{
-                background: "linear-gradient(135deg, var(--accent), var(--accent2))",
+                background: "linear-gradient(135deg, #fb923c, #f59e0b)",
                 WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
               }}>How It Works</h2>
             </div>
@@ -336,12 +336,12 @@ export default function HomePage() {
             ].map(({ step, icon, title, desc }) => (
               <div key={step} className="flex gap-4">
                 <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold"
-                  style={{ background: "rgba(96,165,250,0.15)", border: "1px solid rgba(96,165,250,0.3)", color: "var(--accent)" }}>
+                  style={{ background: "rgba(251,146,60,0.15)", border: "1px solid rgba(251,146,60,0.3)", color: "#fb923c" }}>
                   {step}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1.5">
-                    <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: "var(--accent)" }}>
+                    <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: "#fb923c" }}>
                       {icon}
                     </svg>
                     <p className="text-base font-semibold" style={{ color: "var(--text)" }}>{title}</p>
@@ -351,7 +351,7 @@ export default function HomePage() {
               </div>
             ))}
 
-            <div className="pt-3" style={{ borderTop: "1px solid rgba(96,165,250,0.15)" }}>
+            <div className="pt-3" style={{ borderTop: "1px solid rgba(251,146,60,0.2)" }}>
               <p className="text-xs font-semibold mb-2" style={{ color: "var(--muted)" }}>Handy tools while you work:</p>
               <div className="flex flex-wrap gap-2">
                 {[
@@ -360,8 +360,8 @@ export default function HomePage() {
                   { label: "🎤 Voice input", desc: "Speak your answers instead of typing" },
                 ].map(({ label, desc }) => (
                   <div key={label} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
-                    style={{ background: "rgba(96,165,250,0.08)", border: "1px solid rgba(96,165,250,0.2)" }}>
-                    <span className="text-xs font-semibold" style={{ color: "var(--accent)" }}>{label}</span>
+                    style={{ background: "rgba(251,146,60,0.08)", border: "1px solid rgba(251,146,60,0.25)" }}>
+                    <span className="text-xs font-semibold" style={{ color: "#fb923c" }}>{label}</span>
                     <span className="text-xs" style={{ color: "var(--muted)" }}>— {desc}</span>
                   </div>
                 ))}
