@@ -18,6 +18,7 @@ export default function ProblemPage() {
   const [notFound, setNotFound] = useState(false)
   const [showCalculator, setShowCalculator] = useState(false)
   const [showImage, setShowImage] = useState(true)
+  const [pasteValue, setPasteValue] = useState("")
 
   // Draggable float position + size
   const [pos, setPos] = useState({ x: 12, y: 200 })
@@ -109,7 +110,7 @@ export default function ProblemPage() {
         sessionId={sessionId}
       />
 
-      <ChatInterface sessionId={sessionId} problemIndex={problemIndex} />
+      <ChatInterface sessionId={sessionId} problemIndex={problemIndex} pasteValue={pasteValue} />
 
       {/* Floating draggable image */}
       {hasCrop && showImage && (
@@ -218,7 +219,12 @@ export default function ProblemPage() {
         </svg>
       </button>
 
-      {showCalculator && <Calculator onClose={() => setShowCalculator(false)} />}
+      {showCalculator && (
+        <Calculator
+          onClose={() => setShowCalculator(false)}
+          onPaste={(val) => { setPasteValue(""); setTimeout(() => setPasteValue(val), 0) }}
+        />
+      )}
     </main>
   )
 }

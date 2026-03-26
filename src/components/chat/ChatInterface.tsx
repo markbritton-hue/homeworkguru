@@ -14,9 +14,10 @@ const SOLVED_SENTINEL = "[[SOLVED]]"
 interface ChatInterfaceProps {
   sessionId: string
   problemIndex: number
+  pasteValue?: string
 }
 
-export function ChatInterface({ sessionId, problemIndex }: ChatInterfaceProps) {
+export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInterfaceProps) {
   const [session, setSession] = useState<HomeworkSession | null>(null)
   const [messages, setMessages] = useState<ChatMessageType[]>([])
   const [input, setInput] = useState("")
@@ -33,6 +34,11 @@ export function ChatInterface({ sessionId, problemIndex }: ChatInterfaceProps) {
   useEffect(() => {
     scrollToBottom()
   }, [messages, isLoading, scrollToBottom])
+
+  // Paste calculator value into input
+  useEffect(() => {
+    if (pasteValue) setInput(prev => prev ? `${prev} ${pasteValue}` : pasteValue)
+  }, [pasteValue])
 
   // Focus input whenever loading finishes and problem isn't solved
   useEffect(() => {
