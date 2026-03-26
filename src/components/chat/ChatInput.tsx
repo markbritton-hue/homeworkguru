@@ -56,16 +56,31 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
     const shouldListenRef = useRef(false)
     const [isListening, setIsListening] = useState(false)
     const [speechSupported, setSpeechSupported] = useState(false)
+    const [mics, setMics] = useState<MediaDeviceInfo[]>([])
+    const [selectedMicId, setSelectedMicId] = useState<string>("")
+    const [showMicPicker, setShowMicPicker] = useState(false)
 
     useImperativeHandle(ref, () => ({
       focus: () => textareaRef.current?.focus(),
     }))
 
     useEffect(() => {
-      setSpeechSupported(
+      const supported =
         typeof window !== "undefined" &&
         ("SpeechRecognition" in window || "webkitSpeechRecognition" in window)
-      )
+      setSpeechSupported(supported)
+
+      if (supported && navigator.mediaDevices) {
+        // Request mic permission first so device labels are visible
+        navigator.mediaDevices.getUserMedia({ audio: true })
+          .then(() => navigator.mediaDevices.enumerateDevices())
+          .then((devices) => {
+            const audioInputs = devices.filter((d) => d.kind === "audioinput")
+            setMics(audioInputs)
+            if (audioInputs.length > 0) setSelectedMicId(audioInputs[0].deviceId)
+          })
+          .catch(() => {})
+      }
     }, [])
 
     useEffect(() => {
@@ -138,8 +153,16 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
         return
       }
       shouldListenRef.current = true
-      startRecognition("", onChange)
-    }, [isListening, onChange, stopListening, startRecognition])
+      // Prime the selected mic before starting recognition
+      if (selectedMicId && navigator.mediaDevices) {
+        navigator.mediaDevices
+          .getUserMedia({ audio: { deviceId: { exact: selectedMicId } } })
+          .then(() => startRecognition("", onChange))
+          .catch(() => startRecognition("", onChange))
+      } else {
+        startRecognition("", onChange)
+      }
+    }, [isListening, onChange, stopListening, startRecognition, selectedMicId])
 
     useEffect(() => {
       if (disabled && isListening) stopListening()
@@ -174,24 +197,66 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
           style={{ minHeight: "24px" }}
         />
 
-        {/* Mic button */}
+        {/* Mic button + picker */}
         {speechSupported && (
-          <button
-            onClick={toggleVoice}
-            onMouseDown={(e) => e.preventDefault()}
-            disabled={disabled}
-            className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${
-              isListening
-                ? "bg-red-500 hover:bg-red-600 animate-pulse"
-                : "bg-slate-100 hover:bg-slate-200 text-slate-500"
-            }`}
-            aria-label={isListening ? "Stop listening" : "Speak your answer"}
-          >
-            <svg className="w-4 h-4" fill={isListening ? "white" : "currentColor"} viewBox="0 0 24 24">
-              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-              <path d="M19 10v2a7 7 0 0 1-14 0v-2H3v2a9 9 0 0 0 8 8.94V23h-3v2h8v-2h-3v-2.06A9 9 0 0 0 21 12v-2h-2z"/>
-            </svg>
-          </button>
+          <div className="relative flex-shrink-0 flex items-center gap-0.5">
+            <button
+              onClick={toggleVoice}
+              onMouseDown={(e) => e.preventDefault()}
+              disabled={disabled}
+              className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${
+                isListening
+                  ? "bg-red-500 hover:bg-red-600 animate-pulse"
+                  : "bg-slate-100 hover:bg-slate-200 text-slate-500"
+              }`}
+              aria-label={isListening ? "Stop listening" : "Speak your answer"}
+            >
+              <svg className="w-4 h-4" fill={isListening ? "white" : "currentColor"} viewBox="0 0 24 24">
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2H3v2a9 9 0 0 0 8 8.94V23h-3v2h8v-2h-3v-2.06A9 9 0 0 0 21 12v-2h-2z"/>
+              </svg>
+            </button>
+
+            {/* Mic picker chevron — only show if multiple mics available */}
+            {mics.length > 1 && (
+              <div className="relative">
+                <button
+                  onClick={() => setShowMicPicker((v) => !v)}
+                  onMouseDown={(e) => e.preventDefault()}
+                  className="w-4 h-4 flex items-center justify-center text-slate-400 hover:text-slate-600 transition-colors"
+                  aria-label="Select microphone"
+                >
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+
+                {showMicPicker && (
+                  <div className="absolute bottom-full right-0 mb-1 bg-white border border-slate-200 rounded-lg shadow-lg z-10 min-w-[200px] py-1">
+                    <p className="px-3 py-1 text-xs font-medium text-slate-400 uppercase tracking-wide">Microphone</p>
+                    {mics.map((mic) => (
+                      <button
+                        key={mic.deviceId}
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => {
+                          setSelectedMicId(mic.deviceId)
+                          setShowMicPicker(false)
+                        }}
+                        className={`w-full text-left px-3 py-2 text-sm transition-colors hover:bg-slate-50 ${
+                          selectedMicId === mic.deviceId ? "text-indigo-600 font-medium" : "text-slate-700"
+                        }`}
+                      >
+                        {selectedMicId === mic.deviceId && (
+                          <span className="mr-1.5">✓</span>
+                        )}
+                        {mic.label || `Microphone ${mics.indexOf(mic) + 1}`}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         )}
 
         {/* Send button */}
