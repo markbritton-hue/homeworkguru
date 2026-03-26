@@ -71,9 +71,12 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
       setSpeechSupported(supported)
 
       if (supported && navigator.mediaDevices) {
-        // Request mic permission first so device labels are visible
+        // Request mic permission first so device labels are visible, then release stream
         navigator.mediaDevices.getUserMedia({ audio: true })
-          .then(() => navigator.mediaDevices.enumerateDevices())
+          .then((stream) => {
+            stream.getTracks().forEach((t) => t.stop())
+            return navigator.mediaDevices.enumerateDevices()
+          })
           .then((devices) => {
             const audioInputs = devices.filter((d) => d.kind === "audioinput")
             setMics(audioInputs)
@@ -153,11 +156,14 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
         return
       }
       shouldListenRef.current = true
-      // Prime the selected mic before starting recognition
+      // Prime the selected mic before starting recognition, then release stream
       if (selectedMicId && navigator.mediaDevices) {
         navigator.mediaDevices
           .getUserMedia({ audio: { deviceId: { exact: selectedMicId } } })
-          .then(() => startRecognition("", onChange))
+          .then((stream) => {
+            stream.getTracks().forEach((t) => t.stop())
+            startRecognition("", onChange)
+          })
           .catch(() => startRecognition("", onChange))
       } else {
         startRecognition("", onChange)
