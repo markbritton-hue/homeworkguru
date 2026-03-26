@@ -107,6 +107,12 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
       const SR = window.SpeechRecognition || window.webkitSpeechRecognition
       if (!SR || !shouldListenRef.current) return
 
+      // Stop any existing instance before starting a new one
+      if (recognitionRef.current) {
+        try { recognitionRef.current.stop() } catch {}
+        recognitionRef.current = null
+      }
+
       const recognition = new SR()
       recognition.continuous = true
       recognition.interimResults = true
@@ -183,6 +189,15 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
     useEffect(() => {
       if (disabled && isListening) stopListening()
     }, [disabled, isListening, stopListening])
+
+    // Stop recognition when component unmounts (e.g. remount after AI response)
+    useEffect(() => {
+      return () => {
+        shouldListenRef.current = false
+        try { recognitionRef.current?.stop() } catch {}
+        recognitionRef.current = null
+      }
+    }, [])
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
       if (e.key === "Enter" && !e.shiftKey) {
