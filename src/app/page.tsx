@@ -31,40 +31,44 @@ function HomePageInner() {
     if (!authLoading && !user) router.replace("/login")
   }, [user, authLoading, router])
 
+  const isDemo = searchParams.get("demo") === "1"
+
   useEffect(() => {
     if (!user) return
-    listSessions(user.uid).then((loaded) => {
-      loaded.sort((a, b) => b.createdAt - a.createdAt)
-      setSessions(loaded)
+    const uid = user.uid
 
-      const isDemo = searchParams.get("demo") === "1"
-      if (isDemo && !demoTriggered.current && loaded.length === 0) {
-        demoTriggered.current = true
-        autoOnboard(user.uid)
+    const init = async () => {
+      let loaded: typeof sessions = []
+      try {
+        loaded = await listSessions(uid)
+        loaded.sort((a, b) => b.createdAt - a.createdAt)
+        setSessions(loaded)
+      } catch (err) {
+        setError("Could not load your assignments: " + (err instanceof Error ? err.message : String(err)))
+        setShowUpload(true)
         return
       }
 
-      // Auto-onboard new registered users with demo assignment
-      if (loaded.length === 0 && !user.isAnonymous) {
-        const createdMs = user.metadata.creationTime ? new Date(user.metadata.creationTime).getTime() : 0
-        const isNewUser = Date.now() - createdMs < 2 * 60 * 1000 // within last 2 minutes
-        if (isNewUser && !demoTriggered.current) {
-          demoTriggered.current = true
-          autoOnboard(user.uid)
-          return
-        }
+      const shouldAutoOnboard =
+        loaded.length === 0 &&
+        !demoTriggered.current &&
+        (isDemo || (!user.isAnonymous && Date.now() - new Date(user.metadata.creationTime ?? 0).getTime() < 2 * 60 * 1000))
+
+      if (shouldAutoOnboard) {
+        demoTriggered.current = true
+        autoOnboard(uid)
+        return
       }
 
       setShowUpload(loaded.length === 0)
       if (loaded.length === 0) {
-        try {
-          const seen = localStorage.getItem("welcome_seen")
-          if (!seen) setShowWelcome(true)
-        } catch {}
+        try { if (!localStorage.getItem("welcome_seen")) setShowWelcome(true) } catch {}
       }
-    })
+    }
+
+    init()
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user])
+  }, [user, isDemo])
 
   const handleImageSelected = (dataUrl: string, mimeType: MimeType) => {
     setImages([{ dataUrl, mimeType }]); setError(null)
