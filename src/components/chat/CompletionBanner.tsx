@@ -8,9 +8,10 @@ interface CompletionBannerProps {
   totalProblems: number
   solvedCount: number
   finalAnswer?: string
+  totalTokens?: number
 }
 
-export function CompletionBanner({ sessionId, nextProblem, totalProblems, solvedCount, finalAnswer }: CompletionBannerProps) {
+export function CompletionBanner({ sessionId, nextProblem, totalProblems, solvedCount, finalAnswer, totalTokens }: CompletionBannerProps) {
   const allDone = solvedCount >= totalProblems
 
   return (
@@ -27,9 +28,15 @@ export function CompletionBanner({ sessionId, nextProblem, totalProblems, solved
           <p className="text-sm font-bold" style={{ color: "var(--green)" }}>
             {allDone ? "Assignment complete!" : "Problem solved!"}
           </p>
-          <p className="text-xs mt-0.5" style={{ color: "var(--muted)" }}>
-            {solvedCount} of {totalProblems} solved
-          </p>
+          <div className="flex items-center gap-3 mt-0.5">
+            <p className="text-xs" style={{ color: "var(--muted)" }}>{solvedCount} of {totalProblems} solved</p>
+            {totalTokens && totalTokens > 0 ? (
+              <span className="text-xs px-2 py-0.5 rounded-full"
+                style={{ background: "rgba(16,185,129,0.12)", border: "1px solid rgba(16,185,129,0.25)", color: "var(--muted)" }}>
+                {totalTokens.toLocaleString()} tokens used
+              </span>
+            ) : null}
+          </div>
           {finalAnswer && (
             <div className="mt-3 rounded-xl px-4 py-3"
               style={{ background: "rgba(16,185,129,0.08)", border: "1px solid rgba(16,185,129,0.25)" }}>

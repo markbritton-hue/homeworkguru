@@ -261,6 +261,7 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
           totalProblems={session.problems.length}
           solvedCount={solvedCount}
           finalAnswer={[...messages].reverse().find(m => m.role === "assistant")?.content}
+          totalTokens={totalTokens}
         />
       )}
 
@@ -276,14 +277,9 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
               onSubmit={handleSubmit}
               disabled={isLoading}
             />
-            <div className="flex items-center justify-between mt-2">
-              <p className="text-xs" style={{ color: "var(--muted2)" }}>Enter to send · Shift+Enter for new line</p>
-              {totalTokens > 0 && (
-                <p className="text-xs" style={{ color: "var(--muted2)" }}>
-                  {totalTokens.toLocaleString()} tokens used
-                </p>
-              )}
-            </div>
+            <p className="text-xs text-center mt-2" style={{ color: "var(--muted2)" }}>
+              Enter to send · Shift+Enter for new line
+            </p>
           </div>
         </div>
       )}
