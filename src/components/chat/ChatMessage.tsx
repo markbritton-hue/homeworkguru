@@ -20,7 +20,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
         <span className="text-xs self-center mr-2 flex-shrink-0" style={{ color: "var(--muted2)" }}>You</span>
       )}
       <div
-        className="w-3/4 rounded-2xl px-4 py-3 text-sm leading-relaxed"
+        className="w-1/2 rounded-2xl px-4 py-3 text-sm leading-relaxed"
         style={
           isUser
             ? { background: "var(--accent)", color: "#fff", borderBottomRightRadius: "6px", boxShadow: "0 4px 12px rgba(96,165,250,0.3)" }
