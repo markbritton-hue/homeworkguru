@@ -117,8 +117,8 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
         textareaRef.current?.focus()
       }
 
-      recognition.onerror = (e: Event & { error?: string }) => {
-        console.error("Speech recognition error:", e.error)
+      recognition.onerror = () => {
+        console.error("Speech recognition error fired")
         setIsListening(false)
         recognitionRef.current = null
       }
