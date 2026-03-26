@@ -23,36 +23,20 @@ export default function ProblemPage() {
 
   useEffect(() => {
     const s = loadSession(sessionId)
-    if (s && s.problems[problemIndex]) {
-      setSession(s)
-    } else {
-      setNotFound(true)
-    }
+    if (s && s.problems[problemIndex]) { setSession(s) } else { setNotFound(true) }
   }, [sessionId, problemIndex])
 
-  const zoomIn = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    setZoom((z) => Math.min(MAX_ZOOM, +(z + ZOOM_STEP).toFixed(2)))
-  }
-
-  const zoomOut = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    setZoom((z) => Math.max(MIN_ZOOM, +(z - ZOOM_STEP).toFixed(2)))
-  }
-
-  const resetZoom = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    setZoom(1)
-  }
+  const zoomIn = (e: React.MouseEvent) => { e.stopPropagation(); setZoom((z) => Math.min(MAX_ZOOM, +(z + ZOOM_STEP).toFixed(2))) }
+  const zoomOut = (e: React.MouseEvent) => { e.stopPropagation(); setZoom((z) => Math.max(MIN_ZOOM, +(z - ZOOM_STEP).toFixed(2))) }
+  const resetZoom = (e: React.MouseEvent) => { e.stopPropagation(); setZoom(1) }
 
   if (notFound) {
     return (
-      <main className="min-h-screen bg-slate-50 flex items-center justify-center px-4">
+      <main className="min-h-screen flex items-center justify-center px-4" style={{ background: "var(--bg)" }}>
         <div className="text-center">
-          <p className="text-slate-600 mb-4">Problem not found.</p>
-          <Link href={`/session/${sessionId}`} className="text-indigo-600 hover:text-indigo-700 font-medium text-sm">
-            ← Back to problems
-          </Link>
+          <p className="mb-4" style={{ color: "var(--muted)" }}>Problem not found.</p>
+          <Link href={`/session/${sessionId}`} className="text-sm font-bold uppercase tracking-widest transition-opacity hover:opacity-70"
+            style={{ color: "var(--accent)" }}>← Back</Link>
         </div>
       </main>
     )
@@ -60,8 +44,8 @@ export default function ProblemPage() {
 
   if (!session) {
     return (
-      <main className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <p className="text-slate-400 text-sm">Loading...</p>
+      <main className="min-h-screen flex items-center justify-center" style={{ background: "var(--bg)" }}>
+        <p className="text-sm uppercase tracking-widest" style={{ color: "var(--muted)" }}>Loading…</p>
       </main>
     )
   }
@@ -69,7 +53,7 @@ export default function ProblemPage() {
   const problem = session.problems[problemIndex]
 
   return (
-    <main className="h-screen bg-slate-50 flex flex-col overflow-hidden">
+    <main className="h-screen flex flex-col overflow-hidden" style={{ background: "var(--bg)" }}>
       <ProblemStatement
         problemNumber={problemIndex + 1}
         subject={problem.subject}
@@ -79,57 +63,49 @@ export default function ProblemPage() {
 
       {/* Collapsible homework image */}
       {session.imageDataUrl && (
-        <div className="border-b border-slate-200 bg-white">
-
-          {/* Toggle bar */}
+        <div style={{ borderBottom: "1px solid var(--border)", background: "var(--surface)" }}>
           <button
             onClick={() => { setImageExpanded((v) => !v); setZoom(1) }}
-            className="w-full flex items-center justify-between px-4 py-2 text-xs font-medium text-slate-500 hover:bg-slate-50 transition-colors"
+            className="w-full flex items-center justify-between px-4 py-2 text-xs font-bold uppercase tracking-widest transition-opacity hover:opacity-70"
+            style={{ color: "var(--muted)" }}
           >
             <div className="flex items-center gap-1.5">
-              <svg className="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
               {imageExpanded ? "Hide" : "Show"} homework sheet
             </div>
-            <svg
-              className={`w-3.5 h-3.5 text-slate-400 transition-transform ${imageExpanded ? "rotate-180" : ""}`}
-              fill="none" stroke="currentColor" viewBox="0 0 24 24"
-            >
+            <svg className={`w-3.5 h-3.5 transition-transform ${imageExpanded ? "rotate-180" : ""}`}
+              fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </button>
 
           {imageExpanded && (
-            <div className="border-t border-slate-100">
-
+            <div style={{ borderTop: "1px solid var(--border)" }}>
               {/* Zoom controls */}
-              <div className="flex items-center justify-between px-4 py-2 bg-slate-50 border-b border-slate-100">
-                <span className="text-xs text-slate-400">Zoom: {Math.round(zoom * 100)}%</span>
+              <div className="flex items-center justify-between px-4 py-2" style={{ background: "var(--card)", borderBottom: "1px solid var(--border)" }}>
+                <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "var(--muted)" }}>
+                  Zoom: {Math.round(zoom * 100)}%
+                </span>
                 <div className="flex items-center gap-1">
-                  <button
-                    onClick={zoomOut}
-                    disabled={zoom <= MIN_ZOOM}
-                    className="w-7 h-7 flex items-center justify-center rounded-md bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                    aria-label="Zoom out"
-                  >
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7" />
-                    </svg>
-                  </button>
-                  <button
-                    onClick={resetZoom}
-                    className="px-2 h-7 text-xs rounded-md bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 transition-colors"
-                    aria-label="Reset zoom"
-                  >
+                  {[
+                    { label: "−", action: zoomOut, disabled: zoom <= MIN_ZOOM, icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7" /> },
+                  ].map(({ label, action, disabled, icon }) => (
+                    <button key={label} onClick={action} disabled={disabled}
+                      className="w-7 h-7 flex items-center justify-center rounded transition-opacity hover:opacity-70 disabled:opacity-30 disabled:cursor-not-allowed"
+                      style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text)" }}>
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">{icon}</svg>
+                    </button>
+                  ))}
+                  <button onClick={resetZoom}
+                    className="px-2 h-7 text-xs font-bold uppercase tracking-widest rounded transition-opacity hover:opacity-70"
+                    style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text)" }}>
                     Reset
                   </button>
-                  <button
-                    onClick={zoomIn}
-                    disabled={zoom >= MAX_ZOOM}
-                    className="w-7 h-7 flex items-center justify-center rounded-md bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                    aria-label="Zoom in"
-                  >
+                  <button onClick={zoomIn} disabled={zoom >= MAX_ZOOM}
+                    className="w-7 h-7 flex items-center justify-center rounded transition-opacity hover:opacity-70 disabled:opacity-30 disabled:cursor-not-allowed"
+                    style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--text)" }}>
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
                     </svg>
@@ -137,26 +113,14 @@ export default function ProblemPage() {
                 </div>
               </div>
 
-              {/* Image with zoom */}
-              <div className="overflow-auto bg-slate-100" style={{ maxHeight: "420px" }}>
-                <div
-                  className="flex items-start justify-center p-2"
-                  style={{ minWidth: zoom > 1 ? `${zoom * 100}%` : "100%" }}
-                >
+              <div className="overflow-auto" style={{ maxHeight: "420px", background: "var(--bg)" }}>
+                <div className="flex items-start justify-center p-2"
+                  style={{ minWidth: zoom > 1 ? `${zoom * 100}%` : "100%" }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={session.imageDataUrl}
-                    alt="Homework sheet"
-                    style={{
-                      transform: `scale(${zoom})`,
-                      transformOrigin: "top center",
-                      width: "100%",
-                      transition: "transform 0.15s ease",
-                    }}
-                  />
+                  <img src={session.imageDataUrl} alt="Homework sheet"
+                    style={{ transform: `scale(${zoom})`, transformOrigin: "top center", width: "100%", transition: "transform 0.15s ease" }} />
                 </div>
               </div>
-
             </div>
           )}
         </div>

@@ -190,7 +190,7 @@ export function ChatInterface({ sessionId, problemIndex }: ChatInterfaceProps) {
   if (!session) {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <p className="text-slate-500 text-sm">Loading...</p>
+        <p className="text-sm uppercase tracking-widest" style={{ color: "var(--muted)" }}>Loading…</p>
       </div>
     )
   }
@@ -201,18 +201,19 @@ export function ChatInterface({ sessionId, problemIndex }: ChatInterfaceProps) {
   const solvedCount = session.problems.filter((p) => p.status === "solved").length
 
   return (
-    <div className="flex flex-col flex-1 overflow-hidden">
+    <div className="flex flex-col flex-1 overflow-hidden" style={{ background: "var(--bg)" }}>
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 pt-4 pb-2">
         <div className="max-w-2xl mx-auto">
           {messages.length === 0 && isLoading && (
             <div className="flex justify-start mb-4">
-              <div className="flex-shrink-0 w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center mr-2">
+              <div className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center mr-2"
+                style={{ background: "linear-gradient(135deg, var(--accent), var(--accent2))" }}>
                 <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
               </div>
-              <div className="bg-white border border-slate-200 rounded-2xl rounded-bl-sm shadow-sm">
+              <div className="rounded-2xl rounded-bl-sm" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
                 <LoadingDots />
               </div>
             </div>
@@ -224,12 +225,13 @@ export function ChatInterface({ sessionId, problemIndex }: ChatInterfaceProps) {
 
           {messages.length > 0 && isLoading && (
             <div className="flex justify-start mb-4">
-              <div className="flex-shrink-0 w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center mr-2">
+              <div className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center mr-2"
+                style={{ background: "linear-gradient(135deg, var(--accent), var(--accent2))" }}>
                 <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
               </div>
-              <div className="bg-white border border-slate-200 rounded-2xl rounded-bl-sm shadow-sm">
+              <div className="rounded-2xl rounded-bl-sm" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
                 <LoadingDots />
               </div>
             </div>
@@ -251,7 +253,7 @@ export function ChatInterface({ sessionId, problemIndex }: ChatInterfaceProps) {
 
       {/* Input */}
       {!isSolved && (
-        <div className="px-4 pb-4 pt-2 border-t border-slate-100 bg-slate-50">
+        <div className="px-4 pb-4 pt-2" style={{ borderTop: "1px solid var(--border)", background: "var(--surface)" }}>
           <div className="max-w-2xl mx-auto">
             <ChatInput
               key={isLoading ? "loading" : "ready"}
@@ -261,8 +263,8 @@ export function ChatInterface({ sessionId, problemIndex }: ChatInterfaceProps) {
               onSubmit={handleSubmit}
               disabled={isLoading}
             />
-            <p className="text-xs text-slate-400 text-center mt-2">
-              Press Enter to send · Shift+Enter for new line
+            <p className="text-xs text-center mt-2 uppercase tracking-widest" style={{ color: "var(--muted)" }}>
+              Enter to send · Shift+Enter for new line
             </p>
           </div>
         </div>

@@ -209,16 +209,17 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
     return (
       <>
       {micError && (
-        <p className="text-xs text-red-500 mb-1 px-1">{micError}</p>
+        <p className="text-xs mb-1 px-1 font-bold uppercase tracking-widest" style={{ color: "var(--accent)" }}>{micError}</p>
       )}
       {!micError && micStatus && (
-        <p className="text-xs text-slate-400 mb-1 px-1">{micStatus}</p>
+        <p className="text-xs mb-1 px-1 uppercase tracking-widest" style={{ color: "var(--muted)" }}>{micStatus}</p>
       )}
-      <div className={`flex items-end gap-2 bg-white border rounded-2xl px-4 py-3 shadow-sm transition-all ${
-        isListening
-          ? "border-red-400 ring-1 ring-red-400"
-          : "border-slate-200 focus-within:border-indigo-400 focus-within:ring-1 focus-within:ring-indigo-400"
-      }`}>
+      <div className="flex items-end gap-2 rounded-xl px-4 py-3 transition-all"
+        style={{
+          background: "var(--card)",
+          border: `1px solid ${isListening ? "var(--accent)" : "var(--border)"}`,
+          boxShadow: isListening ? "0 0 0 1px var(--accent)" : undefined,
+        }}>
         <textarea
           ref={textareaRef}
           value={value}
@@ -231,8 +232,8 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
             (placeholder || "Type or speak your answer…")
           }
           rows={1}
-          className="flex-1 resize-none bg-transparent text-slate-800 placeholder-slate-400 text-sm focus:outline-none"
-          style={{ minHeight: "24px" }}
+          className="flex-1 resize-none bg-transparent text-sm focus:outline-none"
+          style={{ minHeight: "24px", color: "var(--text)" }}
         />
 
         {/* Mic button + picker */}
@@ -242,11 +243,11 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
               onClick={toggleVoice}
               onMouseDown={(e) => e.preventDefault()}
               disabled={disabled}
-              className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${
-                isListening
-                  ? "bg-red-500 hover:bg-red-600 animate-pulse"
-                  : "bg-slate-100 hover:bg-slate-200 text-slate-500"
-              }`}
+              className={`w-8 h-8 rounded-lg flex items-center justify-center transition-opacity disabled:opacity-40 disabled:cursor-not-allowed ${isListening ? "animate-pulse" : "hover:opacity-70"}`}
+              style={{
+                background: isListening ? "var(--accent)" : "rgba(255,255,255,0.06)",
+                color: isListening ? "white" : "var(--muted)",
+              }}
               aria-label={isListening ? "Stop listening" : "Speak your answer"}
             >
               <svg className="w-4 h-4" fill={isListening ? "white" : "currentColor"} viewBox="0 0 24 24">
@@ -255,13 +256,14 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
               </svg>
             </button>
 
-            {/* Mic picker chevron — only show if multiple mics available */}
+            {/* Mic picker chevron */}
             {mics.length > 1 && (
               <div className="relative">
                 <button
                   onClick={() => setShowMicPicker((v) => !v)}
                   onMouseDown={(e) => e.preventDefault()}
-                  className="w-4 h-4 flex items-center justify-center text-slate-400 hover:text-slate-600 transition-colors"
+                  className="w-4 h-4 flex items-center justify-center transition-opacity hover:opacity-70"
+                  style={{ color: "var(--muted)" }}
                   aria-label="Select microphone"
                 >
                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -270,23 +272,18 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
                 </button>
 
                 {showMicPicker && (
-                  <div className="absolute bottom-full right-0 mb-1 bg-white border border-slate-200 rounded-lg shadow-lg z-10 min-w-[200px] py-1">
-                    <p className="px-3 py-1 text-xs font-medium text-slate-400 uppercase tracking-wide">Microphone</p>
+                  <div className="absolute bottom-full right-0 mb-1 rounded-lg shadow-xl z-10 min-w-[200px] py-1"
+                    style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+                    <p className="px-3 py-1 text-xs font-bold uppercase tracking-widest" style={{ color: "var(--muted)" }}>Microphone</p>
                     {mics.map((mic) => (
                       <button
                         key={mic.deviceId}
                         onMouseDown={(e) => e.preventDefault()}
-                        onClick={() => {
-                          setSelectedMicId(mic.deviceId)
-                          setShowMicPicker(false)
-                        }}
-                        className={`w-full text-left px-3 py-2 text-sm transition-colors hover:bg-slate-50 ${
-                          selectedMicId === mic.deviceId ? "text-indigo-600 font-medium" : "text-slate-700"
-                        }`}
+                        onClick={() => { setSelectedMicId(mic.deviceId); setShowMicPicker(false) }}
+                        className="w-full text-left px-3 py-2 text-sm transition-opacity hover:opacity-70"
+                        style={{ color: selectedMicId === mic.deviceId ? "var(--accent)" : "var(--text)" }}
                       >
-                        {selectedMicId === mic.deviceId && (
-                          <span className="mr-1.5">✓</span>
-                        )}
+                        {selectedMicId === mic.deviceId && <span className="mr-1.5">✓</span>}
                         {mic.label || `Microphone ${mics.indexOf(mic) + 1}`}
                       </button>
                     ))}
@@ -302,7 +299,8 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
           onClick={onSubmit}
           onMouseDown={(e) => e.preventDefault()}
           disabled={disabled || !value.trim()}
-          className="flex-shrink-0 w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center hover:bg-indigo-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-opacity hover:opacity-80 disabled:opacity-30 disabled:cursor-not-allowed"
+          style={{ background: "linear-gradient(135deg, var(--accent), var(--accent2))" }}
           aria-label="Send message"
         >
           <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -310,7 +308,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
           </svg>
         </button>
       </div>
-      </>
+</>
     )
   }
 )

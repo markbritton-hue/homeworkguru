@@ -1,4 +1,3 @@
-import { clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -6,29 +5,23 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   size?: "sm" | "md" | "lg"
 }
 
-export function Button({
-  variant = "primary",
-  size = "md",
-  className,
-  children,
-  ...props
-}: ButtonProps) {
+export function Button({ variant = "primary", size = "md", className, children, style, ...props }: ButtonProps) {
+  const sizeClass = size === "sm" ? "px-3 py-1.5 text-sm" : size === "lg" ? "px-6 py-3 text-base" : "px-4 py-2 text-sm"
+
+  const baseStyle: React.CSSProperties =
+    variant === "primary"
+      ? { background: "linear-gradient(135deg, var(--accent), var(--accent2))", color: "#fff" }
+      : variant === "secondary"
+      ? { background: "var(--card)", color: "var(--text)", border: "1px solid var(--border)" }
+      : { color: "var(--muted)" }
+
   return (
     <button
       className={twMerge(
-        clsx(
-          "inline-flex items-center justify-center font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed",
-          {
-            "bg-indigo-600 text-white hover:bg-indigo-700 active:bg-indigo-800": variant === "primary",
-            "bg-white text-slate-700 border border-slate-200 hover:bg-slate-50": variant === "secondary",
-            "text-slate-600 hover:text-slate-900 hover:bg-slate-100": variant === "ghost",
-            "px-3 py-1.5 text-sm": size === "sm",
-            "px-4 py-2 text-sm": size === "md",
-            "px-6 py-3 text-base": size === "lg",
-          }
-        ),
+        `inline-flex items-center justify-center font-bold uppercase tracking-widest rounded-lg transition-opacity hover:opacity-80 focus:outline-none disabled:opacity-40 disabled:cursor-not-allowed ${sizeClass}`,
         className
       )}
+      style={{ ...baseStyle, ...style }}
       {...props}
     >
       {children}
