@@ -246,6 +246,7 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
           nextProblem={nextProblem}
           totalProblems={session.problems.length}
           solvedCount={solvedCount}
+          finalAnswer={[...messages].reverse().find(m => m.role === "assistant")?.content}
         />
       )}
 

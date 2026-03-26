@@ -1,4 +1,5 @@
 import Link from "next/link"
+import ReactMarkdown from "react-markdown"
 import type { Problem } from "@/types"
 
 interface CompletionBannerProps {
@@ -6,9 +7,10 @@ interface CompletionBannerProps {
   nextProblem: Problem | null
   totalProblems: number
   solvedCount: number
+  finalAnswer?: string
 }
 
-export function CompletionBanner({ sessionId, nextProblem, totalProblems, solvedCount }: CompletionBannerProps) {
+export function CompletionBanner({ sessionId, nextProblem, totalProblems, solvedCount, finalAnswer }: CompletionBannerProps) {
   const allDone = solvedCount >= totalProblems
 
   return (
@@ -28,6 +30,15 @@ export function CompletionBanner({ sessionId, nextProblem, totalProblems, solved
           <p className="text-xs mt-0.5" style={{ color: "var(--muted)" }}>
             {solvedCount} of {totalProblems} solved
           </p>
+          {finalAnswer && (
+            <div className="mt-3 rounded-xl px-4 py-3"
+              style={{ background: "rgba(16,185,129,0.08)", border: "1px solid rgba(16,185,129,0.25)" }}>
+              <p className="text-xs font-semibold mb-1.5" style={{ color: "var(--green)" }}>Final Answer</p>
+              <div className="prose prose-sm max-w-none prose-invert prose-p:my-1 prose-ul:my-1 prose-ol:my-1 text-xs" style={{ color: "var(--text)" }}>
+                <ReactMarkdown>{finalAnswer}</ReactMarkdown>
+              </div>
+            </div>
+          )}
           <div className="mt-3 flex gap-2 flex-wrap">
             {nextProblem && (
               <Link
