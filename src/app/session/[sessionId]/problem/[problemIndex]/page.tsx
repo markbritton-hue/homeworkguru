@@ -19,10 +19,13 @@ export default function ProblemPage() {
   const [showCalculator, setShowCalculator] = useState(false)
   const [showImage, setShowImage] = useState(true)
 
-  // Draggable float position
+  // Draggable float position + size
   const [pos, setPos] = useState({ x: 12, y: 200 })
+  const [width, setWidth] = useState(200)
   const dragging = useRef(false)
   const dragOffset = useRef({ x: 0, y: 0 })
+  const resizing = useRef(false)
+  const resizeStart = useRef({ mouseX: 0, startW: 0 })
 
   useEffect(() => {
     const s = loadSession(sessionId)
@@ -40,16 +43,28 @@ export default function ProblemPage() {
     dragOffset.current = { x: e.touches[0].clientX - pos.x, y: e.touches[0].clientY - pos.y }
   }, [pos])
 
+  const onResizeMouseDown = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation()
+    e.preventDefault()
+    resizing.current = true
+    resizeStart.current = { mouseX: e.clientX, startW: width }
+  }, [width])
+
   useEffect(() => {
     const onMove = (e: MouseEvent) => {
-      if (!dragging.current) return
-      setPos({ x: e.clientX - dragOffset.current.x, y: e.clientY - dragOffset.current.y })
+      if (dragging.current) {
+        setPos({ x: e.clientX - dragOffset.current.x, y: e.clientY - dragOffset.current.y })
+      }
+      if (resizing.current) {
+        const newW = Math.min(480, Math.max(140, resizeStart.current.startW + (e.clientX - resizeStart.current.mouseX)))
+        setWidth(newW)
+      }
     }
     const onTouchMove = (e: TouchEvent) => {
       if (!dragging.current) return
       setPos({ x: e.touches[0].clientX - dragOffset.current.x, y: e.touches[0].clientY - dragOffset.current.y })
     }
-    const onUp = () => { dragging.current = false }
+    const onUp = () => { dragging.current = false; resizing.current = false }
     window.addEventListener("mousemove", onMove)
     window.addEventListener("mouseup", onUp)
     window.addEventListener("touchmove", onTouchMove)
@@ -103,7 +118,7 @@ export default function ProblemPage() {
           style={{
             left: pos.x,
             top: pos.y,
-            width: 200,
+            width,
             border: "1px solid rgba(96,165,250,0.35)",
             background: "rgba(10,18,35,0.95)",
             backdropFilter: "blur(12px)",
@@ -141,6 +156,17 @@ export default function ProblemPage() {
             bbox={problem.bbox!}
             alt={`Problem ${problemIndex + 1}`}
           />
+
+          {/* Resize handle */}
+          <div
+            onMouseDown={onResizeMouseDown}
+            className="absolute bottom-0 right-0 w-5 h-5 flex items-end justify-end p-1"
+            style={{ cursor: "se-resize" }}
+          >
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+              <path d="M9 1L1 9M9 5L5 9M9 9" stroke="rgba(96,165,250,0.5)" strokeWidth="1.5" strokeLinecap="round"/>
+            </svg>
+          </div>
         </div>
       )}
 
