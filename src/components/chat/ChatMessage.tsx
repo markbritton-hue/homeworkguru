@@ -16,6 +16,10 @@ export function ChatMessage({ message }: ChatMessageProps) {
         // eslint-disable-next-line @next/next/no-img-element
         <img src="/Gurulogo.png" alt="Tutor" className="flex-shrink-0 w-20 h-20 mr-2 mt-0.5" />
       )}
+      <div className={`flex flex-col ${isUser ? "items-end" : "items-start"}`}>
+        {isUser && (
+          <span className="text-xs mb-1 px-1" style={{ color: "var(--muted2)" }}>You</span>
+        )}
       <div
         className="max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed"
         style={
@@ -31,6 +35,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
             <ReactMarkdown>{message.content}</ReactMarkdown>
           </div>
         )}
+      </div>
       </div>
     </div>
   )
