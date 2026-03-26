@@ -132,26 +132,26 @@ export default function HomePage() {
               Add Assignment
             </button>
           )}
+          {sessions.length > 0 && showUpload && (
+            <button
+              onClick={() => { setShowUpload(false); setImages([]); setError(null) }}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all hover:-translate-y-0.5"
+              style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--accent)", boxShadow: "0 2px 6px rgba(0,0,0,0.3)" }}
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              </svg>
+              Home
+            </button>
+          )}
         </div>
 
         {/* Upload panel */}
         {showUpload && (
           <div className="rounded-2xl p-6 mb-6"
             style={{ background: "var(--surface)", border: "1px solid var(--border)", boxShadow: "0 8px 20px rgba(0,0,0,0.5)", backdropFilter: "blur(10px)" }}>
-            <div className="flex items-center justify-between mb-5">
+            <div className="mb-5">
               <h2 className="font-bold text-lg" style={{ color: "var(--text)" }}>New Assignment</h2>
-              {sessions.length > 0 && (
-                <button
-                  onClick={() => { setShowUpload(false); setImages([]); setError(null) }}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all hover:-translate-y-0.5"
-                  style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--accent)", boxShadow: "0 2px 6px rgba(0,0,0,0.3)" }}
-                >
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                  </svg>
-                  Home
-                </button>
-              )}
             </div>
 
             <input
