@@ -210,8 +210,9 @@ export function ChatInterface({ sessionId, problemIndex }: ChatInterfaceProps) {
               <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center mr-2 mt-0.5"
                 style={{ background: "var(--accent)", boxShadow: "0 0 12px rgba(96,165,250,0.4)" }}>
                 <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 2L3 7l9 4.5L21 7 12 2z" />
+                  <circle cx="12" cy="14" r="2.5" strokeWidth={2} />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 22c0-2.76 2.24-5 5-5s5 2.24 5 5" />
                 </svg>
               </div>
               <div className="rounded-2xl rounded-bl-sm" style={{ background: "var(--surface)", border: "1px solid var(--border)", backdropFilter: "blur(10px)" }}>
@@ -229,8 +230,9 @@ export function ChatInterface({ sessionId, problemIndex }: ChatInterfaceProps) {
               <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center mr-2 mt-0.5"
                 style={{ background: "var(--accent)", boxShadow: "0 0 12px rgba(96,165,250,0.4)" }}>
                 <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 2L3 7l9 4.5L21 7 12 2z" />
+                  <circle cx="12" cy="14" r="2.5" strokeWidth={2} />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 22c0-2.76 2.24-5 5-5s5 2.24 5 5" />
                 </svg>
               </div>
               <div className="rounded-2xl rounded-bl-sm" style={{ background: "var(--surface)", border: "1px solid var(--border)", backdropFilter: "blur(10px)" }}>
