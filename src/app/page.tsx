@@ -70,6 +70,23 @@ export default function HomePage() {
     }
   }
 
+  const handleDemo = async () => {
+    setError(null)
+    try {
+      const res = await fetch("/gemwork.jpg")
+      const blob = await res.blob()
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        const dataUrl = e.target?.result as string
+        setImages([{ dataUrl, mimeType: "image/jpeg" }])
+        setAssignmentName("Demo Assignment")
+      }
+      reader.readAsDataURL(blob)
+    } catch {
+      setError("Could not load demo image.")
+    }
+  }
+
   const handleDelete = (sessionId: string, e: React.MouseEvent) => {
     e.preventDefault(); e.stopPropagation()
     deleteSession(sessionId)
@@ -149,7 +166,22 @@ export default function HomePage() {
             {images.length > 0 ? (
               <ImagePreview images={images} onRemove={handleRemove} onAddMore={handleAddMore} onParse={handleParse} isParsing={isParsing} />
             ) : (
-              <UploadZone onImageSelected={handleImageSelected} />
+              <>
+                <UploadZone onImageSelected={handleImageSelected} />
+                <div className="mt-3 text-center">
+                  <button
+                    onClick={handleDemo}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all hover:-translate-y-0.5"
+                    style={{ background: "rgba(167,139,250,0.15)", border: "1px solid rgba(167,139,250,0.35)", color: "#c4b5fd", boxShadow: "0 4px 12px rgba(0,0,0,0.2)" }}
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Try Demo Assignment
+                  </button>
+                </div>
+              </>
             )}
 
             {error && (
