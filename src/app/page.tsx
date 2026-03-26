@@ -102,35 +102,35 @@ export default function HomePage() {
       <div className="max-w-2xl mx-auto">
 
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-3">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/HomeworkguruLogo.png" alt="Homework Guru" style={{ width: "150px", height: "150px", objectFit: "contain" }} />
+        <div className="relative flex items-center justify-center mb-8">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/HomeworkguruLogo.png" alt="Homework Guru" style={{ width: "180px", height: "180px", objectFit: "contain" }} />
+          <div className="absolute right-0 top-1/2 -translate-y-1/2">
+            {sessions.length > 0 && !showUpload && (
+              <button
+                onClick={() => setShowUpload(true)}
+                className="inline-flex items-center gap-2 px-5 py-2 text-sm font-semibold rounded-full text-white transition-all hover:-translate-y-0.5"
+                style={{ background: "var(--accent)", boxShadow: "0 4px 12px rgba(96,165,250,0.3)" }}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                Add Assignment
+              </button>
+            )}
+            {sessions.length > 0 && showUpload && (
+              <button
+                onClick={() => { setShowUpload(false); setImages([]); setError(null) }}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all hover:-translate-y-0.5"
+                style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--accent)", boxShadow: "0 2px 6px rgba(0,0,0,0.3)" }}
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+                Home
+              </button>
+            )}
           </div>
-          {sessions.length > 0 && !showUpload && (
-            <button
-              onClick={() => setShowUpload(true)}
-              className="inline-flex items-center gap-2 px-5 py-2 text-sm font-semibold rounded-full text-white transition-all hover:-translate-y-0.5"
-              style={{ background: "var(--accent)", boxShadow: "0 4px 12px rgba(96,165,250,0.3)" }}
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-              Add Assignment
-            </button>
-          )}
-          {sessions.length > 0 && showUpload && (
-            <button
-              onClick={() => { setShowUpload(false); setImages([]); setError(null) }}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all hover:-translate-y-0.5"
-              style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--accent)", boxShadow: "0 2px 6px rgba(0,0,0,0.3)" }}
-            >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-              </svg>
-              Home
-            </button>
-          )}
         </div>
 
         {/* Upload panel */}
