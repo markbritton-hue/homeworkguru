@@ -104,21 +104,8 @@ export default function HomePage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-full flex items-center justify-center"
-              style={{ background: "var(--accent)", boxShadow: "0 0 20px rgba(96,165,250,0.4)" }}>
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.8}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
-              </svg>
-            </div>
-            <div>
-              <h1 className="text-xl font-bold" style={{
-                background: "linear-gradient(135deg, var(--accent), var(--accent2))",
-                WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
-              }}>
-                Homework Guru
-              </h1>
-              <p className="text-xs" style={{ color: "var(--muted)" }}>AI tutor that teaches, not just answers</p>
-            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/HomeworkguruLogo.png" alt="Homework Guru" className="h-11 w-auto" />
           </div>
           {sessions.length > 0 && !showUpload && (
             <button
