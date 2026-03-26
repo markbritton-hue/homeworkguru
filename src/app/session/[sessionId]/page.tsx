@@ -92,7 +92,7 @@ export default function SessionPage() {
 
         {/* Homework pages */}
         {session.imageDataUrls.length > 0 && (
-          <div className="rounded-2xl overflow-hidden" style={{ border: "1px solid var(--border)", background: "var(--surface)", backdropFilter: "blur(10px)", boxShadow: "0 8px 24px rgba(0,0,0,0.4)" }}>
+          <div className="rounded-2xl overflow-hidden" style={{ border: "1px solid rgba(96,165,250,0.3)", background: "rgba(15,30,60,0.85)", backdropFilter: "blur(10px)", boxShadow: "0 8px 24px rgba(0,0,0,0.4)" }}>
             {/* Header */}
             <button
               onClick={() => setImageExpanded((v) => !v)}
