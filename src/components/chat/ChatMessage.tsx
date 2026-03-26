@@ -21,7 +21,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
           <span className="text-xs mb-1 px-1" style={{ color: "var(--muted2)" }}>You</span>
         )}
       <div
-        className="max-w-[92%] rounded-2xl px-4 py-3 text-sm leading-relaxed"
+        className="max-w-[98%] rounded-2xl px-4 py-3 text-sm leading-relaxed"
         style={
           isUser
             ? { background: "var(--accent)", color: "#fff", borderBottomRightRadius: "6px", boxShadow: "0 4px 12px rgba(96,165,250,0.3)" }
