@@ -14,7 +14,15 @@ export function Calculator({ onClose, onPaste }: CalculatorProps) {
   const [prevValue, setPrevValue] = useState<number | null>(null)
   const [operator, setOperator] = useState<string | null>(null)
   const [waitingForOperand, setWaitingForOperand] = useState(false)
-  const [isScientific, setIsScientific] = useState(false)
+  const [isScientific, setIsScientific] = useState(() => {
+    try { return localStorage.getItem("calc_mode") === "sci" } catch { return false }
+  })
+
+  const toggleMode = () => setIsScientific(v => {
+    const next = !v
+    try { localStorage.setItem("calc_mode", next ? "sci" : "basic") } catch {}
+    return next
+  })
 
   const setResult = (val: number) => {
     setDisplay(String(parseFloat(val.toPrecision(10))))
@@ -123,7 +131,7 @@ export function Calculator({ onClose, onPaste }: CalculatorProps) {
         <div className="flex items-center gap-1.5">
           {/* Scientific toggle */}
           <button
-            onClick={() => setIsScientific(v => !v)}
+            onClick={toggleMode}
             className="px-2 py-0.5 rounded-full text-xs font-semibold transition-all hover:opacity-80"
             style={{
               background: isScientific ? "rgba(167,139,250,0.25)" : "rgba(255,255,255,0.08)",
