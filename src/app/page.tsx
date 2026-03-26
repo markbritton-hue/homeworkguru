@@ -127,7 +127,9 @@ function HomePageInner() {
 
   const autoOnboard = async (uid: string) => {
     setIsParsing(true)
+    setError(null)
     try {
+      // Fetch demo image
       const res = await fetch("/gemwork.jpg")
       const blob = await res.blob()
       const dataUrl = await new Promise<string>((resolve) => {
@@ -136,13 +138,20 @@ function HomePageInner() {
         reader.readAsDataURL(blob)
       })
       const compressed = await compressImage(dataUrl)
+
+      // Parse problems
       const response = await fetch("/api/parse-homework", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ images: [{ imageBase64: dataUrl, mimeType: "image/jpeg" }] }),
       })
       const data = await response.json()
-      if (!response.ok) { setShowUpload(true); return }
+      if (!response.ok) {
+        setError(data.error || "Failed to read demo homework.")
+        setShowUpload(true)
+        return
+      }
+
       const sessionId = crypto.randomUUID()
       const session: HomeworkSession = {
         sessionId, name: "Demo Assignment", createdAt: Date.now(),
@@ -150,10 +159,19 @@ function HomePageInner() {
         problems: data.problems.map((p: { index: number; text: string; subject: string }) => ({ ...p, status: "not_started" as const })),
         chatHistory: {},
       }
-      await saveSession(uid, session, [compressed])
+
+      // Try saving with Storage upload; fall back to storing base64 directly
+      try {
+        await saveSession(uid, session, [compressed])
+      } catch {
+        session.imageDataUrls = [compressed]
+        await saveSession(uid, session)
+      }
+
       setSessions([session])
       setShowUpload(false)
-    } catch {
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong loading the demo.")
       setShowUpload(true)
     } finally {
       setIsParsing(false)
@@ -177,12 +195,18 @@ function HomePageInner() {
     </main>
   )
 
-  if (isParsing && sessions.length === 0) return (
-    <main className="min-h-screen flex flex-col items-center justify-center gap-4">
+  if (isParsing && sessions.length === 0 && !showUpload) return (
+    <main className="min-h-screen flex flex-col items-center justify-center gap-4"
+      style={{ background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)" }}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src="/HomeworkguruLogo.png" alt="Homework Guru" style={{ height: "100px", objectFit: "contain" }} />
       <p className="text-base font-semibold" style={{ color: "rgba(255,255,255,0.8)" }}>Setting up your demo assignment…</p>
       <p className="text-sm" style={{ color: "rgba(255,255,255,0.4)" }}>Finding problems in your homework</p>
+      <div className="flex gap-1.5 mt-2">
+        {[0,1,2].map(i => (
+          <div key={i} className="w-2 h-2 rounded-full animate-bounce" style={{ background: "#60a5fa", animationDelay: `${i * 0.15}s` }} />
+        ))}
+      </div>
     </main>
   )
 
