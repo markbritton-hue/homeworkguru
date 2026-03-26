@@ -141,7 +141,7 @@ export function Calculator({ onClose, onPaste }: CalculatorProps) {
               style={{ background: "rgba(96,165,250,0.2)", color: "var(--accent)", border: "1px solid rgba(96,165,250,0.35)" }}
               title="Paste answer into chat"
             >
-              → Chat
+              Paste
             </button>
           )}
           <button onClick={onClose} className="transition-opacity hover:opacity-60 ml-1" style={{ color: "var(--muted)" }}>
