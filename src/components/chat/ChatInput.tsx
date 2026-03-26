@@ -18,7 +18,7 @@ interface ISpeechRecognition extends EventTarget {
   stop(): void
   onstart: (() => void) | null
   onend: (() => void) | null
-  onerror: (() => void) | null
+  onerror: ((event: { error: string }) => void) | null
   onresult: ((event: ISpeechRecognitionEvent) => void) | null
 }
 
@@ -59,6 +59,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
     const [mics, setMics] = useState<MediaDeviceInfo[]>([])
     const [selectedMicId, setSelectedMicId] = useState<string>("")
     const [showMicPicker, setShowMicPicker] = useState(false)
+  const [micError, setMicError] = useState<string | null>(null)
 
     useImperativeHandle(ref, () => ({
       focus: () => textareaRef.current?.focus(),
@@ -137,10 +138,19 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
         }
       }
 
-      recognition.onerror = () => {
+      recognition.onerror = (event) => {
         recognitionRef.current = null
-        if (shouldListenRef.current) {
-          setTimeout(() => startRecognition(accumulated, onTextChange), 200)
+        const fatal = event.error === "not-allowed" || event.error === "audio-capture"
+        if (fatal) {
+          shouldListenRef.current = false
+          setIsListening(false)
+          setMicError(
+            event.error === "not-allowed"
+              ? "Microphone permission denied"
+              : "Could not access microphone"
+          )
+        } else if (shouldListenRef.current) {
+          setTimeout(() => startRecognition(accumulated, onTextChange), 300)
         } else {
           setIsListening(false)
         }
@@ -156,18 +166,8 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
         return
       }
       shouldListenRef.current = true
-      // Prime the selected mic before starting recognition, then release stream
-      if (selectedMicId && navigator.mediaDevices) {
-        navigator.mediaDevices
-          .getUserMedia({ audio: { deviceId: { exact: selectedMicId } } })
-          .then((stream) => {
-            stream.getTracks().forEach((t) => t.stop())
-            startRecognition("", onChange)
-          })
-          .catch(() => startRecognition("", onChange))
-      } else {
-        startRecognition("", onChange)
-      }
+      setMicError(null)
+      startRecognition("", onChange)
     }, [isListening, onChange, stopListening, startRecognition, selectedMicId])
 
     useEffect(() => {
@@ -182,6 +182,10 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
     }
 
     return (
+      <>
+      {micError && (
+        <p className="text-xs text-red-500 mb-1 px-1">{micError}</p>
+      )}
       <div className={`flex items-end gap-2 bg-white border rounded-2xl px-4 py-3 shadow-sm transition-all ${
         isListening
           ? "border-red-400 ring-1 ring-red-400"
@@ -278,6 +282,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
           </svg>
         </button>
       </div>
+      </>
     )
   }
 )
