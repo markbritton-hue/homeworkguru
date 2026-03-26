@@ -53,6 +53,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
   function ChatInput({ value, onChange, onSubmit, disabled, placeholder }, ref) {
     const textareaRef = useRef<HTMLTextAreaElement>(null)
     const recognitionRef = useRef<ISpeechRecognition | null>(null)
+    const shouldListenRef = useRef(false)
     const [isListening, setIsListening] = useState(false)
     const [speechSupported, setSpeechSupported] = useState(false)
 
@@ -75,26 +76,22 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
     }, [value])
 
     const stopListening = useCallback(() => {
+      shouldListenRef.current = false
       recognitionRef.current?.stop()
       recognitionRef.current = null
       setIsListening(false)
     }, [])
 
-    const toggleVoice = useCallback(() => {
-      if (isListening) {
-        stopListening()
-        return
-      }
-
+    const startRecognition = useCallback((accumulatedText: string, onTextChange: (t: string) => void) => {
       const SR = window.SpeechRecognition || window.webkitSpeechRecognition
-      if (!SR) return
+      if (!SR || !shouldListenRef.current) return
 
       const recognition = new SR()
       recognition.continuous = true
       recognition.interimResults = true
       recognition.lang = "en-US"
 
-      let accumulated = ""
+      let accumulated = accumulatedText
 
       recognition.onstart = () => setIsListening(true)
 
@@ -108,24 +105,41 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
             interim = t
           }
         }
-        onChange((accumulated + interim).trim())
+        onTextChange((accumulated + interim).trim())
       }
 
       recognition.onend = () => {
-        setIsListening(false)
         recognitionRef.current = null
-        textareaRef.current?.focus()
+        // Auto-restart if user hasn't stopped intentionally
+        if (shouldListenRef.current) {
+          setTimeout(() => startRecognition(accumulated, onTextChange), 200)
+        } else {
+          setIsListening(false)
+          textareaRef.current?.focus()
+        }
       }
 
       recognition.onerror = () => {
-        console.error("Speech recognition error fired")
-        setIsListening(false)
         recognitionRef.current = null
+        if (shouldListenRef.current) {
+          setTimeout(() => startRecognition(accumulated, onTextChange), 200)
+        } else {
+          setIsListening(false)
+        }
       }
 
       recognitionRef.current = recognition
       recognition.start()
-    }, [isListening, onChange, stopListening])
+    }, [])
+
+    const toggleVoice = useCallback(() => {
+      if (isListening) {
+        stopListening()
+        return
+      }
+      shouldListenRef.current = true
+      startRecognition("", onChange)
+    }, [isListening, onChange, stopListening, startRecognition])
 
     useEffect(() => {
       if (disabled && isListening) stopListening()
