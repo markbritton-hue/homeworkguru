@@ -106,7 +106,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
       if (!SR || !shouldListenRef.current) return
 
       const recognition = new SR()
-      recognition.continuous = true
+      recognition.continuous = false
       recognition.interimResults = true
       recognition.lang = "en-US"
 
@@ -140,11 +140,15 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
 
       recognition.onerror = (event) => {
         recognitionRef.current = null
-        setMicError(`Error: ${event.error}`)
         const fatal = event.error === "not-allowed" || event.error === "audio-capture"
         if (fatal) {
           shouldListenRef.current = false
           setIsListening(false)
+          setMicError(
+            event.error === "not-allowed"
+              ? "Microphone permission denied"
+              : "Could not access microphone"
+          )
         } else if (shouldListenRef.current) {
           setTimeout(() => startRecognition(accumulated, onTextChange), 800)
         } else {
