@@ -230,7 +230,7 @@ function HomePageInner() {
         {/* Header */}
         <div className="relative flex items-center justify-center mb-2">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/HomeworkguruLogo.png" alt="Homework Guru" style={{ width: "180px", height: "180px", objectFit: "contain" }} />
+          <img src="/HomeworkguruLogo.png" alt="Homework Guru" style={{ width: "260px", height: "260px", objectFit: "contain" }} />
           <button
             onClick={signOut}
             className="absolute right-0 top-1/2 -translate-y-1/2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all hover:-translate-y-0.5"
