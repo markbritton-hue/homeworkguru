@@ -14,7 +14,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
     <div className={`flex ${isUser ? "justify-end" : "justify-start"} mb-4`}>
       {!isUser && (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src="/professor.svg" alt="Tutor" className="flex-shrink-0 w-9 h-9 mr-2 mt-0.5" />
+        <img src="/chemist.svg" alt="Tutor" className="flex-shrink-0 w-9 h-9 mr-2 mt-0.5" />
       )}
       <div
         className="max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed"

@@ -208,7 +208,7 @@ export function ChatInterface({ sessionId, problemIndex }: ChatInterfaceProps) {
           {messages.length === 0 && isLoading && (
             <div className="flex justify-start mb-4">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/professor.svg" alt="Tutor" className="flex-shrink-0 w-9 h-9 mr-2 mt-0.5" />
+              <img src="/chemist.svg" alt="Tutor" className="flex-shrink-0 w-9 h-9 mr-2 mt-0.5" />
               <div className="rounded-2xl rounded-bl-sm" style={{ background: "var(--surface)", border: "1px solid var(--border)", backdropFilter: "blur(10px)" }}>
                 <LoadingDots />
               </div>
@@ -222,7 +222,7 @@ export function ChatInterface({ sessionId, problemIndex }: ChatInterfaceProps) {
           {messages.length > 0 && isLoading && (
             <div className="flex justify-start mb-4">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/professor.svg" alt="Tutor" className="flex-shrink-0 w-9 h-9 mr-2 mt-0.5" />
+              <img src="/chemist.svg" alt="Tutor" className="flex-shrink-0 w-9 h-9 mr-2 mt-0.5" />
               <div className="rounded-2xl rounded-bl-sm" style={{ background: "var(--surface)", border: "1px solid var(--border)", backdropFilter: "blur(10px)" }}>
                 <LoadingDots />
               </div>
