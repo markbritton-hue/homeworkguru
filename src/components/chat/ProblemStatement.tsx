@@ -12,6 +12,8 @@ export function ProblemStatement({ problemNumber, subject, text, sessionId }: Pr
     <div className="px-4 py-3" style={{ background: "rgba(15,23,42,0.9)", borderBottom: "1px solid var(--border)", backdropFilter: "blur(10px)" }}>
       <div className="max-w-2xl mx-auto">
         <div className="flex items-center gap-2 mb-2">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/HomeworkguruLogo.png" alt="Homework Guru" style={{ height: "36px", width: "auto", objectFit: "contain" }} />
           <Link
             href="/"
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all hover:-translate-y-0.5"
