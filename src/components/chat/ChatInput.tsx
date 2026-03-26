@@ -112,7 +112,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
 
       let accumulated = accumulatedText
 
-      recognition.onstart = () => setIsListening(true)
+      recognition.onstart = () => { setIsListening(true); setMicError(null) }
 
       recognition.onresult = (event: ISpeechRecognitionEvent) => {
         let interim = ""
@@ -140,15 +140,11 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
 
       recognition.onerror = (event) => {
         recognitionRef.current = null
+        setMicError(`Error: ${event.error}`)
         const fatal = event.error === "not-allowed" || event.error === "audio-capture"
         if (fatal) {
           shouldListenRef.current = false
           setIsListening(false)
-          setMicError(
-            event.error === "not-allowed"
-              ? "Microphone permission denied"
-              : "Could not access microphone"
-          )
         } else if (shouldListenRef.current) {
           setTimeout(() => startRecognition(accumulated, onTextChange), 300)
         } else {
