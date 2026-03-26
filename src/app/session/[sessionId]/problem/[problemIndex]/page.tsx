@@ -1,8 +1,9 @@
 "use client"
 
 import { useEffect, useState, useRef, useCallback } from "react"
-import { useParams } from "next/navigation"
-import { loadSession } from "@/lib/session-storage"
+import { useParams, useRouter } from "next/navigation"
+import { loadSession } from "@/lib/firestore"
+import { useAuth } from "@/contexts/AuthContext"
 import { ProblemStatement } from "@/components/chat/ProblemStatement"
 import { ChatInterface } from "@/components/chat/ChatInterface"
 import { Calculator } from "@/components/ui/Calculator"
@@ -12,8 +13,10 @@ import type { HomeworkSession } from "@/types"
 
 export default function ProblemPage() {
   const params = useParams()
+  const router = useRouter()
   const sessionId = params.sessionId as string
   const problemIndex = parseInt(params.problemIndex as string, 10)
+  const { user, loading: authLoading } = useAuth()
   const [session, setSession] = useState<HomeworkSession | null>(null)
   const [notFound, setNotFound] = useState(false)
   const [showCalculator, setShowCalculator] = useState(false)
@@ -29,9 +32,12 @@ export default function ProblemPage() {
   const resizeStart = useRef({ mouseX: 0, startW: 0 })
 
   useEffect(() => {
-    const s = loadSession(sessionId)
-    if (s && s.problems[problemIndex]) { setSession(s) } else { setNotFound(true) }
-  }, [sessionId, problemIndex])
+    if (!authLoading && !user) { router.replace("/login"); return }
+    if (!user) return
+    loadSession(user.uid, sessionId).then((s) => {
+      if (s && s.problems[problemIndex]) { setSession(s) } else { setNotFound(true) }
+    })
+  }, [sessionId, problemIndex, user, authLoading, router])
 
   const onMouseDown = useCallback((e: React.MouseEvent) => {
     dragging.current = true

@@ -1,8 +1,9 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useParams } from "next/navigation"
-import { loadSession } from "@/lib/session-storage"
+import { useParams, useRouter } from "next/navigation"
+import { loadSession } from "@/lib/firestore"
+import { useAuth } from "@/contexts/AuthContext"
 import { SessionHeader } from "@/components/session/SessionHeader"
 import { ProblemCard } from "@/components/session/ProblemCard"
 import Link from "next/link"
@@ -25,15 +26,20 @@ function HomeButton() {
 
 export default function SessionPage() {
   const params = useParams()
+  const router = useRouter()
   const sessionId = params.sessionId as string
+  const { user, loading: authLoading } = useAuth()
   const [session, setSession] = useState<HomeworkSession | null>(null)
   const [notFound, setNotFound] = useState(false)
   const [imageExpanded, setImageExpanded] = useState(false)
 
   useEffect(() => {
-    const s = loadSession(sessionId)
-    if (s) { setSession(s) } else { setNotFound(true) }
-  }, [sessionId])
+    if (!authLoading && !user) { router.replace("/login"); return }
+    if (!user) return
+    loadSession(user.uid, sessionId).then((s) => {
+      if (s) { setSession(s) } else { setNotFound(true) }
+    })
+  }, [sessionId, user, authLoading, router])
 
   if (notFound) {
     return (

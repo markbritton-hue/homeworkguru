@@ -6,7 +6,8 @@ import Link from "next/link"
 import { UploadZone } from "@/components/upload/UploadZone"
 import { ImagePreview } from "@/components/upload/ImagePreview"
 import { compressImage } from "@/lib/image-utils"
-import { saveSession, listSessions, loadSession, deleteSession } from "@/lib/session-storage"
+import { saveSession, listSessions, deleteSession } from "@/lib/firestore"
+import { useAuth } from "@/contexts/AuthContext"
 import type { HomeworkSession } from "@/types"
 
 type MimeType = "image/jpeg" | "image/png" | "image/webp" | "image/gif"
@@ -14,6 +15,7 @@ interface ImageEntry { dataUrl: string; mimeType: MimeType }
 
 export default function HomePage() {
   const router = useRouter()
+  const { user, loading: authLoading, signOut } = useAuth()
   const [images, setImages] = useState<ImageEntry[]>([])
   const [isParsing, setIsParsing] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -22,17 +24,25 @@ export default function HomePage() {
   const [assignmentName, setAssignmentName] = useState("")
   const [showWelcome, setShowWelcome] = useState(false)
 
+  // Redirect to login if not authenticated
   useEffect(() => {
-    const ids = listSessions()
-    const loaded = ids.map((id) => loadSession(id)).filter(Boolean) as HomeworkSession[]
-    loaded.sort((a, b) => b.createdAt - a.createdAt)
-    setSessions(loaded)
-    setShowUpload(loaded.length === 0)
-    if (loaded.length === 0) {
-      const seen = localStorage.getItem("welcome_seen")
-      if (!seen) setShowWelcome(true)
-    }
-  }, [])
+    if (!authLoading && !user) router.replace("/login")
+  }, [user, authLoading, router])
+
+  useEffect(() => {
+    if (!user) return
+    listSessions(user.uid).then((loaded) => {
+      loaded.sort((a, b) => b.createdAt - a.createdAt)
+      setSessions(loaded)
+      setShowUpload(loaded.length === 0)
+      if (loaded.length === 0) {
+        try {
+          const seen = localStorage.getItem("welcome_seen")
+          if (!seen) setShowWelcome(true)
+        } catch {}
+      }
+    })
+  }, [user])
 
   const handleImageSelected = (dataUrl: string, mimeType: MimeType) => {
     setImages([{ dataUrl, mimeType }]); setError(null)
@@ -47,7 +57,7 @@ export default function HomePage() {
   }
 
   const handleParse = async () => {
-    if (images.length === 0) return
+    if (images.length === 0 || !user) return
     setIsParsing(true); setError(null)
     try {
       const response = await fetch("/api/parse-homework", {
@@ -60,14 +70,15 @@ export default function HomePage() {
       const compressedUrls = await Promise.all(images.map((img) => compressImage(img.dataUrl)))
       const subjects = [...new Set(data.problems.map((p: { subject: string }) => p.subject))] as string[]
       const autoName = assignmentName.trim() || `${subjects.slice(0, 2).join(" & ")} — ${new Date().toLocaleDateString()}`
+      const sessionId = crypto.randomUUID()
       const session: HomeworkSession = {
-        sessionId: crypto.randomUUID(), name: autoName, createdAt: Date.now(),
-        imageDataUrls: compressedUrls,
+        sessionId, name: autoName, createdAt: Date.now(),
+        imageDataUrls: [],
         problems: data.problems.map((p: { index: number; text: string; subject: string }) => ({ ...p, status: "not_started" as const })),
         chatHistory: {},
       }
-      saveSession(session)
-      router.push(`/session/${session.sessionId}`)
+      await saveSession(user.uid, session, compressedUrls)
+      router.push(`/session/${sessionId}`)
     } catch {
       setError("Something went wrong. Please check your connection and try again.")
     } finally {
@@ -94,7 +105,8 @@ export default function HomePage() {
 
   const handleDelete = (sessionId: string, e: React.MouseEvent) => {
     e.preventDefault(); e.stopPropagation()
-    deleteSession(sessionId)
+    if (!user) return
+    deleteSession(user.uid, sessionId)
     setSessions((prev) => prev.filter((s) => s.sessionId !== sessionId))
   }
 
@@ -102,14 +114,30 @@ export default function HomePage() {
 
   const solvedCount = (s: HomeworkSession) => s.problems.filter((p) => p.status === "solved").length
 
+  if (authLoading || !user) return (
+    <main className="min-h-screen flex items-center justify-center">
+      <p className="text-sm" style={{ color: "rgba(255,255,255,0.4)" }}>Loading…</p>
+    </main>
+  )
+
   return (
     <main className="min-h-screen px-4 py-10">
       <div className="max-w-2xl mx-auto">
 
         {/* Header */}
-        <div className="flex items-center justify-center mb-2">
+        <div className="relative flex items-center justify-center mb-2">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/HomeworkguruLogo.png" alt="Homework Guru" style={{ width: "180px", height: "180px", objectFit: "contain" }} />
+          <button
+            onClick={signOut}
+            className="absolute right-0 top-1/2 -translate-y-1/2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all hover:-translate-y-0.5"
+            style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--muted)" }}
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            Sign Out
+          </button>
         </div>
 
         {/* Upload panel */}

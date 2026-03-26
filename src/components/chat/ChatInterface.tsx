@@ -5,7 +5,8 @@ import { ChatMessage } from "./ChatMessage"
 import { ChatInput, type ChatInputHandle } from "./ChatInput"
 import { LoadingDots } from "@/components/ui/LoadingDots"
 import { CompletionBanner } from "./CompletionBanner"
-import { appendChatMessage, loadSession, updateProblemStatus } from "@/lib/session-storage"
+import { appendChatMessage, loadSession, updateProblemStatus } from "@/lib/firestore"
+import { useAuth } from "@/contexts/AuthContext"
 import { INITIAL_USER_MESSAGE } from "@/lib/prompts"
 import type { ChatMessage as ChatMessageType, HomeworkSession, Problem } from "@/types"
 
@@ -18,6 +19,7 @@ interface ChatInterfaceProps {
 }
 
 export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInterfaceProps) {
+  const { user } = useAuth()
   const [session, setSession] = useState<HomeworkSession | null>(null)
   const [messages, setMessages] = useState<ChatMessageType[]>([])
   const [input, setInput] = useState("")
@@ -54,7 +56,7 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
 
   const sendMessage = useCallback(
     async (userText: string, isInitial = false) => {
-      if (!session) return
+      if (!session || !user) return
 
       const problem = session.problems[problemIndex]
       const userMsg: ChatMessageType = {
@@ -69,7 +71,7 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
       if (!isInitial) {
         updatedMessages.push(userMsg)
         setMessages(updatedMessages)
-        appendChatMessage(sessionId, problemIndex, userMsg)
+        appendChatMessage(user.uid, sessionId, problemIndex, userMsg)
       }
 
       setIsLoading(true)
@@ -137,13 +139,13 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
           content: finalContent,
           timestamp: Date.now(),
         }
-        appendChatMessage(sessionId, problemIndex, finalAiMsg)
+        appendChatMessage(user.uid, sessionId, problemIndex, finalAiMsg)
 
         if (solved) {
-          updateProblemStatus(sessionId, problemIndex, "solved")
+          updateProblemStatus(user.uid, sessionId, problemIndex, "solved")
           setIsSolved(true)
           // Refresh session
-          const updated = loadSession(sessionId)
+          const updated = await loadSession(user.uid, sessionId)
           if (updated) setSession(updated)
         }
       } catch (err) {
@@ -159,32 +161,33 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
         setIsLoading(false)
       }
     },
-    [session, messages, sessionId, problemIndex]
+    [session, messages, sessionId, problemIndex, user]
   )
 
   // Load session and init chat
   useEffect(() => {
-    if (initialized.current) return
+    if (initialized.current || !user) return
     initialized.current = true
 
-    const s = loadSession(sessionId)
-    if (!s) return
-    setSession(s)
+    loadSession(user.uid, sessionId).then((s) => {
+      if (!s) return
+      setSession(s)
 
-    const existing = s.chatHistory[problemIndex] || []
-    const visible = existing.filter((m) => !m.isInitial)
-    setMessages(visible)
+      const existing = s.chatHistory[problemIndex] || []
+      const visible = existing.filter((m) => !m.isInitial)
+      setMessages(visible)
 
-    const alreadySolved = s.problems[problemIndex]?.status === "solved"
-    setIsSolved(alreadySolved)
+      const alreadySolved = s.problems[problemIndex]?.status === "solved"
+      setIsSolved(alreadySolved)
 
-    if (existing.length === 0 && !alreadySolved) {
-      updateProblemStatus(sessionId, problemIndex, "in_progress")
-      sendMessage(INITIAL_USER_MESSAGE, true)
-    } else if (!alreadySolved && s.problems[problemIndex]?.status === "not_started") {
-      updateProblemStatus(sessionId, problemIndex, "in_progress")
-    }
-  }, [sessionId, problemIndex, sendMessage])
+      if (existing.length === 0 && !alreadySolved) {
+        updateProblemStatus(user.uid, sessionId, problemIndex, "in_progress")
+        sendMessage(INITIAL_USER_MESSAGE, true)
+      } else if (!alreadySolved && s.problems[problemIndex]?.status === "not_started") {
+        updateProblemStatus(user.uid, sessionId, problemIndex, "in_progress")
+      }
+    })
+  }, [sessionId, problemIndex, sendMessage, user])
 
   const handleSubmit = () => {
     const text = input.trim()
