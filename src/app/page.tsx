@@ -102,7 +102,7 @@ export default function HomePage() {
       <div className="max-w-2xl mx-auto">
 
         {/* Header */}
-        <div className="flex items-center justify-center mb-8">
+        <div className="flex items-center justify-center mb-2">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/HomeworkguruLogo.png" alt="Homework Guru" style={{ width: "180px", height: "180px", objectFit: "contain" }} />
         </div>
