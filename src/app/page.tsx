@@ -291,9 +291,18 @@ export default function HomePage() {
 
         {/* How it works */}
         <div className="mt-10 pb-10">
-          <p className="text-xs font-semibold mb-4 px-1" style={{ color: "var(--muted)" }}>How It Works</p>
-          <div className="rounded-2xl p-6 space-y-5"
+          <div className="rounded-2xl overflow-hidden"
             style={{ background: "rgba(15,30,60,0.85)", border: "1px solid rgba(96,165,250,0.2)", boxShadow: "0 8px 20px rgba(0,0,0,0.4)", backdropFilter: "blur(10px)" }}>
+
+            {/* Panel header */}
+            <div className="px-6 py-4" style={{ borderBottom: "1px solid rgba(96,165,250,0.2)", background: "rgba(96,165,250,0.08)" }}>
+              <h2 className="text-xl font-bold" style={{
+                background: "linear-gradient(135deg, var(--accent), var(--accent2))",
+                WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+              }}>How It Works</h2>
+            </div>
+
+          <div className="p-6 space-y-5">
             {[
               {
                 step: "1",
@@ -326,13 +335,13 @@ export default function HomePage() {
                   {step}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: "var(--accent)" }}>
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: "var(--accent)" }}>
                       {icon}
                     </svg>
-                    <p className="text-sm font-semibold" style={{ color: "var(--text)" }}>{title}</p>
+                    <p className="text-base font-semibold" style={{ color: "var(--text)" }}>{title}</p>
                   </div>
-                  <p className="text-xs leading-relaxed" style={{ color: "var(--muted)" }}>{desc}</p>
+                  <p className="text-sm leading-relaxed" style={{ color: "var(--muted)" }}>{desc}</p>
                 </div>
               </div>
             ))}
@@ -353,6 +362,7 @@ export default function HomePage() {
                 ))}
               </div>
             </div>
+          </div>
           </div>
         </div>
       </div>
