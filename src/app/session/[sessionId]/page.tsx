@@ -6,6 +6,7 @@ import { loadSession } from "@/lib/session-storage"
 import { SessionHeader } from "@/components/session/SessionHeader"
 import { ProblemCard } from "@/components/session/ProblemCard"
 import Link from "next/link"
+import { Calculator } from "@/components/ui/Calculator"
 import type { HomeworkSession } from "@/types"
 
 function HomeButton() {
@@ -29,6 +30,7 @@ export default function SessionPage() {
   const [session, setSession] = useState<HomeworkSession | null>(null)
   const [notFound, setNotFound] = useState(false)
   const [imageExpanded, setImageExpanded] = useState(false)
+  const [showCalculator, setShowCalculator] = useState(false)
 
   useEffect(() => {
     const s = loadSession(sessionId)
@@ -63,6 +65,21 @@ export default function SessionPage() {
         {/* Header */}
         <div className="flex items-center gap-3 mb-6">
           <HomeButton />
+          <button
+            onClick={() => setShowCalculator((v) => !v)}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold transition-all hover:-translate-y-0.5 flex-shrink-0"
+            style={{
+              background: showCalculator ? "var(--accent)" : "var(--surface)",
+              border: `1px solid ${showCalculator ? "var(--accent)" : "var(--border)"}`,
+              color: showCalculator ? "#fff" : "var(--accent)",
+              boxShadow: showCalculator ? "0 4px 12px rgba(96,165,250,0.4)" : "0 2px 8px rgba(0,0,0,0.3)",
+            }}
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 11h.01M12 11h.01M15 11h.01M4 5h16a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V7a2 2 0 012-2z" />
+            </svg>
+            Calc
+          </button>
           <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
             style={{ background: "var(--accent)", boxShadow: "0 0 16px rgba(96,165,250,0.4)" }}>
             <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -163,6 +180,8 @@ export default function SessionPage() {
         )}
 
       </div>
+
+      {showCalculator && <Calculator onClose={() => setShowCalculator(false)} />}
     </main>
   )
 }
