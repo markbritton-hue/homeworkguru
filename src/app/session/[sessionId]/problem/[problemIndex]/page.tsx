@@ -21,7 +21,7 @@ export default function ProblemPage() {
   const [pasteValue, setPasteValue] = useState("")
 
   // Draggable float position + size
-  const [pos, setPos] = useState({ x: 12, y: 200 })
+  const [pos, setPos] = useState({ x: 12, y: 80 })
   const [width, setWidth] = useState(200)
   const dragging = useRef(false)
   const dragOffset = useRef({ x: 0, y: 0 })
