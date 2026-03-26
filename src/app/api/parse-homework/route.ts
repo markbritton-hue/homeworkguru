@@ -14,21 +14,25 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 })
   }
 
-  const { imageBase64, mimeType } = body
+  const { images } = body
 
-  if (!imageBase64 || !mimeType) {
-    return NextResponse.json({ error: "imageBase64 and mimeType are required" }, { status: 400 })
+  if (!images || !Array.isArray(images) || images.length === 0) {
+    return NextResponse.json({ error: "At least one image is required" }, { status: 400 })
   }
 
-  if (!ALLOWED_MIME_TYPES.includes(mimeType)) {
-    return NextResponse.json({ error: "Unsupported image type" }, { status: 400 })
+  for (const img of images) {
+    if (!ALLOWED_MIME_TYPES.includes(img.mimeType)) {
+      return NextResponse.json({ error: "Unsupported image type" }, { status: 400 })
+    }
   }
 
-  const rawBase64 = stripDataUrlPrefix(imageBase64)
-
-  if (!rawBase64 || rawBase64.length < 100) {
-    return NextResponse.json({ error: "Invalid image data" }, { status: 400 })
-  }
+  const imageBlocks = images.map((img) => {
+    const raw = stripDataUrlPrefix(img.imageBase64)
+    return {
+      type: "image" as const,
+      source: { type: "base64" as const, media_type: img.mimeType, data: raw },
+    }
+  })
 
   try {
     const response = await anthropic.messages.create({
@@ -38,10 +42,7 @@ export async function POST(req: NextRequest) {
         {
           role: "user",
           content: [
-            {
-              type: "image",
-              source: { type: "base64", media_type: mimeType, data: rawBase64 },
-            },
+            ...imageBlocks,
             { type: "text", text: PARSE_HOMEWORK_PROMPT },
           ],
         },

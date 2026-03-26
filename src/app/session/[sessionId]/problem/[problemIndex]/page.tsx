@@ -62,7 +62,7 @@ export default function ProblemPage() {
       />
 
       {/* Collapsible homework image */}
-      {session.imageDataUrl && (
+      {session.imageDataUrls.length > 0 && (
         <div style={{ borderBottom: "1px solid var(--border)", background: "var(--surface)", backdropFilter: "blur(10px)" }}>
           <button
             onClick={() => { setImageExpanded((v) => !v); setZoom(1) }}
@@ -114,12 +114,21 @@ export default function ProblemPage() {
               </div>
 
               <div className="overflow-auto" style={{ maxHeight: "420px", background: "var(--input-bg)" }}>
-                <div className="flex items-start justify-center p-2"
-                  style={{ minWidth: zoom > 1 ? `${zoom * 100}%` : "100%" }}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={session.imageDataUrl} alt="Homework sheet"
-                    style={{ transform: `scale(${zoom})`, transformOrigin: "top center", width: "100%", transition: "transform 0.15s ease" }} />
-                </div>
+                {session.imageDataUrls.map((url, i) => (
+                  <div key={i}>
+                    {session.imageDataUrls.length > 1 && (
+                      <p className="text-xs font-semibold px-3 py-1" style={{ color: "var(--muted)", borderBottom: "1px solid var(--border)" }}>
+                        Page {i + 1}
+                      </p>
+                    )}
+                    <div className="flex items-start justify-center p-2"
+                      style={{ minWidth: zoom > 1 ? `${zoom * 100}%` : "100%" }}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={url} alt={`Homework page ${i + 1}`}
+                        style={{ transform: `scale(${zoom})`, transformOrigin: "top center", width: "100%", transition: "transform 0.15s ease" }} />
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           )}

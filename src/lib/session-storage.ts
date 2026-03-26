@@ -20,13 +20,18 @@ export function loadSession(sessionId: string): HomeworkSession | null {
   try {
     const raw = localStorage.getItem(PREFIX + sessionId)
     if (!raw) return null
-    const session = JSON.parse(raw) as HomeworkSession
+    const session = JSON.parse(raw) as HomeworkSession & { imageDataUrl?: string }
     // backfill name for older sessions that didn't have one
     if (!session.name) {
       const subjects = [...new Set(session.problems.map((p) => p.subject))]
       session.name = subjects.slice(0, 2).join(" & ") || "Homework"
     }
-    return session
+    // backfill imageDataUrls for older single-image sessions
+    if (!session.imageDataUrls && session.imageDataUrl) {
+      session.imageDataUrls = [session.imageDataUrl]
+    }
+    if (!session.imageDataUrls) session.imageDataUrls = []
+    return session as HomeworkSession
   } catch {
     return null
   }

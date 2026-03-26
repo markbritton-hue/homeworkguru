@@ -9,10 +9,12 @@ import { compressImage } from "@/lib/image-utils"
 import { saveSession, listSessions, loadSession, deleteSession } from "@/lib/session-storage"
 import type { HomeworkSession } from "@/types"
 
+type MimeType = "image/jpeg" | "image/png" | "image/webp" | "image/gif"
+interface ImageEntry { dataUrl: string; mimeType: MimeType }
+
 export default function HomePage() {
   const router = useRouter()
-  const [imageDataUrl, setImageDataUrl] = useState<string | null>(null)
-  const [mimeType, setMimeType] = useState<"image/jpeg" | "image/png" | "image/webp" | "image/gif">("image/jpeg")
+  const [images, setImages] = useState<ImageEntry[]>([])
   const [isParsing, setIsParsing] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [sessions, setSessions] = useState<HomeworkSession[]>([])
@@ -27,27 +29,35 @@ export default function HomePage() {
     setShowUpload(loaded.length === 0)
   }, [])
 
-  const handleImageSelected = (dataUrl: string, mime: typeof mimeType) => {
-    setImageDataUrl(dataUrl); setMimeType(mime); setError(null)
+  const handleImageSelected = (dataUrl: string, mimeType: MimeType) => {
+    setImages([{ dataUrl, mimeType }]); setError(null)
+  }
+
+  const handleAddMore = (dataUrl: string, mimeType: MimeType) => {
+    setImages((prev) => [...prev, { dataUrl, mimeType }]); setError(null)
+  }
+
+  const handleRemove = (index: number) => {
+    setImages((prev) => prev.filter((_, i) => i !== index))
   }
 
   const handleParse = async () => {
-    if (!imageDataUrl) return
+    if (images.length === 0) return
     setIsParsing(true); setError(null)
     try {
       const response = await fetch("/api/parse-homework", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageBase64: imageDataUrl, mimeType }),
+        body: JSON.stringify({ images: images.map((img) => ({ imageBase64: img.dataUrl, mimeType: img.mimeType })) }),
       })
       const data = await response.json()
       if (!response.ok) { setError(data.error || "Failed to read homework. Please try again."); return }
-      const compressed = await compressImage(imageDataUrl)
+      const compressedUrls = await Promise.all(images.map((img) => compressImage(img.dataUrl)))
       const subjects = [...new Set(data.problems.map((p: { subject: string }) => p.subject))] as string[]
       const autoName = assignmentName.trim() || `${subjects.slice(0, 2).join(" & ")} — ${new Date().toLocaleDateString()}`
       const session: HomeworkSession = {
         sessionId: crypto.randomUUID(), name: autoName, createdAt: Date.now(),
-        imageDataUrl: compressed,
+        imageDataUrls: compressedUrls,
         problems: data.problems.map((p: { index: number; text: string; subject: string }) => ({ ...p, status: "not_started" as const })),
         chatHistory: {},
       }
@@ -112,7 +122,7 @@ export default function HomePage() {
             <div className="flex items-center justify-between mb-5">
               <h2 className="font-bold text-lg" style={{ color: "var(--text)" }}>New Assignment</h2>
               {sessions.length > 0 && (
-                <button onClick={() => { setShowUpload(false); setImageDataUrl(null); setError(null) }}
+                <button onClick={() => { setShowUpload(false); setImages([]); setError(null) }}
                   className="transition-opacity hover:opacity-70" style={{ color: "var(--muted)" }}>
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -136,8 +146,8 @@ export default function HomePage() {
               onBlur={e => { e.currentTarget.style.borderColor = "rgba(96,165,250,0.3)"; e.currentTarget.style.boxShadow = "" }}
             />
 
-            {imageDataUrl ? (
-              <ImagePreview dataUrl={imageDataUrl} onClear={() => { setImageDataUrl(null); setError(null) }} onParse={handleParse} isParsing={isParsing} />
+            {images.length > 0 ? (
+              <ImagePreview images={images} onRemove={handleRemove} onAddMore={handleAddMore} onParse={handleParse} isParsing={isParsing} />
             ) : (
               <UploadZone onImageSelected={handleImageSelected} />
             )}

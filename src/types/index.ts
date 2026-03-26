@@ -19,14 +19,13 @@ export interface HomeworkSession {
   sessionId: string
   name: string
   createdAt: number
-  imageDataUrl: string
+  imageDataUrls: string[]
   problems: Problem[]
   chatHistory: Record<number, ChatMessage[]>
 }
 
 export interface ParseHomeworkRequest {
-  imageBase64: string
-  mimeType: "image/jpeg" | "image/png" | "image/webp" | "image/gif"
+  images: Array<{ imageBase64: string; mimeType: "image/jpeg" | "image/png" | "image/webp" | "image/gif" }>
 }
 
 export interface ParsedProblem {
