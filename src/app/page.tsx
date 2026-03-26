@@ -38,10 +38,9 @@ function HomePageInner() {
       setSessions(loaded)
 
       const isDemo = searchParams.get("demo") === "1"
-      if (isDemo && !demoTriggered.current) {
+      if (isDemo && !demoTriggered.current && loaded.length === 0) {
         demoTriggered.current = true
-        setShowUpload(true)
-        handleDemo()
+        autoOnboard(user.uid)
         return
       }
 
