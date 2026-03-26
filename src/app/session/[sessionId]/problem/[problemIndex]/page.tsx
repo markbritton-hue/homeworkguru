@@ -5,6 +5,7 @@ import { useParams } from "next/navigation"
 import { loadSession } from "@/lib/session-storage"
 import { ProblemStatement } from "@/components/chat/ProblemStatement"
 import { ChatInterface } from "@/components/chat/ChatInterface"
+import { Calculator } from "@/components/ui/Calculator"
 import Link from "next/link"
 import type { HomeworkSession } from "@/types"
 
@@ -20,6 +21,7 @@ export default function ProblemPage() {
   const [notFound, setNotFound] = useState(false)
   const [imageExpanded, setImageExpanded] = useState(false)
   const [zoom, setZoom] = useState(1)
+  const [showCalculator, setShowCalculator] = useState(false)
 
   useEffect(() => {
     const s = loadSession(sessionId)
@@ -136,6 +138,26 @@ export default function ProblemPage() {
       )}
 
       <ChatInterface sessionId={sessionId} problemIndex={problemIndex} />
+
+      {/* Floating calculator button */}
+      <button
+        onClick={() => setShowCalculator((v) => !v)}
+        className="fixed bottom-20 right-4 z-40 w-11 h-11 rounded-full flex items-center justify-center transition-all hover:-translate-y-0.5"
+        style={{
+          background: showCalculator ? "var(--accent)" : "var(--surface)",
+          border: `1px solid ${showCalculator ? "var(--accent)" : "var(--border)"}`,
+          color: showCalculator ? "#fff" : "var(--accent)",
+          boxShadow: showCalculator ? "0 4px 16px rgba(96,165,250,0.5)" : "0 4px 12px rgba(0,0,0,0.4)",
+          backdropFilter: "blur(10px)",
+        }}
+        aria-label="Toggle calculator"
+      >
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 11h.01M12 11h.01M15 11h.01M4 5h16a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V7a2 2 0 012-2z" />
+        </svg>
+      </button>
+
+      {showCalculator && <Calculator onClose={() => setShowCalculator(false)} />}
     </main>
   )
 }
