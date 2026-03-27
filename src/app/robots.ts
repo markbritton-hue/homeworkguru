@@ -6,6 +6,6 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: "*",
       allow: "/",
     },
-    sitemap: "https://homeworkguru.vercel.app/sitemap.xml",
+    sitemap: "https://homeworkguru.streamwaveprod.com/sitemap.xml",
   }
 }
