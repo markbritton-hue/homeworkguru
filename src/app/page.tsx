@@ -36,11 +36,12 @@ function LandingPage() {
             Sorry, we don&apos;t just give out answers
           </p>
           <div className="flex flex-wrap gap-3 justify-center">
-            <Link href="/login"
+            <Link href="/login?mode=signup"
               className="px-8 py-3 rounded-full text-base font-bold text-white transition-all hover:-translate-y-0.5"
               style={{ background: "linear-gradient(135deg, #60a5fa, #818cf8)", boxShadow: "0 4px 20px rgba(96,165,250,0.4)" }}>
               Get Started Free
             </Link>
+
             <Link href="/demo"
               className="px-8 py-3 rounded-full text-base font-semibold transition-all hover:-translate-y-0.5"
               style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.2)", color: "rgba(255,255,255,0.8)" }}>
@@ -122,7 +123,7 @@ function LandingPage() {
         <div className="text-center">
           <h2 className="text-2xl font-bold mb-3" style={{ color: "var(--text)" }}>Ready to get started?</h2>
           <p className="text-sm mb-6" style={{ color: "var(--muted)" }}>Free to use. No credit card required.</p>
-          <Link href="/login"
+          <Link href="/login?mode=signup"
             className="inline-block px-10 py-3 rounded-full text-base font-bold text-white transition-all hover:-translate-y-0.5"
             style={{ background: "linear-gradient(135deg, #60a5fa, #818cf8)", boxShadow: "0 4px 20px rgba(96,165,250,0.4)" }}>
             Create a Free Account
@@ -438,6 +439,19 @@ function HomePageInner() {
             {/* Assignments list */}
             {sessions.length > 0 && (
               <div>
+                {/* Demo hint badge */}
+                {user.isAnonymous && (
+                  <div className="mb-3 flex items-center gap-2 px-4 py-3 rounded-2xl animate-pulse"
+                    style={{ background: "rgba(96,165,250,0.1)", border: "1px solid rgba(96,165,250,0.4)" }}>
+                    <span className="relative flex-shrink-0">
+                      <span className="animate-ping absolute inline-flex h-3 w-3 rounded-full opacity-75" style={{ background: "#60a5fa" }} />
+                      <span className="relative inline-flex rounded-full h-3 w-3" style={{ background: "#60a5fa" }} />
+                    </span>
+                    <p className="text-sm font-semibold" style={{ color: "#93c5fd" }}>
+                      👆 Tap the demo assignment below to see your problems
+                    </p>
+                  </div>
+                )}
                 <div className="rounded-2xl overflow-hidden mb-3"
                   style={{ background: "rgba(15,30,60,0.85)", border: "1px solid rgba(96,165,250,0.2)", boxShadow: "0 8px 20px rgba(0,0,0,0.4)", backdropFilter: "blur(10px)" }}>
                   <div className="px-6 py-4 flex items-center justify-between" style={{ background: "rgba(96,165,250,0.08)" }}>
