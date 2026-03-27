@@ -15,8 +15,28 @@ interface ImageEntry { dataUrl: string; mimeType: MimeType }
 
 function LandingPage() {
   return (
-    <main className="min-h-screen px-4 py-10"
+    <main className="min-h-screen px-4 py-10 relative overflow-hidden"
       style={{ background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)" }}>
+
+      {/* Washed-out background logo */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/HomeworkguruLogo.png"
+        alt=""
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: "90vmin",
+          height: "90vmin",
+          objectFit: "contain",
+          opacity: 0.04,
+          pointerEvents: "none",
+          userSelect: "none",
+        }}
+      />
       <div className="max-w-5xl mx-auto">
 
         {/* Hero */}
