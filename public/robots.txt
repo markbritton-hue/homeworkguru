@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /session/
+Disallow: /api/
+
+Sitemap: https://www.homeworkguru.app/sitemap.xml

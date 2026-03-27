@@ -13,6 +13,121 @@ import type { HomeworkSession } from "@/types"
 type MimeType = "image/jpeg" | "image/png" | "image/webp" | "image/gif"
 interface ImageEntry { dataUrl: string; mimeType: MimeType }
 
+function LandingPage() {
+  return (
+    <main className="min-h-screen px-4 py-10"
+      style={{ background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)" }}>
+      <div className="max-w-5xl mx-auto">
+
+        {/* Hero */}
+        <div className="text-center mb-16">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/HomeworkguruLogo.png" alt="Homework Guru" className="mx-auto mb-6" style={{ width: "200px", height: "200px", objectFit: "contain" }} />
+          <h1 className="text-4xl font-extrabold mb-4" style={{
+            background: "linear-gradient(135deg, #60a5fa, #818cf8)",
+            WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+          }}>
+            Your Personal AI Homework Tutor
+          </h1>
+          <p className="text-lg max-w-xl mx-auto mb-2" style={{ color: "rgba(255,255,255,0.7)" }}>
+            Upload a photo of any homework sheet and get guided through every problem — with hints and questions, not just answers.
+          </p>
+          <p className="text-sm mb-8" style={{ color: "rgba(255,255,255,0.4)" }}>
+            Sorry, we don&apos;t just give out answers
+          </p>
+          <div className="flex flex-wrap gap-3 justify-center">
+            <Link href="/login"
+              className="px-8 py-3 rounded-full text-base font-bold text-white transition-all hover:-translate-y-0.5"
+              style={{ background: "linear-gradient(135deg, #60a5fa, #818cf8)", boxShadow: "0 4px 20px rgba(96,165,250,0.4)" }}>
+              Get Started Free
+            </Link>
+            <Link href="/login"
+              className="px-8 py-3 rounded-full text-base font-semibold transition-all hover:-translate-y-0.5"
+              style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.2)", color: "rgba(255,255,255,0.8)" }}>
+              Try a Demo
+            </Link>
+          </div>
+        </div>
+
+        {/* Features grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-16">
+          {[
+            {
+              icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />,
+              title: "Upload Any Homework",
+              desc: "Take a photo or upload an image of any worksheet. Maths, science, English — our AI reads it all.",
+            },
+            {
+              icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />,
+              title: "Guided, Not Spoon-Fed",
+              desc: "Your tutor asks questions and gives hints so you actually understand — not just copy an answer.",
+            },
+            {
+              icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />,
+              title: "Track Your Progress",
+              desc: "Every problem is tracked. See exactly how far through each assignment you are at a glance.",
+            },
+          ].map(({ icon, title, desc }) => (
+            <div key={title} className="rounded-2xl p-6"
+              style={{ background: "rgba(30,41,59,0.6)", border: "1px solid rgba(96,165,250,0.15)", backdropFilter: "blur(10px)" }}>
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-4"
+                style={{ background: "rgba(96,165,250,0.1)", border: "1px solid rgba(96,165,250,0.2)" }}>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: "#60a5fa" }}>
+                  {icon}
+                </svg>
+              </div>
+              <h2 className="text-base font-bold mb-2" style={{ color: "var(--text)" }}>{title}</h2>
+              <p className="text-sm leading-relaxed" style={{ color: "var(--muted)" }}>{desc}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* How it works */}
+        <div className="rounded-2xl overflow-hidden mb-16"
+          style={{ background: "rgba(30,15,5,0.9)", border: "1px solid rgba(251,146,60,0.3)", boxShadow: "0 8px 20px rgba(0,0,0,0.4)" }}>
+          <div className="px-6 py-4" style={{ borderBottom: "1px solid rgba(251,146,60,0.25)", background: "rgba(251,146,60,0.1)" }}>
+            <h2 className="text-xl font-bold" style={{
+              background: "linear-gradient(135deg, #fb923c, #f59e0b)",
+              WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+            }}>How It Works</h2>
+          </div>
+          <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[
+              { step: "1", title: "Upload your homework", desc: "Take a photo or upload an image of your worksheet." },
+              { step: "2", title: "AI finds every problem", desc: "Each question is extracted and identified automatically." },
+              { step: "3", title: "Chat with your tutor", desc: "Get guided hints — not just answers — so you actually learn." },
+              { step: "4", title: "Track your progress", desc: "Problems get marked solved as you work through them." },
+            ].map(({ step, title, desc }) => (
+              <div key={step} className="flex gap-4">
+                <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold"
+                  style={{ background: "rgba(251,146,60,0.15)", border: "1px solid rgba(251,146,60,0.3)", color: "#fb923c" }}>
+                  {step}
+                </div>
+                <div>
+                  <p className="text-sm font-semibold mb-0.5" style={{ color: "var(--text)" }}>{title}</p>
+                  <p className="text-sm" style={{ color: "var(--muted)" }}>{desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* CTA */}
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-3" style={{ color: "var(--text)" }}>Ready to get started?</h2>
+          <p className="text-sm mb-6" style={{ color: "var(--muted)" }}>Free to use. No credit card required.</p>
+          <Link href="/login"
+            className="inline-block px-10 py-3 rounded-full text-base font-bold text-white transition-all hover:-translate-y-0.5"
+            style={{ background: "linear-gradient(135deg, #60a5fa, #818cf8)", boxShadow: "0 4px 20px rgba(96,165,250,0.4)" }}>
+            Create a Free Account
+          </Link>
+        </div>
+
+      </div>
+    </main>
+  )
+}
+
 function HomePageInner() {
   const router = useRouter()
   const { user, loading: authLoading, signOut } = useAuth()
@@ -26,10 +141,7 @@ function HomePageInner() {
   const [assignmentName, setAssignmentName] = useState("")
   const [showWelcome, setShowWelcome] = useState(false)
 
-  // Redirect to login if not authenticated
-  useEffect(() => {
-    if (!authLoading && !user) router.replace("/login")
-  }, [user, authLoading, router])
+  // No redirect — logged-out users see the landing page instead
 
   const isDemo = searchParams.get("demo") === "1"
 
@@ -187,11 +299,13 @@ function HomePageInner() {
 
   const solvedCount = (s: HomeworkSession) => s.problems.filter((p) => p.status === "solved").length
 
-  if (authLoading || !user) return (
+  if (authLoading) return (
     <main className="min-h-screen flex items-center justify-center">
       <p className="text-sm" style={{ color: "rgba(255,255,255,0.4)" }}>Loading…</p>
     </main>
   )
+
+  if (!user) return <LandingPage />
 
   if (isParsing && sessions.length === 0 && !showUpload) return (
     <main className="min-h-screen flex flex-col items-center justify-center gap-4"
