@@ -41,7 +41,7 @@ function LandingPage() {
               style={{ background: "linear-gradient(135deg, #60a5fa, #818cf8)", boxShadow: "0 4px 20px rgba(96,165,250,0.4)" }}>
               Get Started Free
             </Link>
-            <Link href="/login"
+            <Link href="/demo"
               className="px-8 py-3 rounded-full text-base font-semibold transition-all hover:-translate-y-0.5"
               style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.2)", color: "rgba(255,255,255,0.8)" }}>
               Try a Demo
