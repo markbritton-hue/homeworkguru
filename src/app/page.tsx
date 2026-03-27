@@ -27,7 +27,7 @@ function LandingPage() {
             background: "linear-gradient(135deg, #60a5fa, #818cf8)",
             WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
           }}>
-            Your Personal AI Homework Tutor
+            Your Personal AI Homework Guru
           </h1>
           <p className="text-lg max-w-xl mx-auto mb-2" style={{ color: "rgba(255,255,255,0.7)" }}>
             Upload a photo of any homework sheet and get guided through every problem — with hints and questions, not just answers.
@@ -60,7 +60,7 @@ function LandingPage() {
             {
               icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />,
               title: "Guided, Not Spoon-Fed",
-              desc: "Your tutor asks questions and gives hints so you actually understand — not just copy an answer.",
+              desc: "Your guru asks questions and gives hints so you actually understand — not just copy an answer.",
             },
             {
               icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />,
@@ -95,7 +95,7 @@ function LandingPage() {
             {[
               { step: "1", title: "Upload your homework", desc: "Take a photo or upload an image of your worksheet." },
               { step: "2", title: "AI finds every problem", desc: "Each question is extracted and identified automatically." },
-              { step: "3", title: "Chat with your tutor", desc: "Get guided hints — not just answers — so you actually learn." },
+              { step: "3", title: "Chat with your guru", desc: "Get guided hints — not just answers — so you actually learn." },
               { step: "4", title: "Track your progress", desc: "Problems get marked solved as you work through them." },
             ].map(({ step, title, desc }) => (
               <div key={step} className="flex gap-4">
@@ -588,8 +588,8 @@ function HomePageInner() {
                   {
                     step: "3",
                     icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />,
-                    title: "Work With Your AI Tutor",
-                    desc: "Select any problem to open a chat with your personal tutor. It won't just give you the answer — it guides you with hints and questions so you actually learn.",
+                    title: "Work With Your AI Guru",
+                    desc: "Select any problem to open a chat with your personal guru. It won't just give you the answer — it guides you with hints and questions so you actually learn.",
                   },
                   {
                     step: "4",
@@ -648,7 +648,7 @@ function HomePageInner() {
                   {
                     date: "Mar 2025",
                     title: "Voice input",
-                    desc: "Speak your answers directly into the tutor chat — no typing needed.",
+                    desc: "Speak your answers directly into the guru chat — no typing needed.",
                   },
                   {
                     date: "Mar 2025",
@@ -692,7 +692,7 @@ function HomePageInner() {
             <div className="px-6 pt-8 pb-4 text-center">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/HomeworkguruLogo.png" alt="Homework Guru" className="mx-auto mb-4" style={{ height: "100px", objectFit: "contain" }} />
-              <p className="text-sm" style={{ color: "var(--muted)" }}>Your personal AI homework tutor</p>
+              <p className="text-sm" style={{ color: "var(--muted)" }}>Your personal AI homework guru</p>
             </div>
 
             {/* Steps */}
@@ -700,7 +700,7 @@ function HomePageInner() {
               {[
                 { step: "1", title: "Upload your homework", desc: "Take a photo or upload an image of your worksheet." },
                 { step: "2", title: "AI finds every problem", desc: "Each question is extracted and identified automatically." },
-                { step: "3", title: "Chat with your tutor", desc: "Get guided hints — not just answers — so you actually learn." },
+                { step: "3", title: "Chat with your guru", desc: "Get guided hints — not just answers — so you actually learn." },
                 { step: "4", title: "Track your progress", desc: "Problems get marked solved as you work through them." },
               ].map(({ step, title, desc }) => (
                 <div key={step} className="flex gap-3">

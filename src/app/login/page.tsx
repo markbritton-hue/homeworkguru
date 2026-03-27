@@ -72,7 +72,7 @@ export default function LoginPage() {
         <div className="text-center mb-8">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/HomeworkguruLogo.png" alt="Homework Guru" className="mx-auto" style={{ height: "180px", objectFit: "contain" }} />
-          <p className="text-sm mt-2" style={{ color: "rgba(255,255,255,0.5)" }}>Your personal AI homework tutor</p>
+          <p className="text-sm mt-2" style={{ color: "rgba(255,255,255,0.5)" }}>Your personal AI homework guru</p>
           <p className="text-xs mt-1" style={{ color: "rgba(255,255,255,0.35)" }}>Sorry, I don't just give out answers</p>
         </div>
 

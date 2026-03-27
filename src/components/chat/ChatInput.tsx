@@ -228,7 +228,7 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(
           autoFocus
           placeholder={
             isListening ? "Listening…" :
-            disabled ? "Waiting for tutor…" :
+            disabled ? "Waiting for guru…" :
             (placeholder || "Type or speak your answer…")
           }
           rows={1}
