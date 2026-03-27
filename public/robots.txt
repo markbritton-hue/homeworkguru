@@ -3,4 +3,4 @@ Allow: /
 Disallow: /session/
 Disallow: /api/
 
-Sitemap: https://www.homeworkguru.app/sitemap.xml
+Sitemap: https://homeworkguru.vercel.app/sitemap.xml
