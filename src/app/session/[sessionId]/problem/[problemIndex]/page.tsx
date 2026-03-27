@@ -108,7 +108,7 @@ export default function ProblemPage() {
   const hasCrop = !!problem.bbox && session.imageDataUrls.length > 0
 
   return (
-    <main className="h-screen flex flex-col overflow-hidden">
+    <main className="flex flex-col overflow-hidden" style={{ height: "100dvh" }}>
       <ProblemStatement
         problemNumber={problemIndex + 1}
         subject={problem.subject}

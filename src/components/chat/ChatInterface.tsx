@@ -267,7 +267,7 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
 
       {/* Input */}
       {!isSolved && (
-        <div className="px-4 pb-4 pt-2" style={{ borderTop: "1px solid var(--border)", background: "var(--surface)", backdropFilter: "blur(10px)" }}>
+        <div className="px-4 pt-2" style={{ borderTop: "1px solid var(--border)", background: "var(--surface)", backdropFilter: "blur(10px)", paddingBottom: "max(16px, env(safe-area-inset-bottom))" }}>
           <div className="max-w-2xl mx-auto">
             <ChatInput
               key={isLoading ? "loading" : "ready"}
