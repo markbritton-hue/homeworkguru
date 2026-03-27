@@ -47,6 +47,12 @@ function LandingPage() {
               Try a Demo
             </Link>
           </div>
+          <p className="mt-4 text-sm" style={{ color: "rgba(255,255,255,0.4)" }}>
+            Already have an account?{" "}
+            <Link href="/login" className="font-semibold hover:underline" style={{ color: "rgba(255,255,255,0.75)" }}>
+              Sign in
+            </Link>
+          </p>
         </div>
 
         {/* Features grid */}
@@ -121,6 +127,12 @@ function LandingPage() {
             style={{ background: "linear-gradient(135deg, #60a5fa, #818cf8)", boxShadow: "0 4px 20px rgba(96,165,250,0.4)" }}>
             Create a Free Account
           </Link>
+          <p className="mt-4 text-sm" style={{ color: "rgba(255,255,255,0.4)" }}>
+            Already have an account?{" "}
+            <Link href="/login" className="font-semibold transition-colors hover:underline" style={{ color: "rgba(255,255,255,0.75)" }}>
+              Sign in
+            </Link>
+          </p>
         </div>
 
       </div>
