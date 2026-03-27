@@ -32,7 +32,7 @@ function LandingPage() {
           <p className="text-lg max-w-xl mx-auto mb-2" style={{ color: "rgba(255,255,255,0.7)" }}>
             Upload a photo of any homework sheet and get guided through every problem — with hints and questions, not just answers.
           </p>
-          <p className="text-sm mb-8" style={{ color: "rgba(255,255,255,0.4)" }}>
+          <p className="text-base font-semibold mb-8" style={{ color: "rgba(255,255,255,0.75)" }}>
             Sorry, we don&apos;t just give out answers
           </p>
           <div className="flex flex-wrap gap-3 justify-center">
