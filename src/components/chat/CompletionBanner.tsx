@@ -1,3 +1,6 @@
+"use client"
+
+import { useState } from "react"
 import Link from "next/link"
 import ReactMarkdown from "react-markdown"
 import type { Problem } from "@/types"
@@ -9,10 +12,13 @@ interface CompletionBannerProps {
   solvedCount: number
   finalAnswer?: string
   totalTokens?: number
+  workingOut?: string
+  isLoadingWorking?: boolean
 }
 
-export function CompletionBanner({ sessionId, nextProblem, totalProblems, solvedCount, finalAnswer, totalTokens }: CompletionBannerProps) {
+export function CompletionBanner({ sessionId, nextProblem, totalProblems, solvedCount, finalAnswer, totalTokens, workingOut, isLoadingWorking }: CompletionBannerProps) {
   const allDone = solvedCount >= totalProblems
+  const [showWorking, setShowWorking] = useState(false)
 
   return (
     <div className="mx-4 mb-4 rounded-2xl p-4"
@@ -46,6 +52,34 @@ export function CompletionBanner({ sessionId, nextProblem, totalProblems, solved
               </div>
             </div>
           )}
+
+          {/* Worked solution */}
+          {(workingOut || isLoadingWorking) && (
+            <div className="mt-3 rounded-xl overflow-hidden"
+              style={{ background: "rgba(16,185,129,0.06)", border: "1px solid rgba(16,185,129,0.2)" }}>
+              <button
+                onClick={() => setShowWorking((v) => !v)}
+                className="w-full flex items-center justify-between px-4 py-2.5 transition-opacity hover:opacity-80"
+              >
+                <p className="text-xs font-semibold" style={{ color: "var(--green)" }}>How we got there</p>
+                {isLoadingWorking ? (
+                  <span className="text-xs" style={{ color: "var(--muted)" }}>Generating…</span>
+                ) : (
+                  <svg className="w-3.5 h-3.5 transition-transform" style={{ color: "var(--muted)", transform: showWorking ? "rotate(180deg)" : "rotate(0deg)" }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                )}
+              </button>
+              {showWorking && workingOut && (
+                <div className="px-4 pb-3" style={{ borderTop: "1px solid rgba(16,185,129,0.15)" }}>
+                  <div className="prose prose-sm max-w-none prose-invert prose-p:my-1 prose-ul:my-1 prose-ol:my-1 text-xs mt-2" style={{ color: "var(--text)" }}>
+                    <ReactMarkdown>{workingOut}</ReactMarkdown>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
           <div className="mt-3 flex gap-2 flex-wrap">
             {nextProblem && (
               <Link

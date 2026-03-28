@@ -27,6 +27,8 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
   const [isLoading, setIsLoading] = useState(false)
   const [isSolved, setIsSolved] = useState(false)
   const [totalTokens, setTotalTokens] = useState(0)
+  const [workingOut, setWorkingOut] = useState<string | undefined>(undefined)
+  const [isLoadingWorking, setIsLoadingWorking] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const chatInputRef = useRef<ChatInputHandle>(null)
   const initialized = useRef(false)
@@ -158,6 +160,22 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
           // Refresh session
           const updated = await loadSession(user.uid, sessionId)
           if (updated) setSession(updated)
+          // Generate worked solution
+          setIsLoadingWorking(true)
+          fetch("/api/worked-solution", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              problemText: problem.text,
+              messages: [...updatedMessages, { role: "assistant", content: finalContent }]
+                .filter((m) => !(m as ChatMessageType).isInitial)
+                .map((m) => ({ role: (m as ChatMessageType).role ?? m.role, content: m.content })),
+            }),
+          })
+            .then((r) => r.json())
+            .then((data) => { if (data.working) setWorkingOut(data.working) })
+            .catch(() => {})
+            .finally(() => setIsLoadingWorking(false))
         }
       } catch (err) {
         console.error("tutor fetch error:", err)
@@ -262,6 +280,8 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
           solvedCount={solvedCount}
           finalAnswer={[...messages].reverse().find(m => m.role === "assistant")?.content}
           totalTokens={totalTokens}
+          workingOut={workingOut}
+          isLoadingWorking={isLoadingWorking}
         />
       )}
 
