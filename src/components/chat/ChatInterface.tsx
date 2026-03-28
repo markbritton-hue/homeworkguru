@@ -159,15 +159,25 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
           // Refresh session
           const updated = await loadSession(user.uid, sessionId)
           if (updated) setSession(updated)
-          // Build worked solution from chat history — no API call
-          const guruSteps = [...updatedMessages, finalAiMsg]
-            .filter((m) => m.role === "assistant" && !m.isInitial && m.content.trim().length > 0)
-            .map((m, i) => `**Step ${i + 1}:** ${m.content.trim()}`)
-            .join("\n\n")
-          if (guruSteps) {
-            setWorkingOut(guruSteps)
-            saveWorkedSolution(user.uid, sessionId, problemIndex, guruSteps).catch(() => {})
-          }
+          // Generate worked solution via API
+          fetch("/api/worked-solution", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              problemText: problem.text,
+              messages: [...updatedMessages, finalAiMsg]
+                .filter((m) => !m.isInitial)
+                .map((m) => ({ role: m.role, content: m.content })),
+            }),
+          })
+            .then((r) => r.json())
+            .then((data) => {
+              if (data.working) {
+                setWorkingOut(data.working)
+                saveWorkedSolution(user.uid, sessionId, problemIndex, data.working).catch(() => {})
+              }
+            })
+            .catch(() => {})
         }
       } catch (err) {
         console.error("tutor fetch error:", err)
