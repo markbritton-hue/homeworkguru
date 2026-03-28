@@ -52,6 +52,19 @@ export async function updateProblemStatus(
   await updateDoc(sessionDoc(uid, sessionId), { problems: session.problems })
 }
 
+export async function saveWorkedSolution(
+  uid: string,
+  sessionId: string,
+  problemIndex: number,
+  working: string
+): Promise<void> {
+  const session = await loadSession(uid, sessionId)
+  if (!session) return
+  const workedSolutions = session.workedSolutions ?? {}
+  workedSolutions[problemIndex] = working
+  await updateDoc(sessionDoc(uid, sessionId), { workedSolutions })
+}
+
 export async function appendChatMessage(
   uid: string,
   sessionId: string,

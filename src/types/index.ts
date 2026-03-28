@@ -31,6 +31,7 @@ export interface HomeworkSession {
   imageDataUrls: string[]
   problems: Problem[]
   chatHistory: Record<number, ChatMessage[]>
+  workedSolutions?: Record<number, string>
 }
 
 export interface ParseHomeworkRequest {

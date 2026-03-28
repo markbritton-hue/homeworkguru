@@ -5,7 +5,7 @@ import { ChatMessage } from "./ChatMessage"
 import { ChatInput, type ChatInputHandle } from "./ChatInput"
 import { LoadingDots } from "@/components/ui/LoadingDots"
 import { CompletionBanner } from "./CompletionBanner"
-import { appendChatMessage, loadSession, updateProblemStatus } from "@/lib/firestore"
+import { appendChatMessage, loadSession, saveWorkedSolution, updateProblemStatus } from "@/lib/firestore"
 import { useAuth } from "@/contexts/AuthContext"
 import { INITIAL_USER_MESSAGE } from "@/lib/prompts"
 import type { ChatMessage as ChatMessageType, HomeworkSession, Problem } from "@/types"
@@ -173,7 +173,12 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
             }),
           })
             .then((r) => r.json())
-            .then((data) => { if (data.working) setWorkingOut(data.working) })
+            .then((data) => {
+              if (data.working) {
+                setWorkingOut(data.working)
+                saveWorkedSolution(user.uid, sessionId, problemIndex, data.working).catch(() => {})
+              }
+            })
             .catch(() => {})
             .finally(() => setIsLoadingWorking(false))
         }
@@ -208,6 +213,9 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
 
       const alreadySolved = s.problems[problemIndex]?.status === "solved"
       setIsSolved(alreadySolved)
+      if (alreadySolved && s.workedSolutions?.[problemIndex]) {
+        setWorkingOut(s.workedSolutions[problemIndex])
+      }
 
       if (existing.length === 0 && !alreadySolved) {
         updateProblemStatus(user.uid, sessionId, problemIndex, "in_progress")
