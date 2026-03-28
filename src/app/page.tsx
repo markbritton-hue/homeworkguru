@@ -42,7 +42,8 @@ function LandingPage() {
         {/* Hero */}
         <div className="text-center mb-16">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/HomeworkguruLogo.png" alt="Homework Guru" className="mx-auto mb-6" style={{ width: "200px", height: "200px", objectFit: "contain" }} />
+          <img src="/HomeworkguruLogo.png" alt="Homework Guru" className="mx-auto mb-2" style={{ width: "200px", height: "200px", objectFit: "contain" }} />
+          <p className="text-xs mb-6" style={{ color: "rgba(255,255,255,0.3)" }}>v{process.env.NEXT_PUBLIC_APP_VERSION}</p>
           <h1 className="text-4xl font-extrabold mb-4" style={{
             background: "linear-gradient(135deg, #60a5fa, #818cf8)",
             WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
