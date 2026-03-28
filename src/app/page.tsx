@@ -379,7 +379,7 @@ function HomePageInner() {
         )}
 
         {/* Header */}
-        <div className="relative flex items-center justify-center mb-6">
+        <div className="relative flex items-center justify-center mb-2">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/HomeworkguruLogo.png" alt="Homework Guru" style={{ width: "260px", height: "260px", objectFit: "contain" }} />
           <button
@@ -393,6 +393,7 @@ function HomePageInner() {
             Sign Out
           </button>
         </div>
+        <p className="text-xs text-center mb-6" style={{ color: "rgba(255,255,255,0.3)" }}>v{process.env.NEXT_PUBLIC_APP_VERSION}</p>
 
         {/* 2-column layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start pb-10">
