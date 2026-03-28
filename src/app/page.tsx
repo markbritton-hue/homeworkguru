@@ -701,6 +701,11 @@ function HomePageInner() {
               <div className="p-6 space-y-4">
                 {[
                   {
+                    date: "Mar 2026",
+                    title: "Worked solutions",
+                    desc: "After solving a problem, tap 'How we got there' to see the full step-by-step working.",
+                  },
+                  {
                     date: "Mar 2025",
                     title: "Voice input",
                     desc: "Speak your answers directly into the guru chat — no typing needed.",
