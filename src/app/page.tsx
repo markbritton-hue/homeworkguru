@@ -54,7 +54,7 @@ function LandingPage() {
             Upload a photo of any homework sheet and get guided through every problem — with hints and questions, not just answers.
           </p>
           <p className="text-base font-semibold mb-8" style={{ color: "rgba(255,255,255,0.75)" }}>
-            Sorry, we don&apos;t just give out answers
+            Sorry, I don&apos;t just give out answers
           </p>
           <div className="flex flex-wrap gap-3 justify-center">
             <Link href="/login?mode=signup"
