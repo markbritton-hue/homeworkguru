@@ -13,10 +13,9 @@ interface CompletionBannerProps {
   finalAnswer?: string
   totalTokens?: number
   workingOut?: string
-  isLoadingWorking?: boolean
 }
 
-export function CompletionBanner({ sessionId, nextProblem, totalProblems, solvedCount, finalAnswer, totalTokens, workingOut, isLoadingWorking }: CompletionBannerProps) {
+export function CompletionBanner({ sessionId, nextProblem, totalProblems, solvedCount, finalAnswer, totalTokens, workingOut }: CompletionBannerProps) {
   const allDone = solvedCount >= totalProblems
   const [showWorking, setShowWorking] = useState(false)
 
@@ -54,7 +53,7 @@ export function CompletionBanner({ sessionId, nextProblem, totalProblems, solved
           )}
 
           {/* Worked solution */}
-          {(workingOut || isLoadingWorking) && (
+          {workingOut && (
             <div className="mt-3 rounded-xl overflow-hidden"
               style={{ background: "rgba(16,185,129,0.06)", border: "1px solid rgba(16,185,129,0.2)" }}>
               <button
@@ -62,13 +61,9 @@ export function CompletionBanner({ sessionId, nextProblem, totalProblems, solved
                 className="w-full flex items-center justify-between px-4 py-2.5 transition-opacity hover:opacity-80"
               >
                 <p className="text-xs font-semibold" style={{ color: "var(--green)" }}>How we got there</p>
-                {isLoadingWorking ? (
-                  <span className="text-xs" style={{ color: "var(--muted)" }}>Generating…</span>
-                ) : (
-                  <svg className="w-3.5 h-3.5 transition-transform" style={{ color: "var(--muted)", transform: showWorking ? "rotate(180deg)" : "rotate(0deg)" }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                )}
+                <svg className="w-3.5 h-3.5 transition-transform" style={{ color: "var(--muted)", transform: showWorking ? "rotate(180deg)" : "rotate(0deg)" }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
               </button>
               {showWorking && workingOut && (
                 <div className="px-4 pb-3" style={{ borderTop: "1px solid rgba(16,185,129,0.15)" }}>

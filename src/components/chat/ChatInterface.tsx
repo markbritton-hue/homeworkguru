@@ -28,7 +28,6 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
   const [isSolved, setIsSolved] = useState(false)
   const [totalTokens, setTotalTokens] = useState(0)
   const [workingOut, setWorkingOut] = useState<string | undefined>(undefined)
-  const [isLoadingWorking, setIsLoadingWorking] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const chatInputRef = useRef<ChatInputHandle>(null)
   const initialized = useRef(false)
@@ -160,27 +159,15 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
           // Refresh session
           const updated = await loadSession(user.uid, sessionId)
           if (updated) setSession(updated)
-          // Generate worked solution
-          setIsLoadingWorking(true)
-          fetch("/api/worked-solution", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              problemText: problem.text,
-              messages: [...updatedMessages, { role: "assistant", content: finalContent }]
-                .filter((m) => !(m as ChatMessageType).isInitial)
-                .map((m) => ({ role: (m as ChatMessageType).role ?? m.role, content: m.content })),
-            }),
-          })
-            .then((r) => r.json())
-            .then((data) => {
-              if (data.working) {
-                setWorkingOut(data.working)
-                saveWorkedSolution(user.uid, sessionId, problemIndex, data.working).catch(() => {})
-              }
-            })
-            .catch(() => {})
-            .finally(() => setIsLoadingWorking(false))
+          // Build worked solution from chat history — no API call
+          const guruSteps = [...updatedMessages, finalAiMsg]
+            .filter((m) => m.role === "assistant" && !m.isInitial && m.content.trim().length > 0)
+            .map((m, i) => `**Step ${i + 1}:** ${m.content.trim()}`)
+            .join("\n\n")
+          if (guruSteps) {
+            setWorkingOut(guruSteps)
+            saveWorkedSolution(user.uid, sessionId, problemIndex, guruSteps).catch(() => {})
+          }
         }
       } catch (err) {
         console.error("tutor fetch error:", err)
@@ -289,7 +276,6 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
           finalAnswer={[...messages].reverse().find(m => m.role === "assistant")?.content}
           totalTokens={totalTokens}
           workingOut={workingOut}
-          isLoadingWorking={isLoadingWorking}
         />
       )}
 
