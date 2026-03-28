@@ -701,33 +701,33 @@ function HomePageInner() {
               <div className="p-6 space-y-4">
                 {[
                   {
-                    date: "Mar 2026",
+                    version: "v0.2.0",
                     title: "Worked solutions",
                     desc: "After solving a problem, tap 'How we got there' to see the full step-by-step working.",
                   },
                   {
-                    date: "Mar 2025",
+                    version: "v0.1.0",
                     title: "Voice input",
                     desc: "Speak your answers directly into the guru chat — no typing needed.",
                   },
                   {
-                    date: "Mar 2025",
+                    version: "v0.1.0",
                     title: "Built-in calculator",
                     desc: "Basic and scientific calculator available on every problem, with one-tap paste into chat.",
                   },
                   {
-                    date: "Mar 2025",
+                    version: "v0.1.0",
                     title: "Multi-page uploads",
                     desc: "Add multiple images to a single assignment for longer worksheets.",
                   },
                   {
-                    date: "Mar 2025",
+                    version: "v0.1.0",
                     title: "Progress tracking",
                     desc: "See how many problems you've solved at a glance from your assignments list.",
                   },
-                ].map(({ date, title, desc }) => (
+                ].map(({ version, title, desc }) => (
                   <div key={title} className="flex gap-3">
-                    <span className="flex-shrink-0 text-xs font-semibold pt-0.5 w-16" style={{ color: "rgba(96,165,250,0.5)" }}>{date}</span>
+                    <span className="flex-shrink-0 text-xs font-semibold pt-0.5 w-16" style={{ color: "rgba(96,165,250,0.5)" }}>{version}</span>
                     <div>
                       <p className="text-sm font-semibold" style={{ color: "var(--text)" }}>{title}</p>
                       <p className="text-xs leading-relaxed mt-0.5" style={{ color: "var(--muted)" }}>{desc}</p>
