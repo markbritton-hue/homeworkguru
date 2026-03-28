@@ -23,6 +23,10 @@ export const metadata: Metadata = {
     "Socratic tutor",
     "kids learning app",
   ],
+  icons: {
+    icon: "/Gurulogo.png",
+    apple: "/Gurulogo.png",
+  },
   authors: [{ name: "Homework Guru" }],
   creator: "Homework Guru",
   openGraph: {
