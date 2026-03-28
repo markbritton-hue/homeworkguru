@@ -347,6 +347,7 @@ function HomePageInner() {
       <img src="/HomeworkguruLogo.png" alt="Homework Guru" style={{ height: "100px", objectFit: "contain" }} />
       <p className="text-base font-semibold" style={{ color: "rgba(255,255,255,0.8)" }}>Setting up your demo assignment…</p>
       <p className="text-sm" style={{ color: "rgba(255,255,255,0.4)" }}>Finding problems in your homework</p>
+      <p className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.6)", marginTop: "8px" }}>This is a picture of a Gemomentry Paper</p>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src="/gemwork.jpg" alt="Demo homework sheet" style={{ maxWidth: "320px", width: "100%", borderRadius: "12px", border: "1px solid rgba(96,165,250,0.3)", marginTop: "8px", opacity: 0.85 }} />
       <div className="flex gap-1.5 mt-2">
