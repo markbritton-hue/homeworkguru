@@ -294,8 +294,8 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
       {!isSolved && (
         <div className="px-4 pt-2" style={{ borderTop: "1px solid var(--border)", background: "var(--surface)", backdropFilter: "blur(10px)", paddingBottom: "max(16px, env(safe-area-inset-bottom))" }}>
           <div className="max-w-2xl mx-auto">
-            {/* First-time hint */}
-            {showHint && (
+            {/* First-time hint — hides once guru has responded */}
+            {showHint && messages.filter(m => m.role === "assistant").length === 0 && (
               <div className="flex items-center gap-2 mb-2 px-3 py-2 rounded-xl animate-pulse"
                 style={{ background: "rgba(96,165,250,0.08)", border: "1px solid rgba(96,165,250,0.3)" }}>
                 <span className="text-lg">👆</span>
@@ -308,7 +308,7 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
               key={isLoading ? "loading" : "ready"}
               ref={chatInputRef}
               value={input}
-              onChange={(v) => { setInput(v); setShowHint(false) }}
+              onChange={setInput}
               onSubmit={handleSubmit}
               disabled={isLoading}
             />
