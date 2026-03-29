@@ -382,16 +382,28 @@ function HomePageInner() {
         <div className="relative flex items-center justify-center mb-2">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/HomeworkguruLogo.png" alt="Homework Guru" style={{ width: "260px", height: "260px", objectFit: "contain" }} />
-          <button
-            onClick={signOut}
-            className="absolute right-0 top-1/2 -translate-y-1/2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all hover:-translate-y-0.5"
-            style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--muted)" }}
-          >
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
-            Sign Out
-          </button>
+          <div className="absolute right-0 top-1/2 -translate-y-1/2 flex flex-col items-end gap-2">
+            <button
+              onClick={signOut}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all hover:-translate-y-0.5"
+              style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--muted)" }}
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+              Sign Out
+            </button>
+            <a
+              href="mailto:mark.britton@gmail.com?subject=Homework%20Guru%20Feedback"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all hover:-translate-y-0.5"
+              style={{ background: "rgba(96,165,250,0.1)", border: "1px solid rgba(96,165,250,0.3)", color: "#93c5fd" }}
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+              Feedback
+            </a>
+          </div>
         </div>
         <p className="text-xs text-center mb-6" style={{ color: "rgba(255,255,255,0.3)" }}>v{process.env.NEXT_PUBLIC_APP_VERSION}</p>
 
