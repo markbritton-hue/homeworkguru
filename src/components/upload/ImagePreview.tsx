@@ -89,12 +89,15 @@ export function ImagePreview({ images, onRemove, onAddMore, onParse, isParsing, 
       </p>
 
       {isParsing ? (
-        <div className="flex items-center justify-center gap-3 py-3">
-          <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24" style={{ color: "var(--accent)" }}>
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-          </svg>
-          <span className="text-sm font-semibold" style={{ color: "var(--muted)" }}>Reading your homework…</span>
+        <div className="flex flex-col items-center justify-center gap-3 py-3">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/Gurulogo.png"
+            alt="Guru reading homework"
+            className="animate-bounce"
+            style={{ height: "80px", width: "80px", objectFit: "contain", filter: "drop-shadow(0 0 12px rgba(96,165,250,0.7))" }}
+          />
+          <span className="text-sm font-semibold animate-pulse" style={{ color: "var(--muted)" }}>Reading your homework…</span>
         </div>
       ) : (
         <div className="flex flex-col gap-1.5">
