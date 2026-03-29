@@ -7,15 +7,22 @@ interface ChatMessageProps {
   message: ChatMessageType
 }
 
-const MC_OPTION_RE = /^([A-D])[).]\s+(.+)$/
+const MC_OPTION_RE = /([A-D])[).]\s+(.+?)(?=\s+[A-D][).]\s+|$)/g
+const MC_DETECT_RE = /[A-D][).]\s+.+/
 
 function parseMultipleChoice(content: string): { before: string; options: { letter: string; text: string }[]; after: string } | null {
-  const lines = content.split("\n")
+  if (!MC_DETECT_RE.test(content)) return null
+
+  // Normalise: split inline options onto separate lines first
+  const normalised = content.replace(/\s+([A-D])[).]\s+/g, "\n$1. ")
+
+  const lines = normalised.split("\n")
+  const singleRE = /^([A-D])[).]\s+(.+)$/
   let firstIdx = -1
   let lastIdx = -1
 
   for (let i = 0; i < lines.length; i++) {
-    if (MC_OPTION_RE.test(lines[i].trim())) {
+    if (singleRE.test(lines[i].trim())) {
       if (firstIdx === -1) firstIdx = i
       lastIdx = i
     }
@@ -25,7 +32,7 @@ function parseMultipleChoice(content: string): { before: string; options: { lett
 
   const options: { letter: string; text: string }[] = []
   for (let i = firstIdx; i <= lastIdx; i++) {
-    const m = lines[i].trim().match(MC_OPTION_RE)
+    const m = lines[i].trim().match(singleRE)
     if (m) options.push({ letter: m[1], text: m[2] })
   }
 
