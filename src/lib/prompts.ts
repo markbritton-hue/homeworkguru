@@ -2,7 +2,7 @@ export const PARSE_HOMEWORK_PROMPT = `Examine this homework image carefully. Ext
 
 Return ONLY a valid JSON array. No explanation, no markdown, no code fences. Each element must have:
 - "index": integer starting at 0
-- "text": the full problem text exactly as written
+- "text": the full problem text exactly as written, including all multiple choice options (e.g. "A. option text B. option text C. option text D. option text") if present
 - "subject": infer the academic subject (e.g., "Algebra", "Biology", "History", "Chemistry", "Geometry", "English", "Physics", "Calculus")
 - "page": which image this problem appears on, 0-indexed (default 0 if only one image provided)
 - "bbox": bounding box of the problem on its page as percentages 0–100. Object with "x" (left edge), "y" (top edge), "w" (width), "h" (height). Add ~3% padding around the problem content. Be as precise as possible.
