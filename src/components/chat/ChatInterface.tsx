@@ -295,7 +295,7 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
         <div className="px-4 pt-2" style={{ borderTop: "1px solid var(--border)", background: "var(--surface)", backdropFilter: "blur(10px)", paddingBottom: "max(16px, env(safe-area-inset-bottom))" }}>
           <div className="max-w-2xl mx-auto">
             {/* First-time hint */}
-            {showHint && messages.length > 0 && !isLoading && (
+            {showHint && (
               <div className="flex items-center gap-2 mb-2 px-3 py-2 rounded-xl animate-pulse"
                 style={{ background: "rgba(96,165,250,0.08)", border: "1px solid rgba(96,165,250,0.3)" }}>
                 <span className="text-lg">👆</span>
