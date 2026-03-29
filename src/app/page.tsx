@@ -625,18 +625,6 @@ function HomePageInner() {
               </div>
             )}
 
-            {/* Streamwave footer */}
-            <div className="mt-8 pt-6 flex flex-col items-center gap-2" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/StreaWaveProd-LogoTrans-White.png" alt="Streamwave" style={{ height: "64px", objectFit: "contain", opacity: 0.7 }} />
-              <p className="text-xs" style={{ color: "var(--muted)" }}>
-                <a href="mailto:mark.britton@gmail.com" style={{ color: "inherit", textDecoration: "none" }}
-                  onMouseEnter={e => (e.currentTarget.style.color = "rgba(255,255,255,0.7)")}
-                  onMouseLeave={e => (e.currentTarget.style.color = "var(--muted)")}>
-                  mark.britton@gmail.com
-                </a>
-              </p>
-            </div>
           </div>
 
           {/* RIGHT: How it works + Feature updates */}
@@ -763,6 +751,19 @@ function HomePageInner() {
             </div>
 
           </div>
+        </div>
+
+        {/* Streamwave footer */}
+        <div className="mt-10 pt-6 flex flex-col items-center gap-2" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/StreaWaveProd-LogoTrans-White.png" alt="Streamwave" style={{ height: "64px", objectFit: "contain", opacity: 0.7 }} />
+          <p className="text-xs" style={{ color: "var(--muted)" }}>
+            <a href="mailto:mark.britton@gmail.com" style={{ color: "inherit", textDecoration: "none" }}
+              onMouseEnter={e => (e.currentTarget.style.color = "rgba(255,255,255,0.7)")}
+              onMouseLeave={e => (e.currentTarget.style.color = "var(--muted)")}>
+              mark.britton@gmail.com
+            </a>
+          </p>
         </div>
       </div>
 
