@@ -61,8 +61,9 @@ export async function POST(req: NextRequest) {
         "X-Content-Type-Options": "nosniff",
       },
     })
-  } catch (err) {
-    console.error("tutor error:", err)
-    return new Response("Failed to get response. Please try again.", { status: 500 })
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : JSON.stringify(err)
+    console.error("tutor error:", msg)
+    return new Response(`Failed to get response: ${msg}`, { status: 500 })
   }
 }
