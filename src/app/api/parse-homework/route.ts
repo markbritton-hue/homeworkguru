@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
       images.map(async (img) => {
         const raw = stripDataUrlPrefix(img.imageBase64)
         const response = await groq.chat.completions.create({
-          model: "llama-3.2-11b-vision-preview",
+          model: "meta-llama/llama-4-scout-17b-16e-instruct",
           max_tokens: 2048,
           messages: [
             {
