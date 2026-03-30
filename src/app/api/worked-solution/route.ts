@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { anthropic } from "@/lib/claude"
+import { groq } from "@/lib/groq"
 
 export async function POST(req: NextRequest) {
   let body: { problemText: string; messages: Array<{ role: string; content: string }> }
@@ -28,13 +28,13 @@ ${chatTranscript}
 Now write a clear, concise step-by-step worked solution showing exactly how to get to the answer. Use numbered steps. Be brief — one or two lines per step. Do not address the student, just show the working.`
 
   try {
-    const response = await anthropic.messages.create({
-      model: "claude-haiku-4-5-20251001",
+    const response = await groq.chat.completions.create({
+      model: "meta-llama/llama-4-scout-17b-16e-instruct",
       max_tokens: 512,
       messages: [{ role: "user", content: prompt }],
     })
 
-    const working = response.content[0].type === "text" ? response.content[0].text : ""
+    const working = response.choices[0]?.message?.content ?? ""
     return NextResponse.json({ working })
   } catch {
     return NextResponse.json({ error: "Failed to generate worked solution" }, { status: 500 })
