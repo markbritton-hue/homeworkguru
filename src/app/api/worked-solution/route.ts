@@ -29,7 +29,7 @@ Now write a clear, concise step-by-step worked solution showing exactly how to g
 
   try {
     const response = await groq.chat.completions.create({
-      model: "meta-llama/llama-4-scout-17b-16e-instruct",
+      model: "llama-3.3-70b-versatile",
       max_tokens: 512,
       messages: [{ role: "user", content: prompt }],
     })

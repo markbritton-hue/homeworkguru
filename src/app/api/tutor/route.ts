@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const stream = await groq.chat.completions.create({
-      model: "meta-llama/llama-4-scout-17b-16e-instruct",
+      model: "llama-3.3-70b-versatile",
       max_tokens: 1024,
       stream: true,
       messages: [

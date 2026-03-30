@@ -405,7 +405,7 @@ function HomePageInner() {
             </a>
           </div>
         </div>
-        <p className="text-xs text-center mb-6" style={{ color: "rgba(255,255,255,0.3)" }}>v{process.env.NEXT_PUBLIC_APP_VERSION} · Llama 4 Scout</p>
+        <p className="text-xs text-center mb-6" style={{ color: "rgba(255,255,255,0.3)" }}>v{process.env.NEXT_PUBLIC_APP_VERSION} · Llama 3</p>
 
         {/* 2-column layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start pb-10">
