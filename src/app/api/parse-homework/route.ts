@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { groq } from "@/lib/groq"
+import { anthropic } from "@/lib/claude"
 import { PARSE_HOMEWORK_PROMPT } from "@/lib/prompts"
 import { stripDataUrlPrefix } from "@/lib/image-utils"
 import type { ParseHomeworkRequest } from "@/types"
@@ -26,49 +26,54 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  function parseProblems(text: string): unknown[] | null {
+  const imageBlocks = images.map((img) => {
+    const raw = stripDataUrlPrefix(img.imageBase64)
+    return {
+      type: "image" as const,
+      source: { type: "base64" as const, media_type: img.mimeType, data: raw },
+    }
+  })
+
+  try {
+    const response = await anthropic.messages.create({
+      model: "claude-sonnet-4-6",
+      max_tokens: 2048,
+      messages: [
+        {
+          role: "user",
+          content: [
+            ...imageBlocks,
+            { type: "text", text: PARSE_HOMEWORK_PROMPT },
+          ],
+        },
+      ],
+    })
+
+    const text = response.content[0].type === "text" ? response.content[0].text : ""
+
+    let problems
     try {
-      const parsed = JSON.parse(text)
-      return Array.isArray(parsed) ? parsed : null
+      problems = JSON.parse(text)
     } catch {
       const match = text.match(/\[[\s\S]*\]/)
       if (match) {
         try {
-          const parsed = JSON.parse(match[0])
-          return Array.isArray(parsed) ? parsed : null
+          problems = JSON.parse(match[0])
         } catch {
-          return null
+          return NextResponse.json(
+            { error: "Could not read your homework. Try a clearer photo." },
+            { status: 422 }
+          )
         }
+      } else {
+        return NextResponse.json(
+          { error: "Could not read your homework. Try a clearer photo." },
+          { status: 422 }
+        )
       }
-      return null
     }
-  }
 
-  try {
-    const perPageResults = await Promise.all(
-      images.map(async (img) => {
-        const raw = stripDataUrlPrefix(img.imageBase64)
-        const response = await groq.chat.completions.create({
-          model: "meta-llama/llama-4-scout-17b-16e-instruct",
-          max_tokens: 2048,
-          messages: [
-            {
-              role: "user",
-              content: [
-                { type: "image_url", image_url: { url: `data:${img.mimeType};base64,${raw}` } },
-                { type: "text", text: PARSE_HOMEWORK_PROMPT },
-              ],
-            },
-          ],
-        })
-        const text = response.choices[0]?.message?.content ?? ""
-        return parseProblems(text) ?? []
-      })
-    )
-
-    const problems = perPageResults.flat()
-
-    if (problems.length === 0) {
+    if (!Array.isArray(problems) || problems.length === 0) {
       return NextResponse.json(
         { error: "No problems found. Make sure the image shows homework questions." },
         { status: 422 }
@@ -76,9 +81,8 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ problems })
-  } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : JSON.stringify(err)
-    console.error("parse-homework error:", msg)
-    return NextResponse.json({ error: `Failed to analyze image: ${msg}` }, { status: 500 })
+  } catch (err) {
+    console.error("parse-homework error:", err)
+    return NextResponse.json({ error: "Failed to analyze image. Please try again." }, { status: 500 })
   }
 }
