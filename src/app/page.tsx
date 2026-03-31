@@ -360,7 +360,7 @@ function HomePageInner() {
   )
 
   return (
-    <main className="min-h-screen px-4 py-10">
+    <main className="min-h-screen px-4 py-4">
       <div className="max-w-6xl mx-auto">
 
         {/* Guest banner */}
@@ -381,7 +381,7 @@ function HomePageInner() {
         {/* Header */}
         <div className="relative flex items-center justify-center mb-2">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/HomeworkguruLogo.png" alt="Homework Guru" style={{ width: "260px", height: "260px", objectFit: "contain" }} />
+          <img src="/HomeworkguruLogo.png" alt="Homework Guru" style={{ width: "120px", height: "120px", objectFit: "contain" }} />
           <div className="absolute right-0 top-1/2 -translate-y-1/2 flex flex-col items-end gap-2">
             <button
               onClick={signOut}
