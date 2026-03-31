@@ -314,7 +314,7 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
               disabled={isLoading}
             />
             <p className="text-xs text-center mt-2" style={{ color: "var(--muted2)" }}>
-              Enter to send · Shift+Enter for new line
+              Enter to send · Shift+Enter for new line · Claude Haiku
             </p>
           </div>
         </div>
