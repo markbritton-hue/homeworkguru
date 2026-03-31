@@ -23,9 +23,10 @@ export default function ProblemPage() {
   const [showImage, setShowImage] = useState(true)
   const [pasteValue, setPasteValue] = useState("")
 
-  // Draggable float position + size
+  // Draggable float position + size — larger default on big screens
+  const defaultWidth = typeof window !== "undefined" && window.innerWidth >= 1024 ? 432 : 240
   const [pos, setPos] = useState({ x: 12, y: 80 })
-  const [width, setWidth] = useState(200)
+  const [width, setWidth] = useState(defaultWidth)
   const dragging = useRef(false)
   const dragOffset = useRef({ x: 0, y: 0 })
   const resizing = useRef(false)
