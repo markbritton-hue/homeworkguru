@@ -383,7 +383,7 @@ function HomePageInner() {
           {/* Left: logo + beta */}
           <div className="flex items-center gap-4">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/HomeworkguruLogo.png" alt="Homework Guru" style={{ width: "80px", height: "80px", objectFit: "contain", flexShrink: 0 }} />
+            <img src="/HomeworkguruLogo.png" alt="Homework Guru" style={{ width: "140px", height: "140px", objectFit: "contain", flexShrink: 0 }} />
             <div className="px-4 py-3 rounded-2xl" style={{ background: "rgba(96,165,250,0.08)", border: "1px solid rgba(96,165,250,0.25)" }}>
               <p className="text-xs font-semibold mb-0.5" style={{ color: "#60a5fa" }}>🚧 Beta — We&apos;d love your feedback!</p>
               <p className="text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>
