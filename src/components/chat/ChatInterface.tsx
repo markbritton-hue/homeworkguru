@@ -6,7 +6,6 @@ import { ChatInput, type ChatInputHandle } from "./ChatInput"
 import { LoadingDots } from "@/components/ui/LoadingDots"
 import { CompletionBanner } from "./CompletionBanner"
 import { appendChatMessage, loadSession, saveWorkedSolution, updateProblemStatus } from "@/lib/firestore"
-import { incrementStats } from "@/lib/stats"
 import { useAuth } from "@/contexts/AuthContext"
 import { INITIAL_USER_MESSAGE } from "@/lib/prompts"
 import type { ChatMessage as ChatMessageType, HomeworkSession, Problem } from "@/types"
@@ -141,10 +140,6 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
           try {
             const usage = JSON.parse(tokenMatch[1])
             setTotalTokens(prev => prev + (usage.input_tokens ?? 0) + (usage.output_tokens ?? 0))
-            incrementStats({
-              tutorInputTokens: usage.input_tokens ?? 0,
-              tutorOutputTokens: usage.output_tokens ?? 0,
-            }).catch(() => {})
           } catch {}
         }
 

@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server"
 import { anthropic } from "@/lib/claude"
 import { buildTutorSystemPrompt } from "@/lib/prompts"
+import { incrementStatsAdmin } from "@/lib/stats-admin"
 import type { TutorRequest } from "@/types"
 
 export async function POST(req: NextRequest) {
@@ -38,6 +39,10 @@ export async function POST(req: NextRequest) {
           }
           const msg = await stream.finalMessage()
           controller.enqueue(new TextEncoder().encode(`[[TOKENS:${JSON.stringify(msg.usage)}]]`))
+          incrementStatsAdmin({
+            tutorInputTokens: msg.usage.input_tokens,
+            tutorOutputTokens: msg.usage.output_tokens,
+          }).catch(console.error)
         } finally {
           controller.close()
         }
