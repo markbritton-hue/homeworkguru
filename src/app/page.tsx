@@ -7,6 +7,7 @@ import { UploadZone } from "@/components/upload/UploadZone"
 import { ImagePreview } from "@/components/upload/ImagePreview"
 import { compressImage } from "@/lib/image-utils"
 import { saveSession, listSessions, deleteSession } from "@/lib/firestore"
+import { incrementStats } from "@/lib/stats"
 import { useAuth } from "@/contexts/AuthContext"
 import type { HomeworkSession } from "@/types"
 
@@ -250,6 +251,11 @@ function HomePageInner() {
         chatHistory: {},
       }
       await saveSession(user.uid, session, compressedUrls)
+      incrementStats({
+        sessions: 1,
+        parseInputTokens: data.usage?.input_tokens ?? 0,
+        parseOutputTokens: data.usage?.output_tokens ?? 0,
+      }).catch(() => {})
       router.push(`/session/${sessionId}`)
     } catch {
       setError("Something went wrong. Please check your connection and try again.")

@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server"
 import { anthropic } from "@/lib/claude"
 import { PARSE_HOMEWORK_PROMPT } from "@/lib/prompts"
 import { stripDataUrlPrefix } from "@/lib/image-utils"
-import { incrementStatsAdmin } from "@/lib/stats-admin"
 import type { ParseHomeworkRequest } from "@/types"
 
 const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"]
@@ -81,13 +80,7 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    incrementStatsAdmin({
-      sessions: 1,
-      parseInputTokens: response.usage.input_tokens,
-      parseOutputTokens: response.usage.output_tokens,
-    }).catch(console.error)
-
-    return NextResponse.json({ problems })
+    return NextResponse.json({ problems, usage: response.usage })
   } catch (err) {
     console.error("parse-homework error:", err)
     return NextResponse.json({ error: "Failed to analyze image. Please try again." }, { status: 500 })
