@@ -251,7 +251,7 @@ function HomePageInner() {
         chatHistory: {},
       }
       await saveSession(user.uid, session, compressedUrls)
-      incrementStats({
+      incrementStats(user.uid, {
         sessions: 1,
         parseInputTokens: data.usage?.input_tokens ?? 0,
         parseOutputTokens: data.usage?.output_tokens ?? 0,

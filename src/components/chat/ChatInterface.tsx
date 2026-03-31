@@ -141,7 +141,7 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
           try {
             const usage = JSON.parse(tokenMatch[1])
             setTotalTokens(prev => prev + (usage.input_tokens ?? 0) + (usage.output_tokens ?? 0))
-            incrementStats({
+            if (user) incrementStats(user.uid, {
               tutorInputTokens: usage.input_tokens ?? 0,
               tutorOutputTokens: usage.output_tokens ?? 0,
             }).catch(() => {})
