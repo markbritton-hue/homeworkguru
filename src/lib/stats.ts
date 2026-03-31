@@ -1,4 +1,4 @@
-import { doc, getDoc, setDoc, increment, serverTimestamp } from "firebase/firestore"
+import { doc, getDoc, setDoc, updateDoc, increment, serverTimestamp } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 
 const STATS_DOC = doc(db, "appStats", "totals")
@@ -10,13 +10,26 @@ export async function incrementStats(updates: {
   tutorInputTokens?: number
   tutorOutputTokens?: number
 }) {
+  // Ensure document exists first
+  const snap = await getDoc(STATS_DOC)
+  if (!snap.exists()) {
+    await setDoc(STATS_DOC, {
+      sessions: 0,
+      parseInputTokens: 0,
+      parseOutputTokens: 0,
+      tutorInputTokens: 0,
+      tutorOutputTokens: 0,
+      lastUpdated: serverTimestamp(),
+    })
+  }
+
   const data: Record<string, unknown> = { lastUpdated: serverTimestamp() }
   if (updates.sessions)           data.sessions           = increment(updates.sessions)
   if (updates.parseInputTokens)   data.parseInputTokens   = increment(updates.parseInputTokens)
   if (updates.parseOutputTokens)  data.parseOutputTokens  = increment(updates.parseOutputTokens)
   if (updates.tutorInputTokens)   data.tutorInputTokens   = increment(updates.tutorInputTokens)
   if (updates.tutorOutputTokens)  data.tutorOutputTokens  = increment(updates.tutorOutputTokens)
-  await setDoc(STATS_DOC, data, { merge: true })
+  await updateDoc(STATS_DOC, data)
 }
 
 export async function loadStats() {
