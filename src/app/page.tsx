@@ -7,6 +7,7 @@ import { UploadZone } from "@/components/upload/UploadZone"
 import { ImagePreview } from "@/components/upload/ImagePreview"
 import { compressImage } from "@/lib/image-utils"
 import { saveSession, listSessions, deleteSession } from "@/lib/firestore"
+import { incrementStats } from "@/lib/stats"
 import { useAuth } from "@/contexts/AuthContext"
 import type { HomeworkSession } from "@/types"
 
@@ -250,6 +251,11 @@ function HomePageInner() {
         chatHistory: {},
       }
       await saveSession(user.uid, session, compressedUrls)
+      incrementStats({
+        sessions: 1,
+        parseInputTokens: data.usage?.input_tokens ?? 0,
+        parseOutputTokens: data.usage?.output_tokens ?? 0,
+      }).catch(() => {})
       router.push(`/session/${sessionId}`)
     } catch {
       setError("Something went wrong. Please check your connection and try again.")
@@ -415,6 +421,18 @@ function HomePageInner() {
               </svg>
               Feedback
             </a>
+            {user.email === "mark.britton@gmail.com" && (
+              <Link
+                href="/stats"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all hover:-translate-y-0.5"
+                style={{ background: "rgba(129,140,248,0.1)", border: "1px solid rgba(129,140,248,0.3)", color: "#a5b4fc" }}
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                Stats
+              </Link>
+            )}
           </div>
         </div>
 

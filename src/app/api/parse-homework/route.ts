@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    return NextResponse.json({ problems })
+    return NextResponse.json({ problems, usage: response.usage })
   } catch (err) {
     console.error("parse-homework error:", err)
     return NextResponse.json({ error: "Failed to analyze image. Please try again." }, { status: 500 })
