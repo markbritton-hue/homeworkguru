@@ -379,10 +379,22 @@ function HomePageInner() {
         )}
 
         {/* Header */}
-        <div className="relative flex items-center justify-center mb-2">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/HomeworkguruLogo.png" alt="Homework Guru" style={{ width: "120px", height: "120px", objectFit: "contain" }} />
-          <div className="absolute right-0 top-1/2 -translate-y-1/2 flex flex-col items-end gap-2">
+        <div className="flex items-center justify-between gap-4 mb-6">
+          {/* Left: logo + beta */}
+          <div className="flex items-center gap-4">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/HomeworkguruLogo.png" alt="Homework Guru" style={{ width: "80px", height: "80px", objectFit: "contain", flexShrink: 0 }} />
+            <div className="px-4 py-3 rounded-2xl" style={{ background: "rgba(96,165,250,0.08)", border: "1px solid rgba(96,165,250,0.25)" }}>
+              <p className="text-xs font-semibold mb-0.5" style={{ color: "#60a5fa" }}>🚧 Beta — We&apos;d love your feedback!</p>
+              <p className="text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>
+                Found a bug or have a suggestion?{" "}
+                <a href="mailto:mark.britton@gmail.com" style={{ color: "#60a5fa" }}>mark.britton@gmail.com</a>
+              </p>
+              <p className="text-xs mt-1" style={{ color: "rgba(255,255,255,0.2)" }}>v{process.env.NEXT_PUBLIC_APP_VERSION} · Powered by Claude</p>
+            </div>
+          </div>
+          {/* Right: buttons */}
+          <div className="flex flex-col items-end gap-2">
             <button
               onClick={signOut}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all hover:-translate-y-0.5"
@@ -404,19 +416,6 @@ function HomePageInner() {
               Feedback
             </a>
           </div>
-        </div>
-        <p className="text-xs text-center mb-1" style={{ color: "rgba(255,255,255,0.3)" }}>v{process.env.NEXT_PUBLIC_APP_VERSION}</p>
-        <p className="text-xs text-center mb-4" style={{ color: "rgba(255,255,255,0.2)" }}>Powered by Claude</p>
-
-        {/* Beta banner */}
-        <div className="max-w-xl mx-auto mb-6 px-4 py-3 rounded-2xl text-center"
-          style={{ background: "rgba(96,165,250,0.08)", border: "1px solid rgba(96,165,250,0.25)" }}>
-          <p className="text-xs font-semibold mb-1" style={{ color: "#60a5fa" }}>🚧 Beta — We&apos;d love your feedback!</p>
-          <p className="text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>
-            This app is still in beta testing. Found a bug or have a suggestion?{" "}
-            Use the <span style={{ color: "rgba(255,255,255,0.6)" }}>Feedback</span> button above or email{" "}
-            <a href="mailto:mark.britton@gmail.com" style={{ color: "#60a5fa" }}>mark.britton@gmail.com</a>
-          </p>
         </div>
 
         {/* 2-column layout */}
