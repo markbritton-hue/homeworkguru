@@ -113,7 +113,8 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
         })
 
         if (!response.ok || !response.body) {
-          throw new Error("Failed to get response")
+          const errText = await response.text().catch(() => "unknown error")
+          throw new Error(errText || "Failed to get response")
         }
 
         const reader = response.body.getReader()
