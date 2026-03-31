@@ -406,7 +406,18 @@ function HomePageInner() {
           </div>
         </div>
         <p className="text-xs text-center mb-1" style={{ color: "rgba(255,255,255,0.3)" }}>v{process.env.NEXT_PUBLIC_APP_VERSION}</p>
-        <p className="text-xs text-center mb-6" style={{ color: "rgba(255,255,255,0.2)" }}>Powered by Claude</p>
+        <p className="text-xs text-center mb-4" style={{ color: "rgba(255,255,255,0.2)" }}>Powered by Claude</p>
+
+        {/* Beta banner */}
+        <div className="max-w-xl mx-auto mb-6 px-4 py-3 rounded-2xl text-center"
+          style={{ background: "rgba(96,165,250,0.08)", border: "1px solid rgba(96,165,250,0.25)" }}>
+          <p className="text-xs font-semibold mb-1" style={{ color: "#60a5fa" }}>🚧 Beta — We&apos;d love your feedback!</p>
+          <p className="text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>
+            This app is still in beta testing. Found a bug or have a suggestion?{" "}
+            Use the <span style={{ color: "rgba(255,255,255,0.6)" }}>Feedback</span> button above or email{" "}
+            <a href="mailto:mark.britton@gmail.com" style={{ color: "#60a5fa" }}>mark.britton@gmail.com</a>
+          </p>
+        </div>
 
         {/* 2-column layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start pb-10">
