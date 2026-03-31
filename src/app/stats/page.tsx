@@ -70,7 +70,9 @@ export default function StatsPage() {
                   + (stats.tutorOutputTokens / 1_000_000) * HAIKU_OUTPUT_PER_M
   const totalCost = parseCost + tutorCost
   const totalTokens = stats.parseInputTokens + stats.parseOutputTokens + stats.tutorInputTokens + stats.tutorOutputTokens
-  const lastUpdated = stats.lastUpdated?.toDate?.()?.toLocaleString() ?? "—"
+  const lastUpdated = stats.lastUpdated
+    ? new Date((stats.lastUpdated as unknown as { _seconds: number })._seconds * 1000).toLocaleString()
+    : "—"
 
   return (
     <main className="min-h-screen px-4 py-8" style={{ background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)" }}>
