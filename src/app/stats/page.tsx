@@ -13,7 +13,7 @@ type Stats = {
   parseOutputTokens: number
   tutorInputTokens: number
   tutorOutputTokens: number
-  lastUpdated: { toDate: () => Date }
+  lastUpdated: { toDate?: () => Date; _seconds?: number }
 }
 
 // Claude pricing (per 1M tokens, as of 2025)
