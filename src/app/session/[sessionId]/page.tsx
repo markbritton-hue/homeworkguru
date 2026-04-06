@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
-import { loadSession } from "@/lib/firestore"
+import { loadSession, deleteProblem } from "@/lib/firestore"
 import { useAuth } from "@/contexts/AuthContext"
 import { SessionHeader } from "@/components/session/SessionHeader"
 import { ProblemCard } from "@/components/session/ProblemCard"
@@ -103,7 +103,16 @@ export default function SessionPage() {
 
         <div className="space-y-3 mb-6">
           {session.problems.map((problem) => (
-            <ProblemCard key={problem.index} problem={problem} sessionId={sessionId} />
+            <ProblemCard
+              key={problem.index}
+              problem={problem}
+              sessionId={sessionId}
+              onDelete={async (index) => {
+                if (!user) return
+                await deleteProblem(user.uid, sessionId, index)
+                setSession((s) => s ? { ...s, problems: s.problems.filter((p) => p.index !== index) } : s)
+              }}
+            />
           ))}
         </div>
 

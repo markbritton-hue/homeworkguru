@@ -40,6 +40,13 @@ export async function deleteSession(uid: string, sessionId: string): Promise<voi
   await deleteDoc(sessionDoc(uid, sessionId))
 }
 
+export async function deleteProblem(uid: string, sessionId: string, problemIndex: number): Promise<void> {
+  const session = await loadSession(uid, sessionId)
+  if (!session) return
+  const problems = session.problems.filter((p) => p.index !== problemIndex)
+  await updateDoc(sessionDoc(uid, sessionId), { problems })
+}
+
 export async function updateProblemStatus(
   uid: string,
   sessionId: string,
