@@ -232,14 +232,14 @@ function HomePageInner() {
     if (images.length === 0 || !user) return
     setIsParsing(true); setError(null)
     try {
+      const compressedUrls = await Promise.all(images.map((img) => compressImage(img.dataUrl)))
       const response = await fetch("/api/parse-homework", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ images: images.map((img) => ({ imageBase64: img.dataUrl, mimeType: img.mimeType })) }),
+        body: JSON.stringify({ images: compressedUrls.map((url) => ({ imageBase64: url, mimeType: "image/jpeg" as const })) }),
       })
       const data = await response.json()
       if (!response.ok) { setError(data.error || "Failed to read homework. Please try again."); return }
-      const compressedUrls = await Promise.all(images.map((img) => compressImage(img.dataUrl)))
       const subjects = [...new Set(data.problems.map((p: { subject: string }) => p.subject))] as string[]
       const autoName = assignmentName.trim() || `${subjects.slice(0, 2).join(" & ")} — ${new Date().toLocaleDateString()}`
       const sessionId = crypto.randomUUID()
@@ -293,7 +293,7 @@ function HomePageInner() {
       const response = await fetch("/api/parse-homework", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ images: [{ imageBase64: dataUrl, mimeType: "image/jpeg" }] }),
+        body: JSON.stringify({ images: [{ imageBase64: compressed, mimeType: "image/jpeg" }] }),
       })
       const data = await response.json()
       if (!response.ok) {

@@ -14,7 +14,7 @@ export function UploadZone({ onImageSelected }: UploadZoneProps) {
   const handleFile = useCallback(
     async (file: File) => {
       setError(null)
-      if (file.size > 10 * 1024 * 1024) { setError("Image must be under 10MB."); return }
+      if (file.size > 4 * 1024 * 1024) { setError("Image is too large. Please resize it to under 4MB and try again."); return }
       const mimeType = getImageMimeType(file)
       if (!mimeType) { setError("Please upload a JPEG, PNG, WebP, or GIF image."); return }
       const dataUrl = await fileToBase64(file)
@@ -55,7 +55,7 @@ export function UploadZone({ onImageSelected }: UploadZoneProps) {
             </p>
             <p className="text-sm mt-1" style={{ color: "var(--muted)" }}>or click to browse files</p>
           </div>
-          <p className="text-xs" style={{ color: "var(--muted2)" }}>JPEG · PNG · WebP · up to 10MB</p>
+          <p className="text-xs" style={{ color: "var(--muted2)" }}>JPEG · PNG · WebP · up to 4MB</p>
         </div>
       </div>
 
