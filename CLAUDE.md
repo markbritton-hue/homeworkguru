@@ -6,7 +6,7 @@
 - React
 - Tailwind CSS
 - Firebase Auth + Firestore
-- Groq API for vision/chat
+- Anthropic (Claude) API for vision/chat
 - KaTeX for math rendering
 
 ## Purpose
@@ -42,8 +42,8 @@
 - `src/contexts/AuthContext.tsx` for auth state
 - `src/contexts/SessionContext.tsx` for active session state
 - `src/lib/firebase.ts` for Firebase setup
-- `src/lib/groq.ts` for Groq setup
-- `src/lib/types/index.ts` for shared types
+- `src/lib/claude.ts` for Anthropic (Claude) setup
+- `src/types/index.ts` for shared types
 
 ## Guardrails
 - Ask before changing guru/Socratic rules.

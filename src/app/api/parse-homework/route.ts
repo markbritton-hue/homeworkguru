@@ -5,6 +5,8 @@ import { stripDataUrlPrefix } from "@/lib/image-utils"
 import type { ParseHomeworkRequest } from "@/types"
 
 const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"]
+const MAX_IMAGES = 10
+const MAX_IMAGE_BYTES = 4 * 1024 * 1024
 
 export async function POST(req: NextRequest) {
   let body: ParseHomeworkRequest
@@ -20,9 +22,18 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "At least one image is required" }, { status: 400 })
   }
 
+  if (images.length > MAX_IMAGES) {
+    return NextResponse.json({ error: `Too many images (max ${MAX_IMAGES})` }, { status: 400 })
+  }
+
   for (const img of images) {
     if (!ALLOWED_MIME_TYPES.includes(img.mimeType)) {
       return NextResponse.json({ error: "Unsupported image type" }, { status: 400 })
+    }
+    // base64 encodes 3 bytes as 4 chars, so this approximates decoded size
+    const approxBytes = (img.imageBase64?.length ?? 0) * 0.75
+    if (approxBytes > MAX_IMAGE_BYTES) {
+      return NextResponse.json({ error: "Image too large (max 4MB)" }, { status: 413 })
     }
   }
 

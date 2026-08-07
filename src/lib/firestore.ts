@@ -6,6 +6,7 @@ import {
   getDocs,
   deleteDoc,
   updateDoc,
+  runTransaction,
 } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import type { HomeworkSession, ChatMessage, ProblemStatus } from "@/types"
@@ -41,10 +42,14 @@ export async function deleteSession(uid: string, sessionId: string): Promise<voi
 }
 
 export async function deleteProblem(uid: string, sessionId: string, problemIndex: number): Promise<void> {
-  const session = await loadSession(uid, sessionId)
-  if (!session) return
-  const problems = session.problems.filter((p) => p.index !== problemIndex)
-  await updateDoc(sessionDoc(uid, sessionId), { problems })
+  const ref = sessionDoc(uid, sessionId)
+  await runTransaction(db, async (tx) => {
+    const snap = await tx.get(ref)
+    if (!snap.exists()) return
+    const session = snap.data() as HomeworkSession
+    const problems = session.problems.filter((p) => p.index !== problemIndex)
+    tx.update(ref, { problems })
+  })
 }
 
 export async function updateProblemStatus(
@@ -53,10 +58,16 @@ export async function updateProblemStatus(
   problemIndex: number,
   status: ProblemStatus
 ): Promise<void> {
-  const session = await loadSession(uid, sessionId)
-  if (!session) return
-  session.problems[problemIndex].status = status
-  await updateDoc(sessionDoc(uid, sessionId), { problems: session.problems })
+  const ref = sessionDoc(uid, sessionId)
+  await runTransaction(db, async (tx) => {
+    const snap = await tx.get(ref)
+    if (!snap.exists()) return
+    const session = snap.data() as HomeworkSession
+    const problem = session.problems.find((p) => p.index === problemIndex)
+    if (!problem) return
+    problem.status = status
+    tx.update(ref, { problems: session.problems })
+  })
 }
 
 export async function saveWorkedSolution(
@@ -65,11 +76,15 @@ export async function saveWorkedSolution(
   problemIndex: number,
   working: string
 ): Promise<void> {
-  const session = await loadSession(uid, sessionId)
-  if (!session) return
-  const workedSolutions = session.workedSolutions ?? {}
-  workedSolutions[problemIndex] = working
-  await updateDoc(sessionDoc(uid, sessionId), { workedSolutions })
+  const ref = sessionDoc(uid, sessionId)
+  await runTransaction(db, async (tx) => {
+    const snap = await tx.get(ref)
+    if (!snap.exists()) return
+    const session = snap.data() as HomeworkSession
+    const workedSolutions = session.workedSolutions ?? {}
+    workedSolutions[problemIndex] = working
+    tx.update(ref, { workedSolutions })
+  })
 }
 
 export async function appendChatMessage(
@@ -78,9 +93,13 @@ export async function appendChatMessage(
   problemIndex: number,
   message: ChatMessage
 ): Promise<void> {
-  const session = await loadSession(uid, sessionId)
-  if (!session) return
-  if (!session.chatHistory[problemIndex]) session.chatHistory[problemIndex] = []
-  session.chatHistory[problemIndex].push(message)
-  await updateDoc(sessionDoc(uid, sessionId), { chatHistory: session.chatHistory })
+  const ref = sessionDoc(uid, sessionId)
+  await runTransaction(db, async (tx) => {
+    const snap = await tx.get(ref)
+    if (!snap.exists()) return
+    const session = snap.data() as HomeworkSession
+    if (!session.chatHistory[problemIndex]) session.chatHistory[problemIndex] = []
+    session.chatHistory[problemIndex].push(message)
+    tx.update(ref, { chatHistory: session.chatHistory })
+  })
 }

@@ -62,7 +62,8 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
     async (userText: string, isInitial = false) => {
       if (!session || !user) return
 
-      const problem = session.problems[problemIndex]
+      const problem = session.problems.find((p) => p.index === problemIndex)
+      if (!problem) return
       const userMsg: ChatMessageType = {
         id: crypto.randomUUID(),
         role: "user",
@@ -75,7 +76,7 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
       if (!isInitial) {
         updatedMessages.push(userMsg)
         setMessages(updatedMessages)
-        appendChatMessage(user.uid, sessionId, problemIndex, userMsg)
+        await appendChatMessage(user.uid, sessionId, problemIndex, userMsg)
       }
 
       setIsLoading(true)
@@ -153,10 +154,10 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
           content: finalContent,
           timestamp: Date.now(),
         }
-        appendChatMessage(user.uid, sessionId, problemIndex, finalAiMsg)
+        await appendChatMessage(user.uid, sessionId, problemIndex, finalAiMsg)
 
         if (solved) {
-          updateProblemStatus(user.uid, sessionId, problemIndex, "solved")
+          await updateProblemStatus(user.uid, sessionId, problemIndex, "solved")
           setIsSolved(true)
           // Refresh session
           const updated = await loadSession(user.uid, sessionId)
@@ -210,7 +211,8 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
       const visible = existing.filter((m) => !m.isInitial)
       setMessages(visible)
 
-      const alreadySolved = s.problems[problemIndex]?.status === "solved"
+      const currentProblem = s.problems.find((p) => p.index === problemIndex)
+      const alreadySolved = currentProblem?.status === "solved"
       setIsSolved(alreadySolved)
       if (alreadySolved && s.workedSolutions?.[problemIndex]) {
         setWorkingOut(s.workedSolutions[problemIndex])
@@ -219,7 +221,7 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
       if (existing.length === 0 && !alreadySolved) {
         updateProblemStatus(user.uid, sessionId, problemIndex, "in_progress")
         sendMessage(INITIAL_USER_MESSAGE, true)
-      } else if (!alreadySolved && s.problems[problemIndex]?.status === "not_started") {
+      } else if (!alreadySolved && currentProblem?.status === "not_started") {
         updateProblemStatus(user.uid, sessionId, problemIndex, "in_progress")
       }
     })
@@ -240,7 +242,14 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
     )
   }
 
-  const problem = session.problems[problemIndex]
+  const problem = session.problems.find((p) => p.index === problemIndex)
+  if (!problem) {
+    return (
+      <div className="flex-1 flex items-center justify-center">
+        <p className="text-sm" style={{ color: "var(--muted)" }}>Problem not found.</p>
+      </div>
+    )
+  }
   const nextProblem =
     session.problems.find((p) => p.index > problemIndex && p.status !== "solved") || null
   const solvedCount = session.problems.filter((p) => p.status === "solved").length
