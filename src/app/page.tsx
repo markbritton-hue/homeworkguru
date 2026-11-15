@@ -267,7 +267,7 @@ function HomePageInner() {
       reader.onload = (e) => {
         const dataUrl = e.target?.result as string
         setImages([{ dataUrl, mimeType: "image/jpeg" }])
-        setAssignmentName("Demo Assignment")
+        setAssignmentName("Demo Assignment – Geometry Problems")
       }
       reader.readAsDataURL(blob)
     } catch {
@@ -304,7 +304,7 @@ function HomePageInner() {
 
       const sessionId = crypto.randomUUID()
       const session: HomeworkSession = {
-        sessionId, name: "Demo Assignment", createdAt: Date.now(),
+        sessionId, name: "Demo Assignment – Geometry Problems", createdAt: Date.now(),
         imageDataUrls: [],
         problems: data.problems.map((p: { index: number; text: string; subject: string }) => ({ ...p, status: "not_started" as const })),
         chatHistory: {},
