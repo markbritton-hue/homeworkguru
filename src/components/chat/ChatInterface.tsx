@@ -66,8 +66,8 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
   useEffect(() => {
     setShowStarters(false)
     if (isLoading || isSolved || hasUserMessage || !hasGuruReply || input) return
-    // Demo users are brand new, so nudge them sooner
-    const t = setTimeout(() => setShowStarters(true), user?.isAnonymous ? 8000 : 20000)
+    // Demo users are brand new, so show them example prompts right away
+    const t = setTimeout(() => setShowStarters(true), user?.isAnonymous ? 0 : 20000)
     return () => clearTimeout(t)
   }, [isLoading, isSolved, hasUserMessage, hasGuruReply, input, user?.isAnonymous])
 
@@ -331,10 +331,14 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
               <div className="mb-2 px-3 py-2 rounded-xl"
                 style={{ background: "rgba(96,165,250,0.08)", border: "1px solid rgba(96,165,250,0.3)" }}>
                 <p className="text-xs font-semibold mb-2" style={{ color: "#60a5fa" }}>
-                  Not sure what to say? Tap one to get started, then finish it in your own words:
+                  {user?.isAnonymous
+                    ? "Ask your guru anything! Tap an example to try it:"
+                    : "Not sure what to say? Tap one to get started, then finish it in your own words:"}
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {[
+                    // Formula example only makes sense for math-style problems
+                    ...(user?.isAnonymous && !/civic|government|social|history/i.test(problem.subject) ? ["What formula do I use?"] : []),
                     "I'm not sure where to start.",
                     "I think this question is asking me to…",
                     "The first thing I notice is…",
