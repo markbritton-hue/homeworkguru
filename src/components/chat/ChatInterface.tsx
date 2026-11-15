@@ -63,15 +63,14 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
   // Demo = anonymous guest, or one of the sample "Demo Assignment" sessions (new signed-up users get those too)
   const isDemo = !!user?.isAnonymous || !!session?.name.startsWith("Demo Assignment")
   const hasUserMessage = messages.some((m) => m.role === "user")
-  const hasGuruReply = messages.some((m) => m.role === "assistant" && m.content)
   const [showStarters, setShowStarters] = useState(false)
   useEffect(() => {
     setShowStarters(false)
-    if (isLoading || isSolved || hasUserMessage || !hasGuruReply || input) return
+    if (isLoading || isSolved || hasUserMessage || !session || input) return
     // Demo users are brand new, so show them example prompts right away
     const t = setTimeout(() => setShowStarters(true), isDemo ? 0 : 20000)
     return () => clearTimeout(t)
-  }, [isLoading, isSolved, hasUserMessage, hasGuruReply, input, isDemo])
+  }, [isLoading, isSolved, hasUserMessage, session, input, isDemo])
 
   const sendMessage = useCallback(
     async (userText: string, isInitial = false) => {
@@ -299,7 +298,7 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
           )}
 
           {/* Demo-only guru pop-up suggesting what to ask first */}
-          {isDemo && !isSolved && !isLoading && hasGuruReply && !hasUserMessage && (
+          {isDemo && !isSolved && !isLoading && !hasUserMessage && (
             <div className="flex justify-start mb-4 animate-pulse">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/Gurulogo.png" alt="Guru" className="flex-shrink-0 w-20 h-20 mr-2 mt-0.5" />
