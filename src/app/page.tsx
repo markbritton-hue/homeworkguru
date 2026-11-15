@@ -187,6 +187,11 @@ function HomePageInner() {
       let loaded: typeof sessions = []
       try {
         loaded = await listSessions(uid)
+        // Starting a new demo (/demo -> /?demo=1) as a guest wipes any previous demo data
+        if (isDemo && user.isAnonymous && loaded.length > 0) {
+          await Promise.all(loaded.map((s) => deleteSession(uid, s.sessionId)))
+          loaded = []
+        }
         loaded.sort((a, b) => b.createdAt - a.createdAt)
         setSessions(loaded)
       } catch (err) {
