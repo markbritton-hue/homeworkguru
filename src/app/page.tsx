@@ -279,40 +279,46 @@ function HomePageInner() {
     setIsParsing(true)
     setError(null)
     try {
-      // Fetch demo image
-      const res = await fetch("/gemwork.jpg")
-      const blob = await res.blob()
-      const dataUrl = await new Promise<string>((resolve) => {
-        const reader = new FileReader()
-        reader.onload = (e) => resolve(e.target?.result as string)
-        reader.readAsDataURL(blob)
-      })
-      const compressed = await compressImage(dataUrl)
+      const demos = [
+        { src: "/gemwork.jpg", name: "Demo Assignment – Geometry Problems" },
+        { src: "/civishomework.png", name: "Demo Assignment – Civics Questions" },
+      ]
+      const now = Date.now()
 
-      // Parse problems
-      const response = await fetch("/api/parse-homework", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ images: [{ imageBase64: compressed, mimeType: "image/jpeg" }] }),
-      })
-      const data = await response.json()
-      if (!response.ok) {
-        setError(data.error || "Failed to read demo homework.")
-        setShowUpload(true)
-        return
+      const createDemo = async ({ src, name }: { src: string; name: string }, i: number) => {
+        // Fetch demo image
+        const res = await fetch(src)
+        const blob = await res.blob()
+        const dataUrl = await new Promise<string>((resolve) => {
+          const reader = new FileReader()
+          reader.onload = (e) => resolve(e.target?.result as string)
+          reader.readAsDataURL(blob)
+        })
+        const compressed = await compressImage(dataUrl)
+
+        // Parse problems
+        const response = await fetch("/api/parse-homework", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ images: [{ imageBase64: compressed, mimeType: "image/jpeg" }] }),
+        })
+        const data = await response.json()
+        if (!response.ok) throw new Error(data.error || "Failed to read demo homework.")
+
+        const session: HomeworkSession = {
+          // Earlier demos get a later createdAt so geometry stays on top of the list
+          sessionId: crypto.randomUUID(), name, createdAt: now - i,
+          imageDataUrls: [],
+          problems: data.problems.map((p: { index: number; text: string; subject: string }) => ({ ...p, status: "not_started" as const })),
+          chatHistory: {},
+        }
+        await saveSession(uid, session, [compressed])
+        return session
       }
 
-      const sessionId = crypto.randomUUID()
-      const session: HomeworkSession = {
-        sessionId, name: "Demo Assignment – Geometry Problems", createdAt: Date.now(),
-        imageDataUrls: [],
-        problems: data.problems.map((p: { index: number; text: string; subject: string }) => ({ ...p, status: "not_started" as const })),
-        chatHistory: {},
-      }
+      const created = await Promise.all(demos.map(createDemo))
 
-      await saveSession(uid, session, [compressed])
-
-      setSessions([session])
+      setSessions(created)
       setShowUpload(false)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong loading the demo.")
