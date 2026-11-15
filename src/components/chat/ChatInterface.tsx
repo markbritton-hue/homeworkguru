@@ -58,6 +58,18 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
     }
   }, [isLoading, isSolved])
 
+  // First-time nudge: if the student hasn't typed anything 20s after the guru's
+  // first reply, offer tappable starter phrases (they fill the input, never send).
+  const hasUserMessage = messages.some((m) => m.role === "user")
+  const hasGuruReply = messages.some((m) => m.role === "assistant" && m.content)
+  const [showStarters, setShowStarters] = useState(false)
+  useEffect(() => {
+    setShowStarters(false)
+    if (isLoading || isSolved || hasUserMessage || !hasGuruReply || input) return
+    const t = setTimeout(() => setShowStarters(true), 20000)
+    return () => clearTimeout(t)
+  }, [isLoading, isSolved, hasUserMessage, hasGuruReply, input])
+
   const sendMessage = useCallback(
     async (userText: string, isInitial = false) => {
       if (!session || !user) return
@@ -312,6 +324,31 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
                 <p className="text-xs font-semibold" style={{ color: "#60a5fa" }}>
                   Type your answer or question to the Guru here!
                 </p>
+              </div>
+            )}
+            {showStarters && (
+              <div className="mb-2 px-3 py-2 rounded-xl"
+                style={{ background: "rgba(96,165,250,0.08)", border: "1px solid rgba(96,165,250,0.3)" }}>
+                <p className="text-xs font-semibold mb-2" style={{ color: "#60a5fa" }}>
+                  Not sure what to say? Tap one to get started, then finish it in your own words:
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    "I'm not sure where to start.",
+                    "I think this question is asking me to…",
+                    "The first thing I notice is…",
+                    "Can you help me understand what this is asking?",
+                  ].map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => { setInput(s); setShowStarters(false); requestAnimationFrame(() => chatInputRef.current?.focus()) }}
+                      className="px-3 py-1 rounded-full text-xs font-semibold transition-all hover:-translate-y-0.5"
+                      style={{ background: "rgba(96,165,250,0.15)", border: "1px solid rgba(96,165,250,0.35)", color: "#93c5fd" }}
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
               </div>
             )}
             <ChatInput
