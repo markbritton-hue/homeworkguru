@@ -66,9 +66,10 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
   useEffect(() => {
     setShowStarters(false)
     if (isLoading || isSolved || hasUserMessage || !hasGuruReply || input) return
-    const t = setTimeout(() => setShowStarters(true), 20000)
+    // Demo users are brand new, so nudge them sooner
+    const t = setTimeout(() => setShowStarters(true), user?.isAnonymous ? 8000 : 20000)
     return () => clearTimeout(t)
-  }, [isLoading, isSolved, hasUserMessage, hasGuruReply, input])
+  }, [isLoading, isSolved, hasUserMessage, hasGuruReply, input, user?.isAnonymous])
 
   const sendMessage = useCallback(
     async (userText: string, isInitial = false) => {
@@ -358,6 +359,7 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
               onChange={setInput}
               onSubmit={handleSubmit}
               disabled={isLoading}
+              placeholder={user?.isAnonymous && !hasUserMessage ? "Try: I think this question is asking me to…" : undefined}
             />
             <p className="text-xs text-center mt-2" style={{ color: "var(--muted2)" }}>
               Enter to send · Shift+Enter for new line · Claude Haiku
