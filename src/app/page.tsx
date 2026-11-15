@@ -258,16 +258,16 @@ function HomePageInner() {
     }
   }
 
-  const handleDemo = async () => {
+  const handleDemo = async (src = "/gemwork.jpg", mimeType: MimeType = "image/jpeg", name = "Demo Assignment – Geometry Problems") => {
     setError(null)
     try {
-      const res = await fetch("/gemwork.jpg")
+      const res = await fetch(src)
       const blob = await res.blob()
       const reader = new FileReader()
       reader.onload = (e) => {
         const dataUrl = e.target?.result as string
-        setImages([{ dataUrl, mimeType: "image/jpeg" }])
-        setAssignmentName("Demo Assignment – Geometry Problems")
+        setImages([{ dataUrl, mimeType }])
+        setAssignmentName(name)
       }
       reader.readAsDataURL(blob)
     } catch {
@@ -348,9 +348,16 @@ function HomePageInner() {
       <img src="/HomeworkguruLogo.png" alt="Homework Guru" style={{ height: "100px", objectFit: "contain" }} />
       <p className="text-base font-semibold" style={{ color: "rgba(255,255,255,0.8)" }}>Setting up your demo assignment…</p>
       <p className="text-sm" style={{ color: "rgba(255,255,255,0.4)" }}>Finding problems in your homework</p>
-      <p className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.6)", marginTop: "8px" }}>This is a picture of a Gemomentry Paper</p>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/gemwork.jpg" alt="Demo homework sheet" style={{ maxWidth: "320px", width: "100%", borderRadius: "12px", border: "1px solid rgba(96,165,250,0.3)", marginTop: "8px", opacity: 0.85 }} />
+      <p className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.6)", marginTop: "8px" }}>These are pictures of a Geometry paper and a Civics paper</p>
+      <div className="flex flex-wrap items-start justify-center gap-4 px-4">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/gemwork.jpg" alt="Demo geometry homework sheet" style={{ maxWidth: "320px", width: "100%", borderRadius: "12px", border: "1px solid rgba(96,165,250,0.3)", marginTop: "8px", opacity: 0.85 }} />
+        {/* Civics sheet, cropped to the first 2 questions */}
+        <div style={{ maxWidth: "320px", width: "100%", aspectRatio: "690 / 500", overflow: "hidden", borderRadius: "12px", border: "1px solid rgba(96,165,250,0.3)", marginTop: "8px", opacity: 0.85 }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/civishomework.png" alt="Demo civics homework sheet, first two questions" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }} />
+        </div>
+      </div>
       <div className="flex gap-1.5 mt-2">
         {[0,1,2].map(i => (
           <div key={i} className="w-2 h-2 rounded-full animate-bounce" style={{ background: "#60a5fa", animationDelay: `${i * 0.15}s` }} />
@@ -460,17 +467,23 @@ function HomePageInner() {
                             Step 1
                           </span>
                         )}
-                        <button
-                          onClick={handleDemo}
-                          className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all hover:-translate-y-0.5"
-                          style={{ background: "rgba(167,139,250,0.15)", border: "1px solid rgba(167,139,250,0.35)", color: "#c4b5fd", boxShadow: "0 4px 12px rgba(0,0,0,0.2)" }}
-                        >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
-                          Try Demo Assignment
-                        </button>
+                        {[
+                          { label: "Try Demo: Geometry", src: "/gemwork.jpg", mime: "image/jpeg" as MimeType, name: "Demo Assignment – Geometry Problems" },
+                          { label: "Try Demo: Civics", src: "/civishomework.png", mime: "image/png" as MimeType, name: "Demo Assignment – Civics Questions" },
+                        ].map(({ label, src, mime, name }) => (
+                          <button
+                            key={label}
+                            onClick={() => handleDemo(src, mime, name)}
+                            className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all hover:-translate-y-0.5"
+                            style={{ background: "rgba(167,139,250,0.15)", border: "1px solid rgba(167,139,250,0.35)", color: "#c4b5fd", boxShadow: "0 4px 12px rgba(0,0,0,0.2)" }}
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            {label}
+                          </button>
+                        ))}
                       </div>
                     </div>
                   </>
