@@ -60,6 +60,8 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
 
   // First-time nudge: if the student hasn't typed anything 20s after the guru's
   // first reply, offer tappable starter phrases (they fill the input, never send).
+  // Demo = anonymous guest, or one of the sample "Demo Assignment" sessions (new signed-up users get those too)
+  const isDemo = !!user?.isAnonymous || !!session?.name.startsWith("Demo Assignment")
   const hasUserMessage = messages.some((m) => m.role === "user")
   const hasGuruReply = messages.some((m) => m.role === "assistant" && m.content)
   const [showStarters, setShowStarters] = useState(false)
@@ -67,9 +69,9 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
     setShowStarters(false)
     if (isLoading || isSolved || hasUserMessage || !hasGuruReply || input) return
     // Demo users are brand new, so show them example prompts right away
-    const t = setTimeout(() => setShowStarters(true), user?.isAnonymous ? 0 : 20000)
+    const t = setTimeout(() => setShowStarters(true), isDemo ? 0 : 20000)
     return () => clearTimeout(t)
-  }, [isLoading, isSolved, hasUserMessage, hasGuruReply, input, user?.isAnonymous])
+  }, [isLoading, isSolved, hasUserMessage, hasGuruReply, input, isDemo])
 
   const sendMessage = useCallback(
     async (userText: string, isInitial = false) => {
@@ -297,7 +299,7 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
           )}
 
           {/* Demo-only guru pop-up suggesting what to ask first */}
-          {user?.isAnonymous && !isSolved && !isLoading && hasGuruReply && !hasUserMessage && (
+          {isDemo && !isSolved && !isLoading && hasGuruReply && !hasUserMessage && (
             <div className="flex justify-start mb-4 animate-pulse">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/Gurulogo.png" alt="Guru" className="flex-shrink-0 w-20 h-20 mr-2 mt-0.5" />
@@ -345,14 +347,14 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
               <div className="mb-2 px-3 py-2 rounded-xl"
                 style={{ background: "rgba(96,165,250,0.08)", border: "1px solid rgba(96,165,250,0.3)" }}>
                 <p className="text-xs font-semibold mb-2" style={{ color: "#60a5fa" }}>
-                  {user?.isAnonymous
+                  {isDemo
                     ? "Ask your guru anything! Tap an example to try it:"
                     : "Not sure what to say? Tap one to get started, then finish it in your own words:"}
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {[
                     // Formula example only makes sense for math-style problems
-                    ...(user?.isAnonymous && !/civic|government|social|history/i.test(problem.subject) ? ["What formula do I use?"] : []),
+                    ...(isDemo && !/civic|government|social|history/i.test(problem.subject) ? ["What formula do I use?"] : []),
                     "I'm not sure where to start.",
                     "I think this question is asking me to…",
                     "The first thing I notice is…",
@@ -377,7 +379,7 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
               onChange={setInput}
               onSubmit={handleSubmit}
               disabled={isLoading}
-              placeholder={user?.isAnonymous && !hasUserMessage ? "Try: I think this question is asking me to…" : undefined}
+              placeholder={isDemo && !hasUserMessage ? "Try: I think this question is asking me to…" : undefined}
             />
             <p className="text-xs text-center mt-2" style={{ color: "var(--muted2)" }}>
               Enter to send · Shift+Enter for new line · Claude Haiku
