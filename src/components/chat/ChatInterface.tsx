@@ -296,6 +296,20 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
             </div>
           )}
 
+          {/* Demo-only guru pop-up suggesting what to ask first */}
+          {user?.isAnonymous && !isSolved && !isLoading && hasGuruReply && !hasUserMessage && (
+            <div className="flex justify-start mb-4 animate-pulse">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/Gurulogo.png" alt="Guru" className="flex-shrink-0 w-20 h-20 mr-2 mt-0.5" />
+              <div className="rounded-2xl rounded-bl-sm px-4 py-3 self-center text-sm font-semibold"
+                style={{ background: "var(--surface)", border: "1px solid rgba(96,165,250,0.4)", color: "#93c5fd", backdropFilter: "blur(10px)" }}>
+                {/civic|government|social|history/i.test(problem.subject)
+                  ? "Try asking what this question is really asking…"
+                  : "Try asking what the formula is…"}
+              </div>
+            </div>
+          )}
+
           <div ref={messagesEndRef} />
         </div>
       </div>
