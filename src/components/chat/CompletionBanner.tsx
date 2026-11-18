@@ -3,6 +3,9 @@
 import { useState } from "react"
 import Link from "next/link"
 import ReactMarkdown from "react-markdown"
+import remarkMath from "remark-math"
+import rehypeKatex from "rehype-katex"
+import "katex/dist/katex.min.css"
 import type { Problem } from "@/types"
 
 interface CompletionBannerProps {
@@ -47,7 +50,7 @@ export function CompletionBanner({ sessionId, nextProblem, totalProblems, solved
               style={{ background: "rgba(16,185,129,0.08)", border: "1px solid rgba(16,185,129,0.25)" }}>
               <p className="text-xs font-semibold mb-1.5" style={{ color: "var(--green)" }}>Final Answer</p>
               <div className="prose prose-sm max-w-none prose-invert prose-p:my-1 prose-ul:my-1 prose-ol:my-1 text-xs" style={{ color: "var(--text)" }}>
-                <ReactMarkdown>{finalAnswer}</ReactMarkdown>
+                <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>{finalAnswer}</ReactMarkdown>
               </div>
             </div>
           )}
@@ -68,7 +71,7 @@ export function CompletionBanner({ sessionId, nextProblem, totalProblems, solved
               {showWorking && workingOut && (
                 <div className="px-4 pb-3" style={{ borderTop: "1px solid rgba(16,185,129,0.15)" }}>
                   <div className="prose prose-sm max-w-none prose-invert prose-p:my-1 prose-ul:my-1 prose-ol:my-1 text-xs mt-2" style={{ color: "var(--text)" }}>
-                    <ReactMarkdown>{workingOut}</ReactMarkdown>
+                    <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>{workingOut}</ReactMarkdown>
                   </div>
                 </div>
               )}
