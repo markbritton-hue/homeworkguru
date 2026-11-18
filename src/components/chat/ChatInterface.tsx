@@ -29,6 +29,7 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
   const [totalTokens, setTotalTokens] = useState(0)
   const [workingOut, setWorkingOut] = useState<string | undefined>(undefined)
   const [showHint, setShowHint] = useState(true)
+  const [hintIndex, setHintIndex] = useState(0)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const chatInputRef = useRef<ChatInputHandle>(null)
   const initialized = useRef(false)
@@ -255,6 +256,48 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
     })
   }, [sessionId, problemIndex, sendMessage, user])
 
+  const getHint = () => {
+    if (!problem) return
+    const guruCount = messages.filter((m) => m.role === "assistant").length
+    const isGeomArea = /geometry/i.test(problem.subject) && /area/i.test(problem.text)
+    const isCivics = /civic|government|social|history/i.test(problem.subject)
+
+    let hints: string[]
+    if (isGeomArea) {
+      // Extract base and height from problem text for specific hints
+      const baseMatch = problem.text.match(/[Bb]ase\s*=\s*([\d.]+\s*\w+)/)
+      const heightMatch = problem.text.match(/[Hh]eight\s*=\s*([\d.]+\s*\w+)/)
+      const base = baseMatch?.[1] ?? "the base"
+      const height = heightMatch?.[1] ?? "the height"
+      hints = [
+        "I can see there are measurements on the triangle. I think I need the base and the height?",
+        "I think the formula for the area of a triangle is ½ × base × height. Is that right?",
+        `So I need to multiply ${base} by ${height} and then divide by 2?`,
+        `Let me try: ½ × ${base} × ${height} = …`,
+      ]
+    } else if (isCivics) {
+      hints = [
+        "I think this question is asking about how citizens interact with their government.",
+        "I can rule out some options — let me think about which one is most direct.",
+        "I think the answer is the one about elected officials because they directly represent us.",
+        "My answer is B because elected officials act on behalf of the citizens who voted for them.",
+      ]
+    } else {
+      hints = [
+        "I'm not sure where to start — can you give me a question to think about?",
+        "I think the first step is to identify what the question is really asking.",
+        "Let me try to work through this step by step.",
+      ]
+    }
+
+    // Pick hint based on conversation progress, cycling if we run out
+    const idx = guruCount < hints.length ? guruCount : hintIndex % hints.length
+    setInput(hints[idx])
+    setHintIndex((prev) => prev + 1)
+    setShowStarters(false)
+    requestAnimationFrame(() => chatInputRef.current?.focus())
+  }
+
   const handleSubmit = () => {
     const text = input.trim()
     if (!text || isLoading || isSolved) return
@@ -397,15 +440,30 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
                 </div>
               </div>
             )}
-            <ChatInput
-              key={isLoading ? "loading" : "ready"}
-              ref={chatInputRef}
-              value={input}
-              onChange={setInput}
-              onSubmit={handleSubmit}
-              disabled={isLoading}
-              placeholder={isDemo && !hasUserMessage ? "Try: I think this question is asking me to…" : undefined}
-            />
+            <div className="flex items-end gap-2">
+              <div className="flex-1">
+                <ChatInput
+                  key={isLoading ? "loading" : "ready"}
+                  ref={chatInputRef}
+                  value={input}
+                  onChange={setInput}
+                  onSubmit={handleSubmit}
+                  disabled={isLoading}
+                  placeholder={isDemo && !hasUserMessage ? "Try: I think this question is asking me to…" : undefined}
+                />
+              </div>
+              {isDemo && !isSolved && (
+                <button
+                  onClick={getHint}
+                  disabled={isLoading}
+                  className="flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all hover:-translate-y-0.5 disabled:opacity-40"
+                  style={{ background: "rgba(251,191,36,0.15)", border: "1px solid rgba(251,191,36,0.4)", color: "#fbbf24", marginBottom: "1px" }}
+                  title="Get a hint"
+                >
+                  💡 Hint
+                </button>
+              )}
+            </div>
             <p className="text-xs text-center mt-2" style={{ color: "var(--muted2)" }}>
               Enter to send · Shift+Enter for new line · Gemini Flash Lite
             </p>
