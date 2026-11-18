@@ -381,7 +381,7 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
               placeholder={isDemo && !hasUserMessage ? "Try: I think this question is asking me to…" : undefined}
             />
             <p className="text-xs text-center mt-2" style={{ color: "var(--muted2)" }}>
-              Enter to send · Shift+Enter for new line · Claude Haiku
+              Enter to send · Shift+Enter for new line · Gemini Flash Lite
             </p>
           </div>
         </div>

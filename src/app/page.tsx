@@ -408,7 +408,16 @@ function HomePageInner() {
                 Found a bug or have a suggestion?{" "}
                 <a href="mailto:mark.britton@gmail.com" style={{ color: "#60a5fa" }}>mark.britton@gmail.com</a>
               </p>
-              <p className="text-xs mt-1" style={{ color: "rgba(255,255,255,0.2)" }}>v{process.env.NEXT_PUBLIC_APP_VERSION} · Powered by Claude</p>
+              <div className="flex items-center gap-2 mt-1">
+                <p className="text-xs" style={{ color: "rgba(255,255,255,0.2)" }}>v{process.env.NEXT_PUBLIC_APP_VERSION}</p>
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold"
+                  style={{ background: "rgba(26,115,232,0.15)", border: "1px solid rgba(26,115,232,0.35)", color: "#4a90d9" }}>
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2L9.5 9.5H2l6 4.5-2.5 7.5L12 17l6.5 4.5L16 14l6-4.5h-7.5z"/>
+                  </svg>
+                  Gemini Flash Lite
+                </span>
+              </div>
             </div>
           </div>
           {/* Right: buttons */}
