@@ -8,6 +8,45 @@ const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"
 const MAX_IMAGES = 10
 const MAX_IMAGE_BYTES = 4 * 1024 * 1024
 
+function normaliseBbox(
+  problems: Array<{ bbox?: { x: number; y: number; w: number; h: number }; page?: number }>
+) {
+  // If all values are already 0–100, nothing to do
+  const needsNorm = problems.some(
+    (p) => p.bbox && (p.bbox.x > 100 || p.bbox.y > 100 || p.bbox.w > 100 || p.bbox.h > 100)
+  )
+  if (!needsNorm) return problems
+
+  // Gemini uses an internal coordinate system (not actual pixels).
+  // Find the max extent per page to use as the effective canvas size.
+  const pageExtent = new Map<number, { maxX: number; maxY: number }>()
+  for (const p of problems) {
+    if (!p.bbox) continue
+    const page = p.page ?? 0
+    const cur = pageExtent.get(page) ?? { maxX: 0, maxY: 0 }
+    pageExtent.set(page, {
+      maxX: Math.max(cur.maxX, p.bbox.x + p.bbox.w),
+      maxY: Math.max(cur.maxY, p.bbox.y + p.bbox.h),
+    })
+  }
+
+  return problems.map((p) => {
+    if (!p.bbox) return p
+    const page = p.page ?? 0
+    const { maxX, maxY } = pageExtent.get(page) ?? { maxX: 1, maxY: 1 }
+    const pct = (v: number, max: number) => Math.round((v / max) * 100 * 10) / 10
+    return {
+      ...p,
+      bbox: {
+        x: pct(p.bbox.x, maxX),
+        y: pct(p.bbox.y, maxY),
+        w: pct(p.bbox.w, maxX),
+        h: pct(p.bbox.h, maxY),
+      },
+    }
+  })
+}
+
 export async function POST(req: NextRequest) {
   let body: ParseHomeworkRequest
   try {
@@ -83,8 +122,10 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    const normalisedProblems = normaliseBbox(problems)
+
     return NextResponse.json({
-      problems,
+      problems: normalisedProblems,
       usage: {
         input_tokens: usage?.promptTokenCount ?? 0,
         output_tokens: usage?.candidatesTokenCount ?? 0,

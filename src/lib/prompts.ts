@@ -2,15 +2,18 @@ export const PARSE_HOMEWORK_PROMPT = `Examine this homework image carefully. Ext
 
 Return ONLY a valid JSON array. No explanation, no markdown, no code fences. Each element must have:
 - "index": integer starting at 0
-- "text": the full problem text exactly as written, including all multiple choice options (e.g. "A. option text B. option text C. option text D. option text") if present
+- "text": the full problem text. Rules:
+  - Include all written text for the problem exactly as shown.
+  - Include all multiple choice options if present (e.g. "A. option text  B. option text  C. option text  D. option text").
+  - For diagram-based problems (geometry shapes, graphs, circuits, etc.) you MUST read and include every measurement, label, and number visible on or near the diagram — side lengths, angles, heights, bases, coordinates, units, etc. Do not describe the shape generically. Example: "Find the area of the triangle. Base = 5 in, Height = 5.45 in, Sides = 6 in, 6 in."
 - "subject": infer the academic subject (e.g., "Algebra", "Biology", "History", "Chemistry", "Geometry", "English", "Physics", "Calculus")
 - "page": which image this problem appears on, 0-indexed (default 0 if only one image provided)
-- "bbox": bounding box of the problem on its page as percentages 0–100. Object with "x" (left edge), "y" (top edge), "w" (width), "h" (height). Add ~3% padding around the problem content. Be as precise as possible.
+- "bbox": bounding box as PERCENTAGES of the image dimensions (values must be between 0 and 100 — NOT pixel coordinates). Object with "x" (left edge %), "y" (top edge %), "w" (width %), "h" (height %). Add ~3% padding. If the image is 900px wide and a problem starts 90px from the left and is 450px wide, that is x:10, w:50.
 
 If you cannot find any problems (e.g., the image is not a homework assignment), return an empty array: []
 
 Example output format:
-[{"index":0,"text":"Solve for x: 3x - 7 = 14","subject":"Algebra","page":0,"bbox":{"x":5,"y":10,"w":90,"h":12}},{"index":1,"text":"What is the powerhouse of the cell?","subject":"Biology","page":0,"bbox":{"x":5,"y":24,"w":90,"h":10}}]`
+[{"index":0,"text":"Solve for x: 3x - 7 = 14","subject":"Algebra","page":0,"bbox":{"x":5,"y":10,"w":90,"h":12}},{"index":1,"text":"Find the area of the triangle. Base = 12 in, Height = 5 in, Hypotenuse = 13 in.","subject":"Geometry","page":0,"bbox":{"x":5,"y":24,"w":45,"h":22}}]`
 
 export function buildTutorSystemPrompt(subject: string, problemText: string): string {
   return `You are a patient, encouraging Socratic tutor helping a high school student with a ${subject} problem.

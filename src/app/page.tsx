@@ -13,6 +13,22 @@ import type { HomeworkSession } from "@/types"
 type MimeType = "image/jpeg" | "image/png" | "image/webp" | "image/gif"
 interface ImageEntry { dataUrl: string; mimeType: MimeType }
 
+const DEMO_PROBLEMS: Record<string, Array<{ index: number; text: string; subject: string; page: number; bbox: { x: number; y: number; w: number; h: number } }>> = {
+  "/gemwork.jpg": [
+    { index: 0, text: "1) Find the area of the triangle.\nSides: 6 in, 6 in. Base: 5 in. Height: 5.45 in.", subject: "Geometry", page: 0, bbox: { x: 3, y: 12, w: 47, h: 32 } },
+    { index: 1, text: "2) Find the area of the triangle.\nSides: 3 yd, 5 yd (hypotenuse). Base: 4 yd.", subject: "Geometry", page: 0, bbox: { x: 52, y: 8, w: 45, h: 32 } },
+    { index: 2, text: "3) Find the area of the triangle.\nSides: 13 in (hypotenuse), 5 in (height). Base: 12 in.", subject: "Geometry", page: 0, bbox: { x: 3, y: 44, w: 47, h: 26 } },
+    { index: 3, text: "4) Find the area of the triangle.\nSides: 10 ft (hypotenuse), 6 ft. Base: 8 ft.", subject: "Geometry", page: 0, bbox: { x: 52, y: 44, w: 45, h: 26 } },
+    { index: 4, text: "5) Find the area of the triangle.\nSides: 8 ft, 8 ft. Base: 6 ft. Height: 7.42 ft.", subject: "Geometry", page: 0, bbox: { x: 3, y: 70, w: 47, h: 28 } },
+    { index: 5, text: "6) Find the area of the triangle.\nSides: 14 in, 14 in. Base: 12 in. Height: 12.65 in.", subject: "Geometry", page: 0, bbox: { x: 52, y: 70, w: 45, h: 28 } },
+  ],
+  "/civishomework.png": [
+    { index: 0, text: "1. Which of the following is most closely associated with the concept of civic life?\nA. Campaigning for a school board member.\nB. Going to a museum to see a new art exhibit.\nC. Watching an online documentary about the Civil War.\nD. Collecting travel information about different countries.", subject: "Civics", page: 0, bbox: { x: 4, y: 12, w: 92, h: 22 } },
+    { index: 1, text: "2. Which is the most direct way the wishes of citizens are represented in the United States government?\nA. Through the efforts of their employers.\nB. By the actions of their elected officials.\nC. Through the work of trade unions.\nD. By the actions of state universities.", subject: "Civics", page: 0, bbox: { x: 4, y: 40, w: 92, h: 22 } },
+    { index: 2, text: "3. Why is the Rule of Law an important concept underlying the Constitution of the United States?\nA. It supports the Executive Branch's control of the court system.\nB. It outlines why leaders are more important than citizens in making rules.\nC. It prevents countries from challenging the power of the United States.\nD. It protects all citizens by ensuring no one is above the law.", subject: "Civics", page: 0, bbox: { x: 4, y: 73, w: 92, h: 22 } },
+  ],
+}
+
 function LandingPage() {
   return (
     <main className="min-h-screen px-4 py-10 relative overflow-hidden"
@@ -285,13 +301,12 @@ function HomePageInner() {
     setError(null)
     try {
       const demos = [
-        { src: "/gemwork.jpg", name: "Demo Assignment – Geometry Problems" },
-        { src: "/civishomework.png", name: "Demo Assignment – Civics Questions" },
+        { src: "/gemwork.jpg", mime: "image/jpeg" as MimeType, name: "Demo Assignment – Geometry Problems" },
+        { src: "/civishomework.png", mime: "image/png" as MimeType, name: "Demo Assignment – Civics Questions" },
       ]
       const now = Date.now()
 
-      const createDemo = async ({ src, name }: { src: string; name: string }, i: number) => {
-        // Fetch demo image
+      const createDemo = async ({ src, mime, name }: { src: string; mime: MimeType; name: string }, i: number) => {
         const res = await fetch(src)
         const blob = await res.blob()
         const dataUrl = await new Promise<string>((resolve) => {
@@ -301,20 +316,10 @@ function HomePageInner() {
         })
         const compressed = await compressImage(dataUrl)
 
-        // Parse problems
-        const response = await fetch("/api/parse-homework", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ images: [{ imageBase64: compressed, mimeType: "image/jpeg" }] }),
-        })
-        const data = await response.json()
-        if (!response.ok) throw new Error(data.error || "Failed to read demo homework.")
-
         const session: HomeworkSession = {
-          // Earlier demos get a later createdAt so geometry stays on top of the list
           sessionId: crypto.randomUUID(), name, createdAt: now - i,
           imageDataUrls: [],
-          problems: data.problems.map((p: { index: number; text: string; subject: string }) => ({ ...p, status: "not_started" as const })),
+          problems: DEMO_PROBLEMS[src].map((p) => ({ ...p, status: "not_started" as const })),
           chatHistory: {},
         }
         await saveSession(uid, session, [compressed])
@@ -322,7 +327,6 @@ function HomePageInner() {
       }
 
       const created = await Promise.all(demos.map(createDemo))
-
       setSessions(created)
       setShowUpload(false)
     } catch (err) {
