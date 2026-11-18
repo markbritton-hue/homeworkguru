@@ -29,6 +29,81 @@ const DEMO_PROBLEMS: Record<string, Array<{ index: number; text: string; subject
   ],
 }
 
+function ScanStep({ onDone }: { onDone: () => void }) {
+  useEffect(() => {
+    const t = setTimeout(onDone, 1400)
+    return () => clearTimeout(t)
+  }, [onDone])
+  return (
+    <>
+      <div className="relative mx-auto mb-5 w-16 h-16">
+        <div className="absolute inset-0 rounded-full border-4 border-t-transparent animate-spin"
+          style={{ borderColor: "rgba(96,165,250,0.2)", borderTopColor: "#60a5fa" }} />
+        <div className="absolute inset-2 rounded-full flex items-center justify-center"
+          style={{ background: "rgba(96,165,250,0.1)" }}>
+          <svg className="w-6 h-6" fill="none" stroke="#60a5fa" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+        </div>
+      </div>
+      <p className="text-base font-bold mb-1" style={{ color: "var(--text)" }}>Scanning your homework…</p>
+      <p className="text-sm" style={{ color: "var(--muted)" }}>Finding all the questions</p>
+    </>
+  )
+}
+
+function ResultsStep({ geo, civ, total, onDone }: { geo: number; civ: number; total: number; onDone: () => void }) {
+  const [showGeo, setShowGeo] = useState(false)
+  const [showCiv, setShowCiv] = useState(false)
+  const [showTotal, setShowTotal] = useState(false)
+
+  useEffect(() => {
+    const t1 = setTimeout(() => setShowGeo(true), 100)
+    const t2 = setTimeout(() => setShowCiv(true), 600)
+    const t3 = setTimeout(() => setShowTotal(true), 1200)
+    const t4 = setTimeout(onDone, 2800)
+    return () => [t1, t2, t3, t4].forEach(clearTimeout)
+  }, [onDone])
+
+  return (
+    <>
+      <div className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4"
+        style={{ background: "rgba(16,185,129,0.15)", border: "2px solid rgba(16,185,129,0.5)" }}>
+        <svg className="w-6 h-6" fill="none" stroke="#10b981" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+        </svg>
+      </div>
+      <p className="text-base font-bold mb-4" style={{ color: "var(--text)" }}>Problems found!</p>
+      <div className="space-y-2 mb-4 text-left">
+        <div className={`flex items-center gap-3 rounded-xl px-4 py-2.5 transition-all duration-300 ${showGeo ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"}`}
+          style={{ background: "rgba(96,165,250,0.1)", border: "1px solid rgba(96,165,250,0.25)" }}>
+          <span className="text-lg">📐</span>
+          <div className="flex-1">
+            <p className="text-sm font-semibold" style={{ color: "var(--text)" }}>Geometry – Triangle Areas</p>
+          </div>
+          <span className="text-sm font-bold px-2 py-0.5 rounded-full"
+            style={{ background: "rgba(96,165,250,0.2)", color: "#60a5fa" }}>{geo} problems</span>
+        </div>
+        <div className={`flex items-center gap-3 rounded-xl px-4 py-2.5 transition-all duration-300 ${showCiv ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"}`}
+          style={{ background: "rgba(167,139,250,0.1)", border: "1px solid rgba(167,139,250,0.25)" }}>
+          <span className="text-lg">🏛️</span>
+          <div className="flex-1">
+            <p className="text-sm font-semibold" style={{ color: "var(--text)" }}>Civics – Multiple Choice</p>
+          </div>
+          <span className="text-sm font-bold px-2 py-0.5 rounded-full"
+            style={{ background: "rgba(167,139,250,0.2)", color: "#a78bfa" }}>{civ} problems</span>
+        </div>
+      </div>
+      <div className={`rounded-xl px-4 py-2 transition-all duration-300 ${showTotal ? "opacity-100" : "opacity-0"}`}
+        style={{ background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.3)" }}>
+        <p className="text-sm font-bold" style={{ color: "#10b981" }}>
+          {total} problems ready — let&apos;s go! 🎉
+        </p>
+      </div>
+    </>
+  )
+}
+
 function LandingPage() {
   return (
     <main className="min-h-screen px-4 py-10 relative overflow-hidden"
@@ -190,6 +265,8 @@ function HomePageInner() {
   const [showUpload, setShowUpload] = useState(false)
   const [assignmentName, setAssignmentName] = useState("")
   const [showDemoExplainer, setShowDemoExplainer] = useState(false)
+  const [showScanResult, setShowScanResult] = useState(false)
+  const [scanStep, setScanStep] = useState(0)
   const [showWelcome, setShowWelcome] = useState(false)
 
   // No redirect — logged-out users see the landing page instead
@@ -915,7 +992,7 @@ function HomePageInner() {
             {/* CTA */}
             <div className="px-6 pb-7 pt-1">
               <button
-                onClick={() => setShowDemoExplainer(false)}
+                onClick={() => { setShowDemoExplainer(false); setScanStep(0); setShowScanResult(true) }}
                 className="w-full py-3 rounded-full text-sm font-bold text-white transition-all hover:-translate-y-0.5"
                 style={{ background: "linear-gradient(135deg, #60a5fa, #818cf8)", boxShadow: "0 4px 16px rgba(96,165,250,0.4)" }}
               >
@@ -925,6 +1002,38 @@ function HomePageInner() {
           </div>
         </div>
       )}
+
+      {/* Scan result animation */}
+      {showScanResult && (() => {
+        const geo = sessions.find(s => s.name.includes("Geometry"))
+        const civ = sessions.find(s => s.name.includes("Civics"))
+        const total = (geo?.problems.length ?? 0) + (civ?.problems.length ?? 0)
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ background: "rgba(0,0,0,0.85)", backdropFilter: "blur(8px)" }}>
+            <div className="w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl text-center"
+              style={{ background: "rgba(10,18,35,0.98)", border: "1px solid rgba(96,165,250,0.3)" }}>
+              <div className="px-8 py-8">
+
+                {/* Scanning step */}
+                {scanStep === 0 && (
+                  <ScanStep onDone={() => setScanStep(1)} />
+                )}
+
+                {/* Results step */}
+                {scanStep >= 1 && (
+                  <ResultsStep
+                    geo={geo?.problems.length ?? 0}
+                    civ={civ?.problems.length ?? 0}
+                    total={total}
+                    onDone={() => setShowScanResult(false)}
+                  />
+                )}
+              </div>
+            </div>
+          </div>
+        )
+      })()}
 
       {lightbox && (
         <div
