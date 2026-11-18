@@ -1,6 +1,9 @@
 "use client"
 
 import ReactMarkdown from "react-markdown"
+import remarkMath from "remark-math"
+import rehypeKatex from "rehype-katex"
+import "katex/dist/katex.min.css"
 import type { ChatMessage as ChatMessageType } from "@/types"
 
 interface ChatMessageProps {
@@ -79,7 +82,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
           <div>
             {parsed.before && (
               <div className="prose prose-sm max-w-none prose-invert prose-p:my-1 mb-3">
-                <ReactMarkdown>{parsed.before}</ReactMarkdown>
+                <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>{parsed.before}</ReactMarkdown>
               </div>
             )}
             <div className="space-y-2">
@@ -99,13 +102,13 @@ export function ChatMessage({ message }: ChatMessageProps) {
             </div>
             {parsed.after && (
               <div className="prose prose-sm max-w-none prose-invert prose-p:my-1 mt-3">
-                <ReactMarkdown>{parsed.after}</ReactMarkdown>
+                <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>{parsed.after}</ReactMarkdown>
               </div>
             )}
           </div>
         ) : (
           <div className="prose prose-sm max-w-none prose-invert prose-p:my-1 prose-ul:my-1 prose-ol:my-1">
-            <ReactMarkdown>{message.content}</ReactMarkdown>
+            <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>{message.content}</ReactMarkdown>
           </div>
         )}
       </div>
