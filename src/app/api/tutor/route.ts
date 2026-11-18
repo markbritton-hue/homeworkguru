@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server"
-import { anthropic } from "@/lib/claude"
+import { genAI } from "@/lib/gemini"
 import { buildTutorSystemPrompt } from "@/lib/prompts"
 import type { TutorRequest } from "@/types"
 
@@ -18,26 +18,38 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const stream = await anthropic.messages.stream({
-      model: "claude-haiku-4-5-20251001",
-      max_tokens: 1024,
-      system: buildTutorSystemPrompt(subject, problemText),
-      messages: messages.map((m) => ({ role: m.role, content: m.content })),
+    const model = genAI.getGenerativeModel({
+      model: "gemini-flash-lite-latest",
+      systemInstruction: buildTutorSystemPrompt(subject, problemText),
     })
 
+    const history = messages.slice(0, -1).map((m) => ({
+      role: m.role === "assistant" ? ("model" as const) : ("user" as const),
+      parts: [{ text: m.content }],
+    }))
+
+    const lastMessage = messages[messages.length - 1]
+    const chat = model.startChat({ history })
+    const result = await chat.sendMessageStream(lastMessage.content)
+
+    const encoder = new TextEncoder()
     const readable = new ReadableStream({
       async start(controller) {
         try {
-          for await (const chunk of stream) {
-            if (
-              chunk.type === "content_block_delta" &&
-              chunk.delta.type === "text_delta"
-            ) {
-              controller.enqueue(new TextEncoder().encode(chunk.delta.text))
-            }
+          for await (const chunk of result.stream) {
+            const text = chunk.text()
+            if (text) controller.enqueue(encoder.encode(text))
           }
-          const msg = await stream.finalMessage()
-          controller.enqueue(new TextEncoder().encode(`[[TOKENS:${JSON.stringify(msg.usage)}]]`))
+          const finalResponse = await result.response
+          const usage = finalResponse.usageMetadata
+          controller.enqueue(
+            encoder.encode(
+              `[[TOKENS:${JSON.stringify({
+                input_tokens: usage?.promptTokenCount ?? 0,
+                output_tokens: usage?.candidatesTokenCount ?? 0,
+              })}]]`
+            )
+          )
         } finally {
           controller.close()
         }

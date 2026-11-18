@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { anthropic } from "@/lib/claude"
+import { genAI } from "@/lib/gemini"
 import { PARSE_HOMEWORK_PROMPT } from "@/lib/prompts"
 import { stripDataUrlPrefix } from "@/lib/image-utils"
 import type { ParseHomeworkRequest } from "@/types"
@@ -37,30 +37,22 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  const imageBlocks = images.map((img) => {
-    const raw = stripDataUrlPrefix(img.imageBase64)
-    return {
-      type: "image" as const,
-      source: { type: "base64" as const, media_type: img.mimeType, data: raw },
-    }
-  })
+  const imageParts = images.map((img) => ({
+    inlineData: {
+      mimeType: img.mimeType,
+      data: stripDataUrlPrefix(img.imageBase64),
+    },
+  }))
 
   try {
-    const response = await anthropic.messages.create({
-      model: "claude-sonnet-4-6",
-      max_tokens: 2048,
-      messages: [
-        {
-          role: "user",
-          content: [
-            ...imageBlocks,
-            { type: "text", text: PARSE_HOMEWORK_PROMPT },
-          ],
-        },
-      ],
-    })
+    const model = genAI.getGenerativeModel({ model: "gemini-flash-lite-latest" })
+    const result = await model.generateContent([
+      ...imageParts,
+      { text: PARSE_HOMEWORK_PROMPT },
+    ])
 
-    const text = response.content[0].type === "text" ? response.content[0].text : ""
+    const text = result.response.text()
+    const usage = result.response.usageMetadata
 
     let problems
     try {
@@ -91,7 +83,13 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    return NextResponse.json({ problems, usage: response.usage })
+    return NextResponse.json({
+      problems,
+      usage: {
+        input_tokens: usage?.promptTokenCount ?? 0,
+        output_tokens: usage?.candidatesTokenCount ?? 0,
+      },
+    })
   } catch (err) {
     console.error("parse-homework error:", err)
     return NextResponse.json({ error: "Failed to analyze image. Please try again." }, { status: 500 })

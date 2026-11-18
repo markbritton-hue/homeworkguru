@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { anthropic } from "@/lib/claude"
+import { genAI } from "@/lib/gemini"
 
 export async function POST(req: NextRequest) {
   let body: { problemText: string; messages: Array<{ role: string; content: string }> }
@@ -31,13 +31,9 @@ ${chatTranscript}
 Now write a clear, concise step-by-step worked solution showing exactly how to get to the answer. Use numbered steps. Be brief — one or two lines per step. Do not address the student, just show the working.`
 
   try {
-    const response = await anthropic.messages.create({
-      model: "claude-haiku-4-5-20251001",
-      max_tokens: 512,
-      messages: [{ role: "user", content: prompt }],
-    })
-
-    const working = response.content[0].type === "text" ? response.content[0].text : ""
+    const model = genAI.getGenerativeModel({ model: "gemini-flash-lite-latest" })
+    const result = await model.generateContent(prompt)
+    const working = result.response.text()
     return NextResponse.json({ working })
   } catch {
     return NextResponse.json({ error: "Failed to generate worked solution" }, { status: 500 })
