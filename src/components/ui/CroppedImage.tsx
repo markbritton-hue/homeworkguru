@@ -24,7 +24,7 @@ export function CroppedImage({ src, bbox, alt = "Problem", className }: CroppedI
       if (!canvas) return
 
       // Add padding (clamped to image bounds)
-      const pad = 2
+      const pad = 5
       const x = Math.max(0, bbox.x - pad)
       const y = Math.max(0, bbox.y - pad)
       const w = Math.min(100 - x, bbox.w + pad * 2)
