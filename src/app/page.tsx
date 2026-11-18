@@ -319,6 +319,10 @@ function HomePageInner() {
     setImages([{ dataUrl, mimeType }]); setError(null)
   }
 
+  const handleImagesSelected = (imgs: Array<{ dataUrl: string; mimeType: MimeType }>) => {
+    setImages(imgs); setError(null)
+  }
+
   const handleAddMore = (dataUrl: string, mimeType: MimeType) => {
     setImages((prev) => [...prev, { dataUrl, mimeType }]); setError(null)
   }
@@ -560,7 +564,7 @@ function HomePageInner() {
                   <ImagePreview images={images} onRemove={handleRemove} onAddMore={handleAddMore} onParse={handleParse} isParsing={isParsing} isDemo={user.isAnonymous} />
                 ) : (
                   <>
-                    <UploadZone onImageSelected={handleImageSelected} />
+                    <UploadZone onImageSelected={handleImageSelected} onImagesSelected={handleImagesSelected} />
                     <div className="mt-2 text-center">
                       <div className="inline-flex flex-col items-start gap-1.5">
                         {user.isAnonymous && (
