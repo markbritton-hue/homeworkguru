@@ -189,6 +189,7 @@ function HomePageInner() {
   const [sessions, setSessions] = useState<HomeworkSession[]>([])
   const [showUpload, setShowUpload] = useState(false)
   const [assignmentName, setAssignmentName] = useState("")
+  const [showDemoExplainer, setShowDemoExplainer] = useState(false)
   const [showWelcome, setShowWelcome] = useState(false)
 
   // No redirect — logged-out users see the landing page instead
@@ -329,6 +330,7 @@ function HomePageInner() {
       const created = await Promise.all(demos.map(createDemo))
       setSessions(created)
       setShowUpload(false)
+      setShowDemoExplainer(true)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong loading the demo.")
       setShowUpload(true)
@@ -865,6 +867,65 @@ function HomePageInner() {
       )}
 
       {/* Lightbox */}
+      {/* Demo explainer modal */}
+      {showDemoExplainer && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ background: "rgba(0,0,0,0.8)", backdropFilter: "blur(8px)" }}>
+          <div className="w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl"
+            style={{ background: "rgba(10,18,35,0.98)", border: "1px solid rgba(96,165,250,0.3)" }}>
+
+            {/* Header */}
+            <div className="px-6 pt-7 pb-4 text-center">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/Gurulogo.png" alt="Guru" className="mx-auto mb-3" style={{ height: "72px", objectFit: "contain" }} />
+              <h2 className="text-xl font-bold mb-1" style={{ color: "var(--text)" }}>Welcome to the demo!</h2>
+              <p className="text-sm" style={{ color: "var(--muted)" }}>
+                We&apos;ve loaded two real homework sheets for you to try. Your AI guru will guide you through each problem — with hints and questions, not just answers.
+              </p>
+            </div>
+
+            {/* Assignment cards */}
+            <div className="px-6 pb-4 space-y-3">
+              <div className="flex gap-3 rounded-2xl p-3"
+                style={{ background: "rgba(96,165,250,0.07)", border: "1px solid rgba(96,165,250,0.2)" }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/gemwork.jpg" alt="Geometry homework" className="rounded-xl object-cover flex-shrink-0"
+                  style={{ width: "80px", height: "64px", border: "1px solid rgba(96,165,250,0.3)" }} />
+                <div>
+                  <p className="text-sm font-bold mb-0.5" style={{ color: "var(--text)" }}>Geometry — Triangle Areas</p>
+                  <p className="text-xs leading-relaxed" style={{ color: "var(--muted)" }}>
+                    6 problems. Find the area of each triangle using the base and height measurements shown on the diagram.
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-3 rounded-2xl p-3"
+                style={{ background: "rgba(167,139,250,0.07)", border: "1px solid rgba(167,139,250,0.2)" }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/civishomework.png" alt="Civics homework" className="rounded-xl object-cover flex-shrink-0"
+                  style={{ width: "80px", height: "64px", objectPosition: "top", border: "1px solid rgba(167,139,250,0.3)" }} />
+                <div>
+                  <p className="text-sm font-bold mb-0.5" style={{ color: "var(--text)" }}>Civics — Multiple Choice</p>
+                  <p className="text-xs leading-relaxed" style={{ color: "var(--muted)" }}>
+                    3 questions about civic life, government representation, and the Rule of Law.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* CTA */}
+            <div className="px-6 pb-7 pt-1">
+              <button
+                onClick={() => setShowDemoExplainer(false)}
+                className="w-full py-3 rounded-full text-sm font-bold text-white transition-all hover:-translate-y-0.5"
+                style={{ background: "linear-gradient(135deg, #60a5fa, #818cf8)", boxShadow: "0 4px 16px rgba(96,165,250,0.4)" }}
+              >
+                Let&apos;s get started →
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {lightbox && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4"
