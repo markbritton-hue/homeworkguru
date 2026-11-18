@@ -54,7 +54,7 @@ export async function pdfToImages(
 
   for (let i = 1; i <= pageCount; i++) {
     const page = await pdf.getPage(i)
-    const viewport = page.getViewport({ scale: 1.5 })
+    const viewport = page.getViewport({ scale: 2.0 })
     const canvas = document.createElement("canvas")
     canvas.width = viewport.width
     canvas.height = viewport.height

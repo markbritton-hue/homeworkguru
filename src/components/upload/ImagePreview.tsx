@@ -85,7 +85,8 @@ export function ImagePreview({ images, onRemove, onAddMore, onParse, isParsing, 
       />
 
       <p className="text-xs" style={{ color: "var(--muted)" }}>
-        {images.length} page{images.length !== 1 ? "s" : ""} · click a thumbnail's × to remove it
+        {images.length} page{images.length !== 1 ? "s" : ""} · hover a thumbnail and click × to remove it
+        {images.length > 1 && " · remove any answer-key pages before scanning"}
       </p>
 
       {isParsing ? (

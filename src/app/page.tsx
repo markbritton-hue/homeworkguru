@@ -335,7 +335,7 @@ function HomePageInner() {
     if (images.length === 0 || !user) return
     setIsParsing(true); setError(null)
     try {
-      const compressedUrls = await Promise.all(images.map((img) => compressImage(img.dataUrl)))
+      const compressedUrls = await Promise.all(images.map((img) => compressImage(img.dataUrl, 1600, 0.85)))
       const response = await fetch("/api/parse-homework", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
