@@ -32,6 +32,7 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const chatInputRef = useRef<ChatInputHandle>(null)
   const initialized = useRef(false)
+  const demoPrefilledRef = useRef(false)
 
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -71,6 +72,19 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
     const t = setTimeout(() => setShowStarters(true), isDemo ? 0 : 20000)
     return () => clearTimeout(t)
   }, [isLoading, isSolved, hasUserMessage, session, input, isDemo])
+
+  // Pre-fill input for demo geometry problems so the user just hits Enter
+  useEffect(() => {
+    if (!session || hasUserMessage || !isDemo || demoPrefilledRef.current) return
+    const prob = session.problems.find((p) => p.index === problemIndex)
+    if (!prob) return
+    demoPrefilledRef.current = true
+    if (/geometry/i.test(prob.subject) && /area/i.test(prob.text)) {
+      setInput("I'm not sure where to start. What do I need to know to find the area of a triangle?")
+    } else if (/civic|government|history|social/i.test(prob.subject)) {
+      setInput("I think this question is asking me to think about…")
+    }
+  }, [session, hasUserMessage, isDemo, problemIndex])
 
   const sendMessage = useCallback(
     async (userText: string, isInitial = false) => {
@@ -305,8 +319,8 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
               <div className="rounded-2xl rounded-bl-sm px-4 py-3 self-center text-sm font-semibold"
                 style={{ background: "var(--surface)", border: "1px solid rgba(96,165,250,0.4)", color: "#93c5fd", backdropFilter: "blur(10px)" }}>
                 {/civic|government|social|history/i.test(problem.subject)
-                  ? "Try asking what this question is really asking…"
-                  : "Try asking what the formula is…"}
+                  ? "Try asking what this question is really about…"
+                  : "👇 Your question is ready — just hit Send!"}
               </div>
             </div>
           )}
@@ -352,12 +366,24 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {[
-                    // Formula example only makes sense for math-style problems
-                    ...(isDemo && !/civic|government|social|history/i.test(problem.subject) ? ["What formula do I use?"] : []),
-                    "I'm not sure where to start.",
-                    "I think this question is asking me to…",
-                    "The first thing I notice is…",
-                    "Can you help me understand what this is asking?",
+                    ...(isDemo && /geometry/i.test(problem.subject) && /area/i.test(problem.text)
+                      ? [
+                          "I'm not sure where to start. What do I need to know to find the area of a triangle?",
+                          "I can see the measurements but I don't know what to do with them.",
+                          "Is there a specific formula I should be thinking about?",
+                        ]
+                      : isDemo && /civic|government|social|history/i.test(problem.subject)
+                      ? [
+                          "I think this question is asking me to think about…",
+                          "I'm not sure what 'civic life' means here.",
+                          "Can you help me understand what this is asking?",
+                        ]
+                      : [
+                          "I'm not sure where to start.",
+                          "I think this question is asking me to…",
+                          "The first thing I notice is…",
+                          "Can you help me understand what this is asking?",
+                        ]),
                   ].map((s) => (
                     <button
                       key={s}
