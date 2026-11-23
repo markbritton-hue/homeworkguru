@@ -509,6 +509,18 @@ function HomePageInner() {
           </div>
           {/* Right: buttons */}
           <div className="flex flex-col items-end gap-2">
+            {!user.isAnonymous && (
+              <Link
+                href="/profile"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all hover:-translate-y-0.5"
+                style={{ background: "linear-gradient(135deg, rgba(96,165,250,0.15), rgba(129,140,248,0.15))", border: "1px solid rgba(96,165,250,0.4)", color: "#93c5fd" }}
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                My Profile
+              </Link>
+            )}
             <button
               onClick={signOut}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all hover:-translate-y-0.5"
@@ -632,17 +644,6 @@ function HomePageInner() {
                       }}>Your Assignments</h2>
                     </div>
                     {!showUpload ? (
-                      <div className="flex items-center gap-2">
-                        {!user.isAnonymous && (
-                          <Link
-                            href="/profile"
-                            className="w-8 h-8 rounded-full flex items-center justify-center transition-all hover:-translate-y-0.5 text-xs font-bold"
-                            style={{ background: "linear-gradient(135deg, #60a5fa, #818cf8)", color: "#fff", boxShadow: "0 2px 8px rgba(96,165,250,0.4)" }}
-                            title="My profile"
-                          >
-                            {(user.displayName ?? user.email ?? "?")[0]?.toUpperCase()}
-                          </Link>
-                        )}
                       <button
                         onClick={() => setShowUpload(true)}
                         className="inline-flex items-center gap-2 px-4 py-1.5 text-sm font-semibold rounded-full text-white transition-all hover:-translate-y-0.5"
@@ -653,7 +654,6 @@ function HomePageInner() {
                         </svg>
                         Add
                       </button>
-                      </div>
                     ) : (
                       <button
                         onClick={() => { setShowUpload(false); setImages([]); setError(null) }}
