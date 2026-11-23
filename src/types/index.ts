@@ -58,6 +58,8 @@ export interface TutorRequest {
 export interface SubjectStat {
   solved: number
   totalTurns: number
+  recentStruggles: string[]
+  recentStrengths: string[]
 }
 
 export interface LearningProfile {

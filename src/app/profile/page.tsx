@@ -185,7 +185,7 @@ export default function ProfilePage() {
                         {skill.label}
                       </span>
                     </div>
-                    <div className="rounded-full h-1.5" style={{ background: "rgba(255,255,255,0.07)" }}>
+                    <div className="rounded-full h-1.5 mb-3" style={{ background: "rgba(255,255,255,0.07)" }}>
                       <div
                         className="h-1.5 rounded-full transition-all"
                         style={{
@@ -195,6 +195,36 @@ export default function ProfilePage() {
                         }}
                       />
                     </div>
+                    {(stat.recentStruggles?.length > 0 || stat.recentStrengths?.length > 0) && (
+                      <div className="flex flex-col gap-1.5">
+                        {stat.recentStruggles?.length > 0 && (
+                          <div className="flex items-start gap-2">
+                            <span className="text-xs mt-0.5 flex-shrink-0" style={{ color: "#f87171" }}>↓ Needs work</span>
+                            <div className="flex flex-wrap gap-1">
+                              {stat.recentStruggles.map((s) => (
+                                <span key={s} className="text-xs px-2 py-0.5 rounded-full"
+                                  style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.25)", color: "#fca5a5" }}>
+                                  {s}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        {stat.recentStrengths?.length > 0 && (
+                          <div className="flex items-start gap-2">
+                            <span className="text-xs mt-0.5 flex-shrink-0" style={{ color: "#10b981" }}>↑ Strong</span>
+                            <div className="flex flex-wrap gap-1">
+                              {stat.recentStrengths.map((s) => (
+                                <span key={s} className="text-xs px-2 py-0.5 rounded-full"
+                                  style={{ background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.25)", color: "#6ee7b7" }}>
+                                  {s}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 )
               })}

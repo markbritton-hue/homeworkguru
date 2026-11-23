@@ -31,6 +31,13 @@ function buildProfileNote(subject: string, profile: LearningProfile | null | und
     if (avg > 10) lines.push(`- Needs significant scaffolding in ${subject}: break every step into the smallest possible piece.`)
     else if (avg > 6) lines.push(`- Benefits from steady guidance in ${subject}: give one clear nudge at a time.`)
     else lines.push(`- Moves efficiently in ${subject}: keep prompts tight and trust their capability.`)
+
+    if (stat.recentStruggles?.length) {
+      lines.push(`- Previously struggled with: ${stat.recentStruggles.join(", ")} — watch for these; address proactively if they appear.`)
+    }
+    if (stat.recentStrengths?.length) {
+      lines.push(`- Demonstrated strength in: ${stat.recentStrengths.join(", ")} — build on these to boost confidence.`)
+    }
   }
 
   return `\nSTUDENT LEARNING PROFILE (use silently to personalise pacing — never mention it to the student):\n${lines.join("\n")}`

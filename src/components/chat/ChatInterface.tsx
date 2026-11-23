@@ -192,9 +192,21 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
           setIsSolved(true)
           // Record to learning profile (skip anonymous/demo users)
           if (!user.isAnonymous) {
-            const turns = [...updatedMessages, finalAiMsg].filter((m) => !m.isInitial).length
-            recordProblemSolved(user.uid, problem.subject, turns)
-              .then(() => loadLearningProfile(user.uid).then((p) => { if (p) setLearningProfile(p) }))
+            const allMsgs = [...updatedMessages, finalAiMsg].filter((m) => !m.isInitial)
+            const turns = allMsgs.length
+            const msgPayload = allMsgs.map((m) => ({ role: m.role, content: m.content }))
+            // Analyze concepts in background, then record — both are fire-and-forget
+            fetch("/api/analyze-learning", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ subject: problem.subject, problemText: problem.text, messages: msgPayload }),
+            })
+              .then((r) => r.json())
+              .then((concepts: { struggles: string[]; strengths: string[] }) =>
+                recordProblemSolved(user.uid, problem.subject, turns, concepts)
+              )
+              .then(() => loadLearningProfile(user.uid))
+              .then((p) => { if (p) setLearningProfile(p) })
               .catch(() => {})
           }
           // Refresh session

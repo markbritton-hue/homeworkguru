@@ -20,15 +20,32 @@ export async function loadLearningProfile(uid: string): Promise<LearningProfile 
   return snap.exists() ? (snap.data() as LearningProfile) : null
 }
 
-export async function recordProblemSolved(uid: string, subject: string, turns: number): Promise<void> {
+export async function recordProblemSolved(
+  uid: string,
+  subject: string,
+  turns: number,
+  concepts?: { struggles?: string[]; strengths?: string[] }
+): Promise<void> {
   const ref = profileDoc(uid)
   await runTransaction(db, async (tx) => {
     const snap = await tx.get(ref)
     const profile: LearningProfile = snap.exists()
       ? (snap.data() as LearningProfile)
       : { subjectStats: {}, totalSolved: 0, updatedAt: 0 }
-    const existing = profile.subjectStats[subject] ?? { solved: 0, totalTurns: 0 }
-    profile.subjectStats[subject] = { solved: existing.solved + 1, totalTurns: existing.totalTurns + turns }
+    const existing = profile.subjectStats[subject] ?? {
+      solved: 0, totalTurns: 0, recentStruggles: [], recentStrengths: [],
+    }
+
+    // Merge new concepts, deduplicate, keep the most recent 6
+    const mergeList = (prev: string[] = [], next: string[] = []) =>
+      [...new Set([...prev, ...next])].slice(-6)
+
+    profile.subjectStats[subject] = {
+      solved: existing.solved + 1,
+      totalTurns: existing.totalTurns + turns,
+      recentStruggles: mergeList(existing.recentStruggles, concepts?.struggles),
+      recentStrengths: mergeList(existing.recentStrengths, concepts?.strengths),
+    }
     profile.totalSolved = (profile.totalSolved ?? 0) + 1
     profile.updatedAt = Date.now()
     tx.set(ref, profile)
