@@ -5,10 +5,10 @@ import { ChatMessage } from "./ChatMessage"
 import { ChatInput, type ChatInputHandle } from "./ChatInput"
 import { LoadingDots } from "@/components/ui/LoadingDots"
 import { CompletionBanner } from "./CompletionBanner"
-import { appendChatMessage, loadSession, saveWorkedSolution, updateProblemStatus } from "@/lib/firestore"
+import { appendChatMessage, loadLearningProfile, loadSession, recordProblemSolved, saveWorkedSolution, updateProblemStatus } from "@/lib/firestore"
 import { useAuth } from "@/contexts/AuthContext"
 import { INITIAL_USER_MESSAGE } from "@/lib/prompts"
-import type { ChatMessage as ChatMessageType, HomeworkSession, Problem } from "@/types"
+import type { ChatMessage as ChatMessageType, HomeworkSession, LearningProfile, Problem } from "@/types"
 
 const SOLVED_SENTINEL = "[[SOLVED]]"
 const TOKENS_RE = /\[\[TOKENS:(\{.*?\})\]\]/
@@ -30,6 +30,7 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
   const [workingOut, setWorkingOut] = useState<string | undefined>(undefined)
   const [showHint, setShowHint] = useState(true)
   const [hintIndex, setHintIndex] = useState(0)
+  const [learningProfile, setLearningProfile] = useState<LearningProfile | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const chatInputRef = useRef<ChatInputHandle>(null)
   const initialized = useRef(false)
@@ -139,6 +140,7 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
             problemText: problem.text,
             subject: problem.subject,
             messages: apiMessages,
+            learningProfile,
           }),
         })
 
@@ -188,6 +190,13 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
         if (solved) {
           await updateProblemStatus(user.uid, sessionId, problemIndex, "solved")
           setIsSolved(true)
+          // Record to learning profile (skip anonymous/demo users)
+          if (!user.isAnonymous) {
+            const turns = [...updatedMessages, finalAiMsg].filter((m) => !m.isInitial).length
+            recordProblemSolved(user.uid, problem.subject, turns)
+              .then(() => loadLearningProfile(user.uid).then((p) => { if (p) setLearningProfile(p) }))
+              .catch(() => {})
+          }
           // Refresh session
           const updated = await loadSession(user.uid, sessionId)
           if (updated) setSession(updated)
@@ -231,6 +240,11 @@ export function ChatInterface({ sessionId, problemIndex, pasteValue }: ChatInter
   useEffect(() => {
     if (initialized.current || !user) return
     initialized.current = true
+
+    // Load learning profile for non-anonymous users
+    if (!user.isAnonymous) {
+      loadLearningProfile(user.uid).then((p) => { if (p) setLearningProfile(p) }).catch(() => {})
+    }
 
     loadSession(user.uid, sessionId).then((s) => {
       if (!s) return

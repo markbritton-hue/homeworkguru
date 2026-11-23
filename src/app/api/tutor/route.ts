@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
     return new Response("Invalid request body", { status: 400 })
   }
 
-  const { problemText, subject, messages } = body
+  const { problemText, subject, messages, learningProfile } = body
 
   if (!problemText || !subject || !messages || messages.length === 0) {
     return new Response("problemText, subject, and messages are required", { status: 400 })
@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
   try {
     const model = genAI.getGenerativeModel({
       model: "gemini-flash-lite-latest",
-      systemInstruction: buildTutorSystemPrompt(subject, problemText),
+      systemInstruction: buildTutorSystemPrompt(subject, problemText, learningProfile),
     })
 
     const history = messages.slice(0, -1).map((m) => ({

@@ -52,4 +52,16 @@ export interface TutorRequest {
   problemText: string
   subject: string
   messages: Array<{ role: "user" | "assistant"; content: string }>
+  learningProfile?: LearningProfile
+}
+
+export interface SubjectStat {
+  solved: number
+  totalTurns: number
+}
+
+export interface LearningProfile {
+  subjectStats: Record<string, SubjectStat>
+  totalSolved: number
+  updatedAt: number
 }

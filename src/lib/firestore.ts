@@ -9,7 +9,31 @@ import {
   runTransaction,
 } from "firebase/firestore"
 import { db } from "@/lib/firebase"
-import type { HomeworkSession, ChatMessage, ProblemStatus } from "@/types"
+import type { HomeworkSession, ChatMessage, ProblemStatus, LearningProfile } from "@/types"
+
+function profileDoc(uid: string) {
+  return doc(db, "users", uid, "meta", "learningProfile")
+}
+
+export async function loadLearningProfile(uid: string): Promise<LearningProfile | null> {
+  const snap = await getDoc(profileDoc(uid))
+  return snap.exists() ? (snap.data() as LearningProfile) : null
+}
+
+export async function recordProblemSolved(uid: string, subject: string, turns: number): Promise<void> {
+  const ref = profileDoc(uid)
+  await runTransaction(db, async (tx) => {
+    const snap = await tx.get(ref)
+    const profile: LearningProfile = snap.exists()
+      ? (snap.data() as LearningProfile)
+      : { subjectStats: {}, totalSolved: 0, updatedAt: 0 }
+    const existing = profile.subjectStats[subject] ?? { solved: 0, totalTurns: 0 }
+    profile.subjectStats[subject] = { solved: existing.solved + 1, totalTurns: existing.totalTurns + turns }
+    profile.totalSolved = (profile.totalSolved ?? 0) + 1
+    profile.updatedAt = Date.now()
+    tx.set(ref, profile)
+  })
+}
 
 function sessionsCol(uid: string) {
   return collection(db, "users", uid, "sessions")
