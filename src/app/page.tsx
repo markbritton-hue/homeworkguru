@@ -29,6 +29,90 @@ const DEMO_PROBLEMS: Record<string, Array<{ index: number; text: string; subject
   ],
 }
 
+function PrivacyModal({ onClose }: { onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ background: "rgba(0,0,0,0.8)", backdropFilter: "blur(8px)" }}
+      onClick={onClose}>
+      <div className="w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl"
+        style={{ background: "rgba(10,18,35,0.98)", border: "1px solid rgba(96,165,250,0.25)", maxHeight: "85vh", display: "flex", flexDirection: "column" }}
+        onClick={e => e.stopPropagation()}>
+
+        {/* Header */}
+        <div className="px-6 py-4 flex items-center justify-between flex-shrink-0"
+          style={{ borderBottom: "1px solid rgba(96,165,250,0.15)", background: "rgba(96,165,250,0.06)" }}>
+          <h2 className="text-lg font-bold" style={{
+            background: "linear-gradient(135deg, #60a5fa, #818cf8)",
+            WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+          }}>Privacy Statement</h2>
+          <button onClick={onClose} className="w-7 h-7 rounded-full flex items-center justify-center transition-opacity hover:opacity-70"
+            style={{ background: "rgba(255,255,255,0.08)", color: "var(--muted)" }}>
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="px-6 py-5 overflow-y-auto space-y-5 text-sm" style={{ color: "rgba(255,255,255,0.7)", lineHeight: "1.6" }}>
+
+          <p style={{ color: "rgba(255,255,255,0.45)", fontSize: "0.75rem" }}>Last updated: November 2026</p>
+
+          <section>
+            <h3 className="text-sm font-bold mb-1.5" style={{ color: "rgba(255,255,255,0.9)" }}>What We Collect</h3>
+            <ul className="space-y-1 list-disc list-inside" style={{ color: "rgba(255,255,255,0.6)" }}>
+              <li>Account email and name (via Google or email sign-in)</li>
+              <li>Homework images you upload</li>
+              <li>Chat history between you and the guru</li>
+              <li>Usage data — subjects studied and problems solved</li>
+            </ul>
+          </section>
+
+          <section>
+            <h3 className="text-sm font-bold mb-1.5" style={{ color: "rgba(255,255,255,0.9)" }}>How We Use Your Data</h3>
+            <p>Your data is used solely to provide the HomeworkGuru tutoring service. We do not sell, share, or use your personal information for advertising. Your assignments and chat history are only accessible by you.</p>
+          </section>
+
+          <section>
+            <h3 className="text-sm font-bold mb-1.5" style={{ color: "rgba(255,255,255,0.9)" }}>Google Gemini AI</h3>
+            <p className="mb-2">HomeworkGuru uses <span style={{ color: "#60a5fa" }}>Google Gemini Flash Lite</span> to read your homework images and generate tutoring hints. This means:</p>
+            <ul className="space-y-1 list-disc list-inside" style={{ color: "rgba(255,255,255,0.6)" }}>
+              <li>Homework images and your chat messages are sent to Google&apos;s Gemini API for processing</li>
+              <li>Google processes this data to generate responses — it is subject to <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" style={{ color: "#60a5fa" }}>Google&apos;s Privacy Policy</a></li>
+              <li>Gemini Flash Lite does not use your data to train AI models by default</li>
+              <li>No images or messages are stored by Google beyond the duration of the API request</li>
+            </ul>
+          </section>
+
+          <section>
+            <h3 className="text-sm font-bold mb-1.5" style={{ color: "rgba(255,255,255,0.9)" }}>Data Storage &amp; Security</h3>
+            <p>Your assignments and chat history are stored securely in Google Firebase (Firestore). Access is restricted to your account only via Firebase security rules. You can delete any assignment at any time directly from the app.</p>
+          </section>
+
+          <section>
+            <h3 className="text-sm font-bold mb-1.5" style={{ color: "rgba(255,255,255,0.9)" }}>Student &amp; Children&apos;s Privacy</h3>
+            <p>HomeworkGuru is designed for students. We do not knowingly collect personal data from children under 13 without parental consent. If you are a parent or guardian and have concerns about your child&apos;s data, please contact us and we will delete it promptly.</p>
+          </section>
+
+          <section>
+            <h3 className="text-sm font-bold mb-1.5" style={{ color: "rgba(255,255,255,0.9)" }}>Contact</h3>
+            <p>Questions about privacy? Email us at <a href="mailto:mark.britton@gmail.com" style={{ color: "#60a5fa" }}>mark.britton@gmail.com</a></p>
+          </section>
+
+        </div>
+
+        <div className="px-6 py-4 flex-shrink-0" style={{ borderTop: "1px solid rgba(96,165,250,0.1)" }}>
+          <button onClick={onClose}
+            className="w-full py-2.5 rounded-full text-sm font-bold text-white transition-all hover:-translate-y-0.5"
+            style={{ background: "linear-gradient(135deg, #60a5fa, #818cf8)", boxShadow: "0 4px 16px rgba(96,165,250,0.3)" }}>
+            Got it
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function ScanStep({ onDone }: { onDone: () => void }) {
   useEffect(() => {
     const t = setTimeout(onDone, 1400)
@@ -105,6 +189,7 @@ function ResultsStep({ geo, civ, total, onDone }: { geo: number; civ: number; to
 }
 
 function LandingPage() {
+  const [showPrivacy, setShowPrivacy] = useState(false)
   return (
     <main className="min-h-screen px-4 py-10 relative overflow-hidden"
       style={{ background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)" }}>
@@ -130,17 +215,27 @@ function LandingPage() {
       />
       <div className="max-w-5xl mx-auto">
 
+        {/* Top bar */}
+        <div className="flex justify-end mb-4">
+          <button onClick={() => setShowPrivacy(true)} className="text-xs hover:underline transition-colors" style={{ color: "rgba(96,165,250,0.6)", background: "none", border: "none", cursor: "pointer" }}>
+            🔒 Privacy Statement
+          </button>
+        </div>
+
         {/* Hero */}
         <div className="text-center mb-16">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/HomeworkguruLogo.png" alt="Homework Guru" className="mx-auto mb-2" style={{ width: "200px", height: "200px", objectFit: "contain" }} />
           <p className="text-xs mb-6" style={{ color: "rgba(255,255,255,0.3)" }}>v{process.env.NEXT_PUBLIC_APP_VERSION}</p>
-          <h1 className="text-4xl font-extrabold mb-4" style={{
+          <h1 className="text-4xl font-extrabold mb-3" style={{
             background: "linear-gradient(135deg, #60a5fa, #818cf8)",
             WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
           }}>
             Your Personal AI Homework Guru
           </h1>
+          <p className="text-base font-semibold mb-4" style={{ color: "rgba(255,255,255,0.45)", letterSpacing: "0.01em" }}>
+            Learn the process, not just the answer.
+          </p>
           <p className="text-lg max-w-xl mx-auto mb-2" style={{ color: "rgba(255,255,255,0.7)" }}>
             Upload a photo of any homework sheet and get guided through every problem — with hints and questions, not just answers.
           </p>
@@ -249,6 +344,7 @@ function LandingPage() {
         </div>
 
       </div>
+      {showPrivacy && <PrivacyModal onClose={() => setShowPrivacy(false)} />}
     </main>
   )
 }
@@ -336,13 +432,24 @@ function HomePageInner() {
     setIsParsing(true); setError(null)
     try {
       const compressedUrls = await Promise.all(images.map((img) => compressImage(img.dataUrl, 1600, 0.85)))
+      const token = user ? await user.getIdToken() : null
       const response = await fetch("/api/parse-homework", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify({ images: compressedUrls.map((url) => ({ imageBase64: url, mimeType: "image/jpeg" as const })) }),
       })
       const data = await response.json()
-      if (!response.ok) { setError(data.error || "Failed to read homework. Please try again."); return }
+      if (!response.ok) {
+        if (data.code === "USAGE_LIMIT") {
+          setError(`${data.error} `)
+        } else {
+          setError(data.error || "Failed to read homework. Please try again.")
+        }
+        return
+      }
       const subjects = [...new Set(data.problems.map((p: { subject: string }) => p.subject))] as string[]
       const autoName = assignmentName.trim() || `${subjects.slice(0, 2).join(" & ")} — ${new Date().toLocaleDateString()}`
       const sessionId = crypto.randomUUID()
@@ -428,6 +535,7 @@ function HomePageInner() {
   }
 
   const [lightbox, setLightbox] = useState<string | null>(null)
+  const [showPrivacyLoggedIn, setShowPrivacyLoggedIn] = useState(false)
 
   const solvedCount = (s: HomeworkSession) => s.problems.filter((p) => p.status === "solved").length
 
@@ -510,16 +618,25 @@ function HomePageInner() {
           {/* Right: buttons */}
           <div className="flex flex-col items-end gap-2">
             {!user.isAnonymous && (
-              <Link
-                href="/profile"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all hover:-translate-y-0.5"
-                style={{ background: "linear-gradient(135deg, rgba(96,165,250,0.15), rgba(129,140,248,0.15))", border: "1px solid rgba(96,165,250,0.4)", color: "#93c5fd" }}
-              >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-                My Profile
-              </Link>
+              <>
+                <Link
+                  href="/profile"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all hover:-translate-y-0.5"
+                  style={{ background: "linear-gradient(135deg, rgba(96,165,250,0.15), rgba(129,140,248,0.15))", border: "1px solid rgba(96,165,250,0.4)", color: "#93c5fd" }}
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                  My Profile
+                </Link>
+                <Link
+                  href="/pricing"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all hover:-translate-y-0.5"
+                  style={{ background: "linear-gradient(135deg, rgba(251,146,60,0.15), rgba(245,158,11,0.15))", border: "1px solid rgba(251,146,60,0.4)", color: "#fb923c" }}
+                >
+                  ⚡ Upgrade
+                </Link>
+              </>
             )}
             <button
               onClick={signOut}
@@ -907,6 +1024,10 @@ function HomePageInner() {
               mark.britton@gmail.com
             </a>
           </p>
+          <button onClick={() => setShowPrivacyLoggedIn(true)} className="text-xs hover:underline transition-colors"
+            style={{ color: "rgba(96,165,250,0.6)", background: "none", border: "none", cursor: "pointer" }}>
+            🔒 Privacy Statement
+          </button>
         </div>
       </div>
 
@@ -1050,6 +1171,8 @@ function HomePageInner() {
           </div>
         )
       })()}
+
+      {showPrivacyLoggedIn && <PrivacyModal onClose={() => setShowPrivacyLoggedIn(false)} />}
 
       {lightbox && (
         <div

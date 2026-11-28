@@ -5,7 +5,16 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { useAuth } from "@/contexts/AuthContext"
 import { loadLearningProfile, listSessions } from "@/lib/firestore"
-import type { LearningProfile, HomeworkSession } from "@/types"
+import { doc, getDoc } from "firebase/firestore"
+import { db } from "@/lib/firebase"
+import type { LearningProfile, HomeworkSession, UserSubscription, PlanKey } from "@/types"
+
+const PLAN_LABELS: Record<PlanKey, { name: string; limit: number | null; color: string }> = {
+  free:      { name: "Free",      limit: 5,    color: "#94a3b8" },
+  student:   { name: "Student",   limit: 30,   color: "#60a5fa" },
+  scholar:   { name: "Scholar",   limit: 100,  color: "#818cf8" },
+  unlimited: { name: "Unlimited", limit: null, color: "#10b981" },
+}
 
 function skillLabel(solved: number, avgTurns: number): { label: string; color: string; bg: string } {
   if (solved < 3) return { label: "Getting started", color: "#94a3b8", bg: "rgba(148,163,184,0.12)" }
@@ -51,19 +60,49 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState<LearningProfile | null>(null)
   const [sessions, setSessions] = useState<HomeworkSession[]>([])
   const [loadingData, setLoadingData] = useState(true)
+  const [subscription, setSubscription] = useState<UserSubscription | null>(null)
+  const [usageCount, setUsageCount] = useState(0)
+  const [portalLoading, setPortalLoading] = useState(false)
 
   useEffect(() => {
     if (!authLoading && !user) { router.replace("/login"); return }
     if (!user || user.isAnonymous) { router.replace("/"); return }
 
+    const monthKey = (() => {
+      const now = new Date()
+      return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`
+    })()
+
     Promise.all([
       loadLearningProfile(user.uid),
       listSessions(user.uid),
-    ]).then(([p, s]) => {
+      getDoc(doc(db, "users", user.uid, "meta", "subscription")),
+      getDoc(doc(db, "users", user.uid, "usage", monthKey)),
+    ]).then(([p, s, subSnap, usageSnap]) => {
       setProfile(p)
       setSessions(s.sort((a, b) => b.createdAt - a.createdAt))
+      setSubscription(subSnap.exists() ? (subSnap.data() as UserSubscription) : { plan: "free" })
+      setUsageCount(usageSnap.exists() ? ((usageSnap.data()?.count as number) ?? 0) : 0)
     }).finally(() => setLoadingData(false))
   }, [user, authLoading, router])
+
+  const handlePortal = async () => {
+    if (!user) return
+    setPortalLoading(true)
+    try {
+      const token = await user.getIdToken()
+      const res = await fetch("/api/stripe/portal", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error)
+      window.location.href = data.url
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Something went wrong")
+      setPortalLoading(false)
+    }
+  }
 
   if (authLoading || loadingData) {
     return (
@@ -251,6 +290,73 @@ export default function ProfilePage() {
             </Link>
           </div>
         )}
+
+        {/* Subscription */}
+        {subscription && (() => {
+          const plan = subscription.plan ?? "free"
+          const planInfo = PLAN_LABELS[plan]
+          const usagePct = planInfo.limit ? Math.min((usageCount / planInfo.limit) * 100, 100) : 0
+          return (
+            <div
+              className="rounded-2xl overflow-hidden"
+              style={{ background: "rgba(15,30,60,0.85)", border: "1px solid rgba(96,165,250,0.2)", backdropFilter: "blur(10px)" }}
+            >
+              <div className="px-5 py-4 flex items-center justify-between" style={{ borderBottom: "1px solid rgba(96,165,250,0.08)", background: "rgba(96,165,250,0.04)" }}>
+                <h2 className="text-base font-bold" style={{ color: "var(--text)" }}>Subscription</h2>
+                <span
+                  className="text-xs font-bold px-2.5 py-1 rounded-full"
+                  style={{ background: `${planInfo.color}20`, color: planInfo.color, border: `1px solid ${planInfo.color}40` }}
+                >
+                  {planInfo.name}
+                </span>
+              </div>
+              <div className="p-5 space-y-4">
+                <div>
+                  <div className="flex justify-between mb-1.5">
+                    <p className="text-xs font-medium" style={{ color: "rgba(255,255,255,0.6)" }}>Problems this month</p>
+                    <p className="text-xs font-semibold" style={{ color: "var(--text)" }}>
+                      {plan === "unlimited" ? "Unlimited" : `${usageCount} / ${planInfo.limit}`}
+                    </p>
+                  </div>
+                  {plan !== "unlimited" && (
+                    <div className="rounded-full h-2" style={{ background: "rgba(255,255,255,0.08)" }}>
+                      <div
+                        className="h-2 rounded-full transition-all"
+                        style={{
+                          width: `${usagePct}%`,
+                          background: usagePct >= 90
+                            ? "linear-gradient(90deg, #f87171, #ef4444)"
+                            : `linear-gradient(90deg, ${planInfo.color}99, ${planInfo.color})`,
+                          boxShadow: `0 0 6px ${usagePct >= 90 ? "rgba(239,68,68,0.5)" : `${planInfo.color}60`}`,
+                        }}
+                      />
+                    </div>
+                  )}
+                </div>
+                <div className="flex gap-3">
+                  {subscription.stripeCustomerId ? (
+                    <button
+                      onClick={handlePortal}
+                      disabled={portalLoading}
+                      className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all hover:-translate-y-0.5 disabled:opacity-50"
+                      style={{ background: "rgba(96,165,250,0.12)", border: "1px solid rgba(96,165,250,0.3)", color: "#93c5fd" }}
+                    >
+                      {portalLoading ? "Loading…" : "Manage subscription"}
+                    </button>
+                  ) : (
+                    <Link
+                      href="/pricing"
+                      className="flex-1 text-center py-2.5 rounded-xl text-sm font-semibold transition-all hover:-translate-y-0.5"
+                      style={{ background: "linear-gradient(135deg, #60a5fa, #818cf8)", color: "white", boxShadow: "0 4px 12px rgba(96,165,250,0.35)" }}
+                    >
+                      ⚡ Upgrade plan
+                    </Link>
+                  )}
+                </div>
+              </div>
+            </div>
+          )
+        })()}
 
         {/* Account */}
         <div

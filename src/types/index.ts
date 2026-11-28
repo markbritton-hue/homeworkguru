@@ -67,3 +67,16 @@ export interface LearningProfile {
   totalSolved: number
   updatedAt: number
 }
+
+export type PlanKey = "free" | "student" | "scholar" | "unlimited"
+
+export interface UserSubscription {
+  plan: PlanKey
+  stripeCustomerId?: string
+  stripeSubscriptionId?: string
+  currentPeriodEnd?: number
+}
+
+export interface UsageRecord {
+  count: number
+}

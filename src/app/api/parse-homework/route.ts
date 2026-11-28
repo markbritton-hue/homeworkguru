@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server"
 import { genAI } from "@/lib/gemini"
 import { PARSE_HOMEWORK_PROMPT } from "@/lib/prompts"
 import { stripDataUrlPrefix } from "@/lib/image-utils"
+import { adminAuth } from "@/lib/firebase-admin"
+import { checkUsage, incrementUsage } from "@/lib/usage"
 import type { ParseHomeworkRequest } from "@/types"
 
 const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"]
@@ -53,6 +55,38 @@ function normaliseBbox(
 }
 
 export async function POST(req: NextRequest) {
+  // Verify auth and check usage limit — anonymous/guest users are skipped (demo mode)
+  const token = req.headers.get("Authorization")?.replace("Bearer ", "")
+  let authedUid: string | null = null
+  let isAnonymous = false
+
+  if (token) {
+    try {
+      const decoded = await adminAuth.verifyIdToken(token)
+      authedUid = decoded.uid
+      isAnonymous = decoded.firebase?.sign_in_provider === "anonymous"
+    } catch {
+      return NextResponse.json({ error: "Invalid auth token" }, { status: 401 })
+    }
+  }
+
+  // Gate usage for real (non-anonymous) users
+  if (authedUid && !isAnonymous) {
+    const usage = await checkUsage(authedUid)
+    if (!usage.allowed) {
+      return NextResponse.json(
+        {
+          error: `You've used all ${usage.limit} problems on your ${usage.plan} plan this month. Upgrade to continue.`,
+          code: "USAGE_LIMIT",
+          plan: usage.plan,
+          used: usage.used,
+          limit: usage.limit,
+        },
+        { status: 402 }
+      )
+    }
+  }
+
   let body: ParseHomeworkRequest
   try {
     body = await req.json()
@@ -128,6 +162,11 @@ export async function POST(req: NextRequest) {
     }
 
     const normalisedProblems = normaliseBbox(problems)
+
+    // Increment usage counter for real users
+    if (authedUid && !isAnonymous) {
+      await incrementUsage(authedUid, normalisedProblems.length)
+    }
 
     return NextResponse.json({
       problems: normalisedProblems,
