@@ -217,8 +217,12 @@ function LandingPage() {
 
         {/* Top bar */}
         <div className="flex justify-end mb-4">
-          <button onClick={() => setShowPrivacy(true)} className="text-xs hover:underline transition-colors" style={{ color: "rgba(96,165,250,0.6)", background: "none", border: "none", cursor: "pointer" }}>
-            🔒 Privacy Statement
+          <button
+            onClick={() => setShowPrivacy(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all hover:-translate-y-0.5"
+            style={{ background: "rgba(96,165,250,0.12)", border: "1px solid rgba(96,165,250,0.35)", color: "#93c5fd", cursor: "pointer" }}
+          >
+            🔒 Privacy
           </button>
         </div>
 
